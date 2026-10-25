@@ -255,7 +255,7 @@ button { font-family: var(--font-ui); -webkit-tap-highlight-color: transparent; 
 .news.react li span { font-size: 12.5px; color: var(--ink-dim); }
 .news.react li.fresh b::after { content: '新'; margin-left: 6px; padding: 0 5px; border-radius: 5px; background: var(--danger); color: #2a0a0a; font-size: 11px; }
 
-.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
+.tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); grid-auto-flow: column; gap: 6px; margin-top: 12px; }
 .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 6px; border-radius: 12px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.38); color: var(--ink-dim); font-size: 15px; cursor: pointer; }
 .tab small { font-size: 11.5px; color: var(--ink-dim); font-family: var(--font-px); }
 .tab.on { background: var(--panel-2); color: var(--ink); box-shadow: inset 0 -3px 0 var(--petal); }
@@ -337,6 +337,29 @@ button { font-family: var(--font-ui); -webkit-tap-highlight-color: transparent; 
 .ochip.req { color: #ffe9a8; border-style: dashed; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hint b { color: var(--lamp); font-weight: 400; }
 .grp.store { background: var(--leaf); color: #10301a; }
+.grp.garden { background: #9ad86a; color: #1f3a10; }
+.newab.garden { border-color: #9ad86a; background: rgba(154, 216, 106, 0.1); }
+.newab.garden .tagnew { background: #6cae3e; }
+canvas.garden-art { display: block; width: 100%; height: auto; margin: 10px 0 2px; border-radius: 12px; border: 2px solid var(--edge); }
+.gpots { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; margin-top: 10px; }
+.gpot { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 6px 8px; border-radius: 12px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.38); color: var(--ink); font: inherit; min-height: 98px; justify-content: center; }
+.gpot img { width: 36px; height: 36px; image-rendering: auto; }
+.gpot b { font-weight: 400; font-size: 14px; }
+.gpot small { font-size: 12px; color: var(--ink-dim); }
+.gpot.empty { cursor: pointer; border-style: dashed; color: var(--ink-dim); }
+.gpot.empty.on { border-color: #9ad86a; border-style: solid; background: rgba(154, 216, 106, 0.12); }
+.gp-plus { font-size: 26px; line-height: 1; color: #9ad86a; }
+.gp-pull { margin-top: 4px; padding: 3px 10px; border-radius: 8px; border: 1px solid var(--edge); background: transparent; color: var(--ink-dim); font: inherit; font-size: 12px; cursor: pointer; }
+.gpick { margin-top: 10px; padding: 10px; border-radius: 12px; background: rgba(154, 216, 106, 0.08); border: 2px solid rgba(154, 216, 106, 0.45); }
+.gpick p { margin: 0 0 8px; font-size: 13.5px; }
+.gpick-b { display: grid; grid-template-columns: 36px 1fr auto; grid-template-rows: auto auto; column-gap: 8px; align-items: center; width: 100%; margin-top: 6px; padding: 6px 10px; border-radius: 10px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.38); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.gpick-b img { grid-row: span 2; width: 34px; height: 34px; }
+.gpick-b b { font-weight: 400; font-size: 15px; }
+.gpick-b small { grid-column: 2; font-size: 12px; color: var(--ink-dim); }
+.gpick-b i { grid-row: 1 / span 2; grid-column: 3; font-style: normal; color: #9ad86a; }
+.gpick-b:disabled { opacity: 0.45; cursor: default; }
+.gforecast { margin: 10px 0 0; font-size: 13.5px; color: #c8f0a8; }
+.gcuts { margin: 4px 0 0; font-size: 12.5px; color: var(--ink-dim); }
 .buy.cash::before { content: 'NT$'; font-size: 10px; margin-right: 2px; font-family: var(--font-px); }
 .wallet { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 8px 10px; background: rgba(10, 11, 24, 0.38); border-radius: 10px; }
 .wallet img { width: 28px; height: 22px; object-fit: contain; }
@@ -458,6 +481,7 @@ details.old .intel { margin-top: 6px; color: var(--ink-dim); }
     <div id="skills">
       <button type="button" id="btn-sk1" class="pad sk" hidden></button>
       <button type="button" id="btn-sk2" class="pad sk" hidden></button>
+      <button type="button" id="btn-sk3" class="pad sk" hidden></button>
     </div>
     <div id="sheet" hidden></div>
   </div></div>
@@ -1667,7 +1691,7 @@ const Input = {
       if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' ', 'shift', 'w', 'a', 's', 'd', 'e', 'q', 'enter', 'escape', 'p'].includes(k)) e.preventDefault();
       if (k === ' ' || k === 'e' || k === 'enter') { if (!e.repeat && this.onAction) this.onAction(); return; }
       if (k === 'q') { if (!e.repeat && this.onWait) this.onWait(); return; }
-      if (k === 'f' || k === 'r') { e.preventDefault(); if (!e.repeat && this.onSkill) this.onSkill(k === 'f' ? 0 : 1); return; }
+      if (k === 'f' || k === 'r' || k === 't') { e.preventDefault(); if (!e.repeat && this.onSkill) this.onSkill('frt'.indexOf(k)); return; }
       if (k === 'escape' || k === 'p') { if (!e.repeat && this.onPause) this.onPause(); return; }
       this.keys.add(k);
     });
@@ -4422,8 +4446,10 @@ function buildFences(map) {
   return m.build();
 }
 
-function buildGreenhouse(x0, x1, z0, z1, doors) {
-  const m = new MeshBuilder(), G = TEX.glass, h = 1.5, rh = 2.25, zr = (z0 + z1) / 2;
+function buildGreenhouse(x0, x1, z0, z1, doors, y0 = 0, k = 1) {
+  const m0 = new MeshBuilder(), G = TEX.glass, h = 1.5 * k, rh = 2.25 * k, zr = (z0 + z1) / 2;
+  // 可以整個抬高（蓋在頂樓上）
+  const m = y0 ? { quad: (t, a, b, c, d, ...r) => m0.quad(t, ...[a, b, c, d].map(p => [p[0], p[1] + y0, p[2]]), ...r), tri: (t, a, b, c, ...r) => m0.tri(t, ...[a, b, c].map(p => [p[0], p[1] + y0, p[2]]), ...r), build: () => m0.build() } : m0;
   // 南面（朝相機）與北面
   m.quad(G, [x0, h, z1], [x1, h, z1], [x1, 0, z1], [x0, 0, z1], [0, 0, 1], [0, 0, (x1 - x0) / 1.2, 1]);
   for (let x = x0; x < x1; x += 1) {
@@ -5574,7 +5600,7 @@ let CAT_GEAR;   // undefined：照 G.run（玩家）的升級；null：什麼都
 function catGearFor(run) {
   if (!run || !run.upg) return null;
   const u = run.upg;
-  const g = { socks: u.paws || 0, mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0 };
+  const g = { socks: u.paws || 0, mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0, horn: u.call || 0, lamp: u.tunnel || 0 };
   for (const k in g) if (g[k]) return g;
   return null;
 }
@@ -5593,7 +5619,8 @@ const GEARC = {
   bow: [null, { c: '#ff6d9a', d: '#d94a78', s: 0.82 }, { c: '#ff6d9a', d: '#d94a78', s: 1.25, dots: '#ffffff' }],
   flower: [null, { c: '#ff9fcb', ctr: '#ffe48a', s: 0.9 }, { c: '#e8394d', ctr: '#ffd84d', s: 1.3 }],
   pack: [null, { c: '#4f78b8', d: '#34558a' }, { c: '#4f78b8', d: '#34558a', fish: '#d4ecfa' }, { c: '#3f9a72', d: '#2a6e50' }],
-  bag: [null, { c: '#f2dfb8', d: '#c8a878' }, { c: '#d6a45a', d: '#9a6a30' }],
+  bag: [null, { c: '#f2dfb8', d: '#c8a878' }, { c: '#d6a45a', d: '#9a6a30' }, { c: '#c8843c', d: '#8a5420', rib: '#ff6d9a' }],
+  horn: [null, { c: '#ffd84d', d: '#c99a1a' }, { c: '#eef0f6', d: '#9aa0b8', band: '#e8394d' }],
   glow: [null, { eye: '#d6ff5c', eyeD: '#8fdc3c' }, { eye: '#f4ff96', eyeD: '#c8f244' }],
   crown: ['#ff8fb8', '#ffd84d', '#ffffff', '#ff7a8a', '#c9b6f0', '#ffd84d', '#ff8fb8'],
 };
@@ -5660,17 +5687,53 @@ function gPack(Q, x, y, lv, k = 1) {
   Q.poly([[x - 3.7 * k, y - 3.4 * k], [x + 3.7 * k, y - 3.4 * k], [x + 3.4 * k, y + 0.3 * k], [x - 3.4 * k, y + 0.3 * k]], C.d);
   Q.ellF(x, y + 0.5 * k, 0.9 * k, 0.9 * k, '#ffd84d');
 }
+// 金色小皇冠：x、y 是底部中間
+function gCrown(Q, x, y, k) {
+  Q.poly([[-5, 0], [5, 0], [5.6, -5.2], [2.8, -2.6], [0, -6.8], [-2.8, -2.6], [-5.6, -5.2]].map(([a, b]) => [x + a * k, y + b * k]), '#ffd84d');
+  Q.line([[x - 4.6 * k, y - 1.1 * k], [x + 4.6 * k, y - 1.1 * k]], '#d9a21a', 0.8 * k);
+  for (const [dx, dy, c] of [[0, -6.8, '#ff6d9a'], [-5.6, -5.2, '#7ad3ff'], [5.6, -5.2, '#7ad3ff']]) Q.ellF(x + dx * k, y + dy * k, 0.95 * k, 0.95 * k, c);
+  Q.ellF(x, y - 2.5 * k, 1.15 * k, 1.15 * k, '#e8394d');
+}
+// 小喇叭（喵喵廣播）：x、y 是吹嘴；dir 1 朝右
+function gHorn(Q, x, y, lv, k = 1, dir = 1) {
+  const C = GEARC.horn[lv], b = lv >= 2 ? 1.45 : 1, X = (a) => x + a * k * dir;
+  Q.poly([[X(0), y - 0.9 * k], [X(4.6 * b), y - 2.7 * k * b], [X(4.6 * b), y + 2.7 * k * b], [X(0), y + 0.9 * k]], C.c);
+  Q.ellF(X(4.6 * b), y, 0.9 * k, 2.4 * k * b, C.d);
+  if (C.band) Q.line([[X(2.6 * b), y - 1.9 * k * b], [X(2.6 * b), y + 1.9 * k * b]], C.band, 0.9 * k);
+  Q.ellF(X(-0.5), y, 0.8 * k, 0.8 * k, C.d);
+}
+// 礦工頭燈（貓道）：x、y 是燈的中心
+function gLamp(Q, x, y, k = 1) {
+  Q.ell(x, y, 2.8 * k, 2.4 * k, '#3a3a4a');
+  Q.ellF(x, y, 1.9 * k, 1.6 * k, '#fff3a0');
+  Q.ellF(x - 0.6 * k, y - 0.5 * k, 0.6 * k, 0.5 * k, '#ffffff');
+}
+// 發光的小燈籠（夜貓子第三級）
+function gLantern(Q, x, y, k = 1, lie = false) {
+  const cx = lie ? x + 3 * k : x + 0.3 * k, cy = lie ? y - 1.4 * k : y + 4.6 * k;
+  if (!lie) Q.line([[x, y], [x + 0.3 * k, y + 1.6 * k]], '#c9a43a', 0.7 * k);
+  Q.ellF(cx, cy, 4.2 * k, 4.6 * k, 'rgba(255,200,110,0.35)');
+  Q.ell(cx, cy, 2.5 * k, 3 * k, '#ff7a3a');
+  for (const dx of [-1.2, 0, 1.2]) Q.line([[cx + dx * k, cy - 2.6 * k], [cx + dx * 1.15 * k, cy + 2.6 * k]], '#c4421a', 0.5 * k);
+  Q.ellF(cx, cy, 1.1 * k, 1.5 * k, '#ffe08a');
+  Q.poly([[cx - 1.5 * k, cy - 3.4 * k], [cx + 1.5 * k, cy - 3.4 * k], [cx + 1.5 * k, cy - 2.6 * k], [cx - 1.5 * k, cy - 2.6 * k]], '#3a2a20');
+  Q.poly([[cx - 1.5 * k, cy + 2.6 * k], [cx + 1.5 * k, cy + 2.6 * k], [cx + 1.5 * k, cy + 3.4 * k], [cx - 1.5 * k, cy + 3.4 * k]], '#3a2a20');
+  Q.line([[cx, cy + 3.4 * k], [cx, cy + 5.4 * k]], '#e8394d', 0.7 * k);
+  Q.poly(star4Pts(cx - 3.4 * k, cy - 1.2 * k, 1.8 * k), '#fff3a0');
+}
 // 花袋／花籃：x、y 是底部中間
 function gBag(Q, x, y, lv, k = 1) {
   const C = GEARC.bag[lv];
+  if (lv >= 3) k *= 1.18;
   if (lv >= 2) {
-    const fl = [[-2.6, 5, '#ff8fb8'], [0.4, 6.6, '#ffd84d'], [3, 4.8, '#ffffff']];
+    const fl = lv >= 3 ? [[-3.6, 4.6, '#e8394d'], [-1.6, 6.8, '#ff8fb8'], [0.6, 7.6, '#ffd84d'], [2.6, 6.2, '#ffffff'], [4.2, 4.4, '#9a6ad0']] : [[-2.6, 5, '#ff8fb8'], [0.4, 6.6, '#ffd84d'], [3, 4.8, '#ffffff']];
     for (const [dx, h] of fl) Q.line([[x + dx * k, y - 4 * k], [x + dx * 1.15 * k, y - (4 + h) * k]], PC.stem, 0.9 * k);
     for (const [dx, h, col] of fl) gFlower(Q, x + dx * 1.15 * k, y - (4 + h) * k, 1.8 * k, col);
     Q.poly([[x - 5.2 * k, y - 4.6 * k], [x + 5.2 * k, y - 4.6 * k], [x + 4.2 * k, y], [x - 4.2 * k, y]], C.c);
     for (let i = 1; i <= 2; i++) Q.line([[x - (5.1 - i * 0.35) * k, y - (4.6 - i * 1.5) * k], [x + (5.1 - i * 0.35) * k, y - (4.6 - i * 1.5) * k]], C.d, 0.7 * k);
     for (let i = -2; i <= 2; i++) Q.line([[x + i * 1.9 * k, y - 4.4 * k], [x + i * 1.6 * k, y - 0.4 * k]], C.d, 0.55 * k);
     Q.poly([[x - 5.8 * k, y - 5.7 * k], [x + 5.8 * k, y - 5.7 * k], [x + 5.8 * k, y - 4.2 * k], [x - 5.8 * k, y - 4.2 * k]], C.d);
+    if (C.rib) { for (const sd of [-1, 1]) Q.ell(x + sd * 1.9 * k, y - 2.4 * k, 1.8 * k, 1.1 * k, C.rib, sd * 0.4); Q.ellF(x, y - 2.4 * k, 0.8 * k, 0.8 * k, '#d94a78'); }
   } else {
     Q.line([[x + 0.5 * k, y - 3.6 * k], [x + 1.2 * k, y - 7.2 * k]], PC.stem, 0.9 * k);
     gFlower(Q, x + 1.2 * k, y - 7.5 * k, 1.75 * k, '#ff8fb8');
@@ -5688,6 +5751,7 @@ function crescentPts(cx, cy, R) {
 function star4Pts(x, y, r) { const pts = []; for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4 - Math.PI / 2, rr = i % 2 ? r * 0.42 : r; pts.push([x + Math.cos(a) * rr, y + Math.sin(a) * rr]); } return pts; }
 // 月亮吊飾：x、y 是尾巴尖。lie：尾巴躺在地上（月亮放旁邊）
 function gMoon(Q, x, y, lv, k = 1, lie = false) {
+  if (lv >= 3) { gLantern(Q, x, y, k, lie); return; }
   const cx = lie ? x + 2.6 * k : x + 0.3 * k, cy = lie ? y - 1 * k : y + 3.9 * k;
   if (!lie) Q.line([[x, y], [x + 0.3 * k, y + 1.7 * k]], '#c9a43a', 0.7 * k);
   Q.poly(crescentPts(cx, cy, 2.4 * k), '#ffe27a');
@@ -5718,6 +5782,7 @@ function gearHeadUnder(P, s, g) {
     PX.line(...P(-1.9, by0 + 0.8), ...P(1.9, by0 + 0.8), '#a8761a');
     PX.ellipse(bx - br * 0.35, by - br * 0.35, br * 0.28, br * 0.28, '#fffbe0');
   }
+  if (g.horn) { const [hx, hy] = P(7.6, 15.6); PX.curve([P(4, 11.6), P(6.4, 14), P(7.6, 15.6)], '#8a6a3a', { w: 0.8 }); gHorn(GP, hx, hy, g.horn, 1.05 * s); }
 }
 // 眼罩：眼周亮色之後、眼睛之前（眼睛蓋在上面，像挖了洞）
 function gearHeadMask(P, s, g) {
@@ -5734,6 +5799,7 @@ function gearHeadTop(P, s, rot, g) {
   if (g.bow >= 3) {
     for (let i = 0; i < 6; i++) { const u = -1 + (i + 0.5) / 3, [x, y] = P(u * 14, -14.6 - 1.5 * (1 - u * u)); PX.ellipse(x, y, 2.7 * s + 0.9, 1.5 * s + 0.7, TAB.out, { rot: rot + u * 0.8 }); PX.ellipse(x, y, 2.7 * s, 1.5 * s, '#5aa652', { rot: rot + u * 0.8 }); }
     for (let i = 0; i < 7; i++) { const u = -1 + i / 3, [x, y] = P(u * 14, -14.6 - 1.5 * (1 - u * u)); gFlower(GP, x, y, 3.3 * s, GEARC.crown[i]); }
+    if (g.bow >= 4) { const [x, y] = P(0, -17.2); gCrown(GP, x, y, 1.2 * s); }
   } else if (g.bow) {
     const C = GEARC.bow[g.bow], k = C.s, bx = -10, by = -14;
     gPoly([P(bx - 0.6, by), P(bx - 3.6 * k, by + 5.8 * k), P(bx - 1.2 * k, by + 5.2 * k)], C.d);
@@ -5747,6 +5813,11 @@ function gearHeadTop(P, s, rot, g) {
     }
     const [kx, ky] = P(bx, by);
     gEll(kx, ky, 2.1 * k * s, 2.1 * k * s, C.c);
+  }
+  if (g.lamp) {
+    PX.curve([P(-16, -6.6), P(-8, -11.6), P(0, -12.6), P(8, -11.6), P(16, -6.6)], TAB.out, { w: 2.4 * s + 1.2 });
+    PX.curve([P(-16, -6.6), P(-8, -11.6), P(0, -12.6), P(8, -11.6), P(16, -6.6)], '#3a3a4a', { w: 2.4 * s });
+    const [lx, ly] = P(0, -12.2); gLamp(GP, lx, ly, 1.25 * s);
   }
   if (g.flower) {
     const C = GEARC.flower[g.flower], [x, y] = g.bow >= 3 ? P(16, -6.5) : P(12.2, -12.8);
@@ -5768,6 +5839,7 @@ function gearSideTop(P, g) {
   if (g.bow >= 3) {
     for (let i = 0; i < 5; i++) { const a = -2.8 + i * 0.44, [x, y] = P(Math.cos(a) * 7.4, Math.sin(a) * 6.9 - 0.4); O.e(x, y, 2.2, 1.2, CM.ink, { rot: a + 1.57 }); O.e(x, y, 1.6, 0.8, '#5aa652', { rot: a + 1.57 }); }
     for (let i = 0; i < 5; i++) { const a = -2.6 + i * 0.4, [x, y] = P(Math.cos(a) * 7.6, Math.sin(a) * 7.1 - 0.6); gFlower(GO, x, y, 1.75, GEARC.crown[i + 1]); }
+    if (g.bow >= 4) { const [x, y] = P(0.6, -8.4); gCrown(GO, x, y, 0.62); }
   } else if (g.bow) {
     const C = GEARC.bow[g.bow], k = C.s * 0.74, [cx, cy] = P(1.6, -8.1);
     GO.poly([[cx - 0.3, cy], [cx - 1.9 * k, cy + 3.4 * k], [cx - 0.5 * k, cy + 3 * k]], C.d);
@@ -5776,6 +5848,7 @@ function gearSideTop(P, g) {
     if (C.dots) for (const sd of [-1, 1]) O.dot(cx + sd * 3.4 * k, cy - 0.9 * k, 0.5 * k + 0.1, C.dots);
     O.eo(cx, cy, 1.2 * k, 1.2 * k, C.c);
   }
+  if (g.lamp) { const pts = [P(-6.8, -3.4), P(-3, -7), P(2, -7.4), P(6.6, -4.2)]; O.curve(pts, CM.ink, 2.6); O.curve(pts, '#3a3a4a', 1.4); const [lx, ly] = P(3.4, -6.6); gLamp(GO, lx, ly, 0.72); }
   if (g.flower) {
     const C = GEARC.flower[g.flower], [x, y] = P(-6.4, -5.2);
     if (g.flower >= 2) gHibiscus(GO, x, y, 2.4 * C.s, C.c);
@@ -5796,6 +5869,7 @@ function gearSideNeck(P, g) {
     const br = g.collar >= 2 ? 1.85 : 1.45, [bx, by] = P(-1.6, 8.9);
     O.eo(bx, by, br, br, '#ffd84d'); O.dot(bx - br * 0.35, by - br * 0.35, br * 0.3, '#fffbe0');
   }
+  if (g.horn) { const [hx, hy] = P(1.2, 10.4); gHorn(GO, hx, hy, g.horn, 0.62, 1); }
 }
 
 // ---- 場景裡的身體（O 畫筆）----
@@ -5842,9 +5916,10 @@ function gearBackBody(stage, bob, g) {
   const hy = -19.5 + bob;
   if (stage === 'head') {
     if (g.mask) { const C = GEARC.mask[g.mask]; O.limb(-8, hy - 0.6, 8, hy - 0.6, 1.7, C.c); GO.poly([[-7.4, hy - 1.4], [-11.6, hy - 4.2], [-11, hy + 0.2]], C.c); GO.poly([[-7.4, hy], [-10.6, hy + 3], [-8.4, hy + 3.6]], C.c); }
-    if (g.bow >= 3) { for (let i = 0; i < 6; i++) { const u = -1 + i / 2.5; gFlower(GO, u * 6.8, hy - 6.4 - (1 - u * u) * 0.9, 1.7, GEARC.crown[i]); } }
+    if (g.bow >= 3) { for (let i = 0; i < 6; i++) { const u = -1 + i / 2.5; gFlower(GO, u * 6.8, hy - 6.4 - (1 - u * u) * 0.9, 1.7, GEARC.crown[i]); } if (g.bow >= 4) gCrown(GO, 0, hy - 7.6, 0.6); }
     else if (g.bow) { const C = GEARC.bow[g.bow], k = C.s * 0.5, cx = 5, cy = hy - 7; for (const sd of [-1, 1]) O.eo(cx + sd * 2.6 * k, cy - 0.4 * k, 2.6 * k, 1.8 * k, C.c, { rot: sd * 0.35 }); O.eo(cx, cy, 1.1 * k, 1.1 * k, C.c); }
     if (g.flower) { const C = GEARC.flower[g.flower]; gFlower(GO, -6.4, hy - 6.2, 1.9 * C.s, C.c, C.ctr); }
+    if (g.lamp) O.limb(-8.2, hy - 2.6, 8.2, hy - 2.6, 1.5, '#3a3a4a');
     return;
   }
   if (g.wings) for (const sd of [-1, 1]) gWing(GO, sd * 2.4, -13.2 + bob, sd, 1, 0);
@@ -5865,7 +5940,8 @@ function gearLoafBody(stage, g) {
 }
 // 紙箱偽裝：耳朵旁邊的蝴蝶結／花冠／小花
 function gearBoxTop(wob, g) {
-  if (g.bow >= 3) { for (let i = 0; i < 5; i++) { const u = -1 + i / 2; gFlower(GO, u * 6.4 + wob, -20.4 - (1 - u * u) * 1.2, 1.6, GEARC.crown[i + 1]); } }
+  if (g.bow >= 3) { for (let i = 0; i < 5; i++) { const u = -1 + i / 2; gFlower(GO, u * 6.4 + wob, -20.4 - (1 - u * u) * 1.2, 1.6, GEARC.crown[i + 1]); } if (g.bow >= 4) gCrown(GO, wob, -21.6, 0.55); }
+  if (g.lamp) gLamp(GO, -1 + wob, -18.6, 0.7);
   else if (g.bow) { const C = GEARC.bow[g.bow], k = C.s * 0.55, cx = -6.4 + wob, cy = -21.6; for (const sd of [-1, 1]) O.eo(cx + sd * 2.6 * k, cy - 0.4 * k, 2.6 * k, 1.8 * k, C.c, { rot: sd * 0.35 }); O.eo(cx, cy, 1.1 * k, 1.1 * k, C.c); }
   if (g.flower) { const C = GEARC.flower[g.flower]; gFlower(GO, 7.6 + wob, -21.4, 1.9 * C.s, C.c, C.ctr); }
 }
@@ -5928,8 +6004,11 @@ function gearCuteHead(c, stage, pal) {
       for (const sd of [-1, 1]) { ell(-10 + sd * 5.4 * k, -15 - 0.8 * k, 5.4 * k, 3.7 * k, C.c, sd * 0.35); if (C.dots) ell(-10 + sd * 6.6 * k, -15.6 - 0.8 * k, 1, 1, C.dots); }
       ell(-10, -15, 2.4 * k + 1.6, 2.4 * k + 1.6, ink); ell(-10, -15, 2.4 * k, 2.4 * k, C.c);
     }
+    if (g.bow >= 4) { const pts = [[-5, 0], [5, 0], [5.6, -5.2], [2.8, -2.6], [0, -6.8], [-2.8, -2.6], [-5.6, -5.2]].map(([a, b]) => [a * 1.3, -17.6 + b * 1.3]); c.lineJoin = 'round'; c.strokeStyle = ink; c.lineWidth = 3; c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.stroke(); poly(pts, '#ffd84d'); ell(0, -20.8, 1.4, 1.4, '#e8394d'); ell(0, -26.4, 1.2, 1.2, '#ff6d9a'); }
+    if (g.lamp) { c.strokeStyle = ink; c.lineWidth = 4.6; c.beginPath(); c.moveTo(-16, -7); c.quadraticCurveTo(0, -17, 16, -7); c.stroke(); c.strokeStyle = '#3a3a4a'; c.lineWidth = 2.6; c.beginPath(); c.moveTo(-16, -7); c.quadraticCurveTo(0, -17, 16, -7); c.stroke(); ell(0, -12.4, 4.6, 4, ink); ell(0, -12.4, 3.4, 2.9, '#3a3a4a'); ell(0, -12.4, 2.4, 2, '#fff3a0'); }
     if (g.flower) { const C = GEARC.flower[g.flower]; flower(g.bow >= 3 ? 16 : 12.4, g.bow >= 3 ? -6 : -13, 3.8 * C.s, C.c); }
   }
+  if (stage === 'under' && g.horn) { const C = GEARC.horn[g.horn], b = g.horn >= 2 ? 1.45 : 1; poly([[7, 14.4], [12 * b, 11.6], [12 * b, 19.4], [7, 16.6]].map(([x, y], i) => [x, y]), ink); poly([[7.6, 14.8], [11.4 * b, 12.4], [11.4 * b, 18.6], [7.6, 16.2]], C.c); ell(11.6 * b, 15.5, 1.2, 3 * b, C.d); }
 }
 function gearCuteEyes(pal) { const g = pal ? null : gearNow(); return { glow: gearEyeCol(g), mask: !!(g && g.mask) }; }
 
@@ -7142,15 +7221,17 @@ const CUTE_MOVES = [
 ];
 
 const UPGRADES = [
-  { id: 'mouth', name: '大嘴巴', group: '技能', max: 2, cost: [12, 30], lv: ['一次叼 2 朵（斜背一個小花袋）', '一次叼 3 朵（換成藤編花籃）'], base: '一次叼 1 朵' },
+  { id: 'mouth', name: '大嘴巴', group: '技能', max: 3, cost: [12, 30, 60], mon: [1, 1, 3], lv: ['一次叼 2 朵（斜背一個小花袋）', '一次叼 3 朵（換成藤編花籃）', '一次叼 4 朵（插滿花、綁著蝴蝶結的大花簍）'], base: '一次叼 1 朵' },
   { id: 'gentle', name: '輕輕叼', group: '技能', max: 2, cost: [8, 20], lv: ['奔跑掉花瓣機率減半（繫上薄荷綠小領巾）', '奔跑完全不掉花瓣（換成粉紅蕾絲領巾）'], base: '奔跑會掉花瓣' },
   { id: 'paws', name: '肉球消音', group: '技能', max: 2, cost: [10, 24], lv: ['腳步聲範圍 −40%（穿上灰色小襪子）', '腳步聲範圍 −70%（換成黑色忍者襪）'], base: '奔跑腳步聲正常' },
   { id: 'catwalk', name: '貓步', group: '技能', max: 2, cost: [10, 24], lv: ['走路時被發現的速度 −30%（戴上怪盜眼罩）', '走路被發現 −50%，走碎石也沒聲音（紫色金邊眼罩）'], base: '走路也會被看到' },
   { id: 'nightvis', name: '夜視', group: '技能', max: 2, cost: [12, 26], lv: ['隔著房子也看得到鄰居（眼睛會發光）', '暗的地方被發現的速度 −25%（眼睛更亮）'], base: '牆後面有誰看不到' },
   { id: 'sniff', name: '嗅花', group: '技能', max: 2, cost: [8, 18], lv: ['畫面邊緣指出最近的三盆花（耳朵別一朵小花）', '再標出價錢、訂單要的花（換成大朵的花）'], base: '花在哪要自己找' },
   { id: 'bribe', name: '罐罐收買', group: '技能', max: 2, cost: [10, 22], lv: ['小柴要叫的時候丟一個罐罐，安靜 18 秒（背上藍色小背包）', '安靜 30 秒，野狗也收買得到（背包掛著小魚乾）'], base: '狗看到你就叫' },
-  { id: 'owl', name: '夜貓子', group: '技能', max: 2, cost: [10, 26], lv: ['每晚多 45 分鐘（尾巴綁上月亮吊飾）', '每晚多 90 分鐘（月亮旁邊多一顆星星）'], base: '02:30 前回家' },
-  { id: 'cute', name: '萌力', group: '技能', max: 3, cost: [8, 18, 36], lv: ['賣萌成功率 +12%（頭上小蝴蝶結）', '賣萌成功率 +24%（大蝴蝶結）', '賣萌成功率 +36%（花冠）'], base: '賣萌靠天分' },
+  { id: 'owl', name: '夜貓子', group: '技能', max: 3, cost: [10, 26, 50], mon: [1, 1, 3], lv: ['每晚多 45 分鐘（尾巴綁上月亮吊飾）', '每晚多 90 分鐘（月亮旁邊多一顆星星）', '每晚多 135 分鐘（尾巴掛上會發光的小燈籠）'], base: '02:30 前回家' },
+  { id: 'cute', name: '萌力', group: '技能', max: 4, cost: [8, 18, 36, 70], mon: [1, 1, 1, 3], lv: ['賣萌成功率 +12%（頭上小蝴蝶結）', '賣萌成功率 +24%（大蝴蝶結）', '賣萌成功率 +36%（花冠）', '賣萌成功率 +48%（花冠中間多一頂金色小皇冠）'], base: '賣萌靠天分' },
+  { id: 'call', name: '喵喵廣播', group: '技能', max: 2, cost: [24, 48], mon: [3, 3], lv: ['多一個「喵！」按鈕：把叫聲丟到前方，附近的人會走過去看（每晚 3 次；脖子掛一個金色小喇叭）', '每晚 5 次、聲音傳得更遠（喇叭換成紅白大聲公）'], base: '只能撥倒東西把人引開' },
+  { id: 'tunnel', name: '貓道', group: '技能', max: 1, cost: [80], mon: [4], lv: ['花店貓門和巷底之間挖一條秘密貓道，在洞口按「鑽」一下就到另一頭（戴上礦工頭燈）'], base: '每次都要走完整條巷子' },
   { id: 'jump', name: '跳高高', group: '技能', max: 1, cost: [20], lv: ['翻過大宅圍牆，偷溫室蝴蝶蘭（背上長出小翅膀）'], base: '大宅圍牆太高' },
   { id: 'orange', name: '橘貓夥伴', group: '夥伴', max: 3, cost: [15, 32, 60], lv: ['每晚跟你出門（體力 3），還自己帶回 NT$ 400（藍色領巾）', '體力 4，自己帶回 NT$ 900（加一個小背包）', '體力 5，自己帶回 NT$ 1,600（披上紅披風）'], base: '還沒有夥伴', need: 'orangeCat' },
   { id: 'lucky', name: '招財貓', group: '花店', max: 3, cost: [12, 28, 55], lv: ['花的賣價 ×1.2（紅項圈小金鈴，櫃台多一隻招財貓）', '花的賣價 ×1.45（鈴鐺變大、招財貓抱金幣）', '花的賣價 ×1.75（金項圈，招財貓變金色）'], base: '賣價 ×1' },
@@ -7732,6 +7813,7 @@ class NightScene {
     // 橘貓夥伴：收了之後每晚都來；第四晚沒收也會來幫忙。體力＝今晚能下幾次指令
     this.hasOrange = this.abil.has('orange') || (this.run.upg.orange || 0) > 0;
     this.oranges = this.hasOrange ? orangeEnergy(this.run) : 0;
+    this.initCatSkills();
     this.visMult = this.event === 'rain' || this.event === 'outage' ? 0.85 : 1;
     this.top = topGrid(this.map); this.topBlocked = new Set();
     for (const [tx, ty] of ROOF_TOWERS) this.topBlocked.add(tx + ',' + ty);
@@ -8221,6 +8303,7 @@ class NightScene {
         if (d < bd) { bd = d; best = { kind: o.jump ? 'jump' : 'knock', ref: o }; }
       }
     }
+    if (!best) { const tt = this.tunnelTarget(cx, cy); if (tt) best = tt; }
     if (c.home) best = { kind: 'home' };
     this.target = best;
     let label = null;
@@ -8231,6 +8314,7 @@ class NightScene {
       else if (best.kind === 'climb') label = '爬';
       else if (best.kind === 'drop') label = '跳下';
       else if (best.kind === 'home') label = '收工';
+      else if (best.kind === 'tunnel') label = '鑽';
       if (best.kind === 'climb' && !this.tips.climb) { this.tips.climb = 1; UI.toast('按「爬」從鐵窗、柵欄爬上去！屋頂上地面的人看不到你', 3200); }
       if (best.kind === 'knock' && !this.tips.knock) { this.tips.knock = 1; UI.toast('按「撥」把它弄倒，聲音能把人引過去'); }
     }
@@ -8238,9 +8322,10 @@ class NightScene {
     UI.setWait(this.mode === 'play' && (c.hidden || c.home), this.waiting);
     const sk = [];
     if (this.mode === 'play' && this.abil.has('box')) sk.push({ id: 'box', label: c.box ? '出來' : '紙箱', n: this.boxes, on: !!c.box, off: !c.box && this.boxes <= 0 });
+    this.catSkillButtons(sk);
     if (this.mode === 'play' && this.orange) sk.push({ id: 'orange', label: '橘貓', n: this.oranges, on: this.orange.state !== 'follow', off: this.oranges <= 0 || this.orange.state !== 'follow' });
     // 在花店貓門：紙箱用不到，換成「熟門熟路」
-    if (this.mode === 'play' && c.home && raidUnlocked(this.run) && masteredList(this.run).length) { const ok = this.raidOptions().filter(o => o.ok).length; const i = sk.findIndex(x => x.id === 'box'); const it = { id: 'raid', label: '熟門', n: ok, off: !ok }; if (i >= 0 && !c.box) sk[i] = it; else sk.unshift(it); if (sk.length > 2) sk.length = 2; }
+    if (this.mode === 'play' && c.home && raidUnlocked(this.run) && masteredList(this.run).length) { const ok = this.raidOptions().filter(o => o.ok).length; const i = sk.findIndex(x => x.id === 'box'); const it = { id: 'raid', label: '熟門', n: ok, off: !ok }; if (i >= 0 && !c.box) sk[i] = it; else sk.unshift(it); if (sk.length > 3) sk.length = 3; }
     UI.setSkills(sk);
   }
   // 能力按鈕：紙箱、橘貓
@@ -8256,6 +8341,8 @@ class NightScene {
       if (!this.tips.box) { this.tips.box = 1; UI.toast('紙箱裡不動，大家只會看到一個箱子。在人家眼前移動會很可疑！', 3400); }
     } else if (id === 'orange' && this.orange) {
       this.orangeOrder();
+    } else if (id === 'call') {
+      this.doCall();
     } else if (id === 'raid' && c.home && raidUnlocked(this.run)) {
       this.openRaid();
     }
@@ -8309,6 +8396,8 @@ class NightScene {
     } else if (tg.kind === 'drop') {
       c.jump = { x0: c.x, y0: c.y, x1: tg.x, y1: tg.y, t: 0, dur: 0.42, h0: c.h, h1: 0, top: false, hopPx: 6 };
       SFX.play('jump');
+    } else if (tg.kind === 'tunnel') {
+      this.useTunnel(tg.i);
     } else if (tg.kind === 'home') {
       UI.confirm('今晚收工？', '回花店睡覺，結算今晚的花。', '收工', '再偷一下', ok => { if (ok) this.finish(false); });
     }
@@ -9835,7 +9924,7 @@ class DayScene {
       this.shopT -= dt;
       if (this.shopT <= 0) {
         const max = this.rush ? 4 : 3;
-        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * rnd(0.8, 1.2);
+        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * (this.run.flags && this.run.flags.famous ? 0.65 : 1) * rnd(0.8, 1.2);
         else this.shopT = 1;
       }
     }
@@ -10742,6 +10831,8 @@ function* monthDayScript(S, n) {
   const nb = run.lastNight || {};
   yield S.say(nb.total > 0 ? pick(['門口又有花了！小精靈今天也來了耶。', '今天的花也好漂亮～花喵，你知道是誰放的嗎？', '花店小精靈又來了！']) : '今天門口沒有花……');
   UI.hideDialog();
+  yield* gardenMorningScript(S);
+  yield* gardenStoryScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
   const k = 1 + (Math.random() < 0.5 ? 1 : 0);
@@ -10781,7 +10872,7 @@ const UI = {
     const press = (el, fn) => el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); SFX.init(); SFX.resume(); fn(); });
     press(this.actBtn, () => Flow.action());
     press(this.waitBtn, () => Flow.wait());
-    this.skBtns = [$('btn-sk1'), $('btn-sk2')]; this.skIds = [null, null];
+    this.skBtns = [$('btn-sk1'), $('btn-sk2'), $('btn-sk3')]; this.skIds = [null, null, null];
     this.skBtns.forEach((b, i) => press(b, () => Flow.skill(i)));
     this.ordersEl = $('hud-orders');
     press($('btn-pause'), () => this.pause());
@@ -10806,7 +10897,7 @@ const UI = {
       this.skIds[i] = it ? it.id : null;
       b.hidden = !it;
       if (!it) return;
-      b.innerHTML = `<span>${esc(it.label)}</span><i class="px">${it.n}</i><kbd>${i ? 'R' : 'F'}</kbd>`;
+      b.innerHTML = `<span>${esc(it.label)}</span><i class="px">${it.n}</i><kbd>${'FRT'[i]}</kbd>`;
       b.classList.toggle('on', !!it.on); b.classList.toggle('off', !!it.off);
       b.setAttribute('aria-label', it.label + '，剩 ' + it.n + ' 次');
     });
@@ -11047,6 +11138,11 @@ const UI = {
     const HS = R.heat || { changes: [], newMaster: [] };
     const heatHtml = HS.changes.length ? `<h3>鄰居的警戒</h3><ul class="tally heat">${HS.changes.map(c => `<li class="${c.to > c.from ? 'up' : c.to < c.from ? 'down' : ''}"><span class="nm">${esc(OWNERS[c.o].person)}<em>${c.taken ? '昨晚少了 ' + c.taken + ' 朵' : '昨晚沒去'}</em></span><span class="fr">${c.to > c.from ? '變緊張了' : c.to < c.from ? '放鬆了' : ''}</span><b class="stars">${starStr(c.to)}</b></li>`).join('')}</ul>${HS.changes.some(c => c.to >= 1) ? '<p class="hint">一顆星：隔天會來店裡問問題　兩顆星：裝防貓設施　三顆星：里長約談。送花賠罪、幾晚不去，星星就會降。</p>' : ''}` : '';
     const masterHtml = HS.newMaster.length ? `<div class="newab master"><span class="tagnew">熟門熟路</span><b>${HS.newMaster.map(o => OWNERS[o].name).join('、')}</b><p>偷熟了！${raidUnlocked(run) ? '' : '第二個月起，'}晚上在花店貓門按「熟門」，花喵就會自己去把那一家的花帶回來（會花一點時間）。</p></div>` : '';
+    const gv = R.gardenValue || 0, GH = R.garden || [], GF = R.gifts || [], CU = R.cuts || [];
+    const gardenHtml = (GH.length || GF.length || (CU.length && gardenOpen(run))) ? `<div class="newab garden"><span class="tagnew">頂樓花園</span>
+      ${GH.length ? `<p>收成：<b>${GH.map(h => FLOWERS[h.t].name + ' ×' + h.n).join('、')}</b></p>` : ''}
+      ${GF.length ? `<p>門口的禮物：${GF.map(g => FAN_NAMES[g.who] + '送的' + FLOWERS[g.t].name).join('、')}</p>` : ''}
+      ${CU.length && gardenOpen(run) ? `<p>順便叼回插枝：${CU.map(t => FLOWERS[t].name).join('、')}</p>` : ''}</div>` : '';
     const title = R.deposited.length ? `帶回 ${R.deposited.length} 朵花` : '昨晚空手而回';
     const prev = run.nightTotals && run.nightTotals.length > 1 ? run.nightTotals[run.nightTotals.length - 2] : 0;
     const growth = prev > 0 && R.total > 0 ? `<p class="growth">這一晚的總價值 <b class="px">${N(R.total)}</b>，是上一晚的 <b class="px">×${(R.total / prev).toFixed(1)}</b></p>` : '';
@@ -11054,12 +11150,12 @@ const UI = {
       ${items.length ? `<h3>今天店裡要賣的花</h3><ul class="tally">${rows}</ul>` : (R.deposited.length ? '' : '<p class="lead">店裡今天又是空的……</p>')}
       ${mults.length ? `<p class="mults">${mults.map(esc).join('<span>・</span>')}</p>` : ''}
       ${orders ? `<h3>訂單${st.scooter ? '<small>外送機車：獎勵 ×2</small>' : ''}</h3><ul class="tally">${orders}</ul>` : ''}
-      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${masterHtml}${heatHtml}
+      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${gardenHtml}${masterHtml}${heatHtml}
       <div class="total"><span>現在入帳</span><b class="px" id="tally-total">0</b></div>
-      ${R.stockValue > 0 ? `<div class="total sub"><span>白天客人上門買花</span><b class="px">≈ ${N(R.stockValue)}</b></div>` : ''}
+      ${R.stockValue + gv > 0 ? `<div class="total sub"><span>白天客人上門買花</span><b class="px">≈ ${N(R.stockValue + gv)}</b></div>` : ''}
       ${growth}
       <div class="cans-earn"><img src="${G.icons.can}" alt=""><span>美玲賞你罐罐</span><b class="px" id="tally-cans">+0</b></div>
-      ${this.rentBar(run, -R.now, R.stockValue)}`;
+      ${this.rentBar(run, -R.now, R.stockValue + gv)}`;
     const req = S && S.request ? `<p class="bq-req">今天有熟客指定：<b>${esc(S.request.label)}</b>（包好馬上買走，多給 ${money(S.request.bonus)}）</p>` : '';
     const sorry = apologyTargets(run);
     this.modal(html + (canBq ? `<p class="hint">可以先把花包成花束：配色漂亮、或湊成有名字的花束，賣得比一枝一枝還貴。${sorry.length ? `<br>${sorry.map(o => OWNERS[o].person).join('、')}在起疑：包好的花束也可以送去賠罪，警戒會降。` : ''}</p>${req}` : ''),
@@ -11082,7 +11178,7 @@ const UI = {
   },
   shop(run, done) {
     const st = storeOf(run);
-    let tab = 'store';
+    let tab = 'store', pickIdx = -1;
     const render = () => {
       const pips = (lv, max) => Array.from({ length: max }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('');
       let body;
@@ -11101,15 +11197,18 @@ const UI = {
           <p class="hint">還剩 <b>${nightsLeft}</b> 晚。越早裝回本越多；買下去馬上會看到店裡變樣。</p>
           ${this.rentBar(run)}
           <ul class="ups">${rows}</ul>`;
+      } else if (tab === 'garden') {
+        body = gardenTabHTML(run, pickIdx);
       } else {
         const rows = UPGRADES.map(u => {
           const lv = run.upg[u.id] || 0;
-          const locked = u.need && !run.intel[u.need];
           const maxed = lv >= u.max;
+          const monNeed = !maxed && u.mon ? u.mon[lv] : 1;
+          const locked = (u.need && !run.intel[u.need]) || (run.month || 1) < monNeed;
           const cost = maxed ? 0 : u.cost[lv];
           const can = !locked && !maxed && run.cans >= cost;
           const now = lv > 0 ? u.lv[lv - 1] : u.base;
-          const next = maxed ? '已經滿級' : (locked ? '白天沒聽說過這號人物' : '下一級：' + u.lv[lv]);
+          const next = maxed ? '已經滿級' : (u.need && !run.intel[u.need]) ? '白天沒聽說過這號人物' : (run.month || 1) < monNeed ? `第${cn(monNeed)}個月才進貨：${u.lv[lv]}` : '下一級：' + u.lv[lv];
           return `<li class="up ${maxed ? 'maxed' : ''} ${locked ? 'locked' : ''}">
             <div class="up-main"><div class="up-name"><span class="grp">${u.group}</span><b>${u.name}</b><span class="pips">${pips(lv, u.max)}</span></div>
             <div class="up-now">${esc(now)}</div><div class="up-next">${esc(next)}</div></div>
@@ -11120,19 +11219,38 @@ const UI = {
           <div class="cat-looks"><figure><canvas class="cat-look" data-who="tab"></canvas><figcaption>花喵現在的樣子</figcaption></figure>${run.upg.orange ? '<figure><canvas class="cat-look" data-who="orange"></canvas><figcaption>橘貓夥伴</figcaption></figure>' : ''}</div>
           <ul class="ups">${rows}</ul>`;
       }
-      const html = `<p class="eyebrow">傍晚</p><h2>${tab === 'store' ? '美玲的花店' : '巷口・老貓的攤子'}</h2>
+      const html = `<p class="eyebrow">傍晚</p><h2>${tab === 'store' ? '美玲的花店' : tab === 'garden' ? '頂樓花園' : '巷口・老貓的攤子'}</h2>
         <div class="tabs" role="tablist">
           <button type="button" class="tab ${tab === 'store' ? 'on' : ''}" data-tab="store" role="tab" aria-selected="${tab === 'store'}">花店升級<small>現金 ${Math.round(run.money).toLocaleString('en-US')}</small></button>
+          <button type="button" class="tab ${tab === 'garden' ? 'on' : ''}" data-tab="garden" role="tab" aria-selected="${tab === 'garden'}">頂樓花園<small>${gardenOpen(run) ? (gardenOf(run).lv ? GARDEN_LV[gardenOf(run).lv - 1].pots + ' 盆' : '還沒蓋') : '第二個月'}</small></button>
           <button type="button" class="tab ${tab === 'cat' ? 'on' : ''}" data-tab="cat" role="tab" aria-selected="${tab === 'cat'}">老貓攤<small>罐罐 ${run.cans}</small></button>
         </div>${body}`;
       this.modal(html, [{ label: '圖鑑', keep: true, onClick: () => UI.book(run, () => render(), 'bq') }, { label: '天黑了，出門', primary: true, onClick: done }], { cls: 'shop' });
-      this.cardEl.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); tab = b.dataset.tab; render(); }));
+      this.cardEl.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); tab = b.dataset.tab; pickIdx = -1; render(); }));
+      // 頂樓花園
+      const keep = () => { const sc = this.cardEl.scrollTop; render(); this.cardEl.scrollTop = sc; };
+      this.cardEl.querySelectorAll('canvas.garden-art').forEach(cv => drawGardenArt(cv, run));
+      this.cardEl.querySelectorAll('[data-garden="up"]').forEach(b => b.addEventListener('click', () => {
+        const g = gardenOf(run), nx = GARDEN_LV[g.lv]; if (!nx || run.money < nx.cost) return;
+        run.money -= nx.cost; g.lv++; SFX.play('buy');
+        this.toast(`${nx.name}蓋好了！${nx.look}${g.story[g.lv] ? '' : '（明天早上有人會注意到）'}`, 3200);
+        keep();
+      }));
+      this.cardEl.querySelectorAll('[data-pot]').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); pickIdx = pickIdx === +b.dataset.pot ? -1 : +b.dataset.pot; keep(); }));
+      this.cardEl.querySelectorAll('[data-plant]').forEach(b => b.addEventListener('click', () => {
+        if (plantPot(run, pickIdx, b.dataset.plant)) { SFX.play('buy'); this.toast(`種下${FLOWERS[b.dataset.plant].name}，${growNights(run, b.dataset.plant)} 晚後開花`, 2200); }
+        pickIdx = -1; keep();
+      }));
+      this.cardEl.querySelectorAll('[data-pull]').forEach(b => b.addEventListener('click', () => {
+        const i = +b.dataset.pull, p = gardenOf(run).plots[i]; if (!p) return;
+        this.confirm('拔掉這盆？', `${FLOWERS[p.t].name}會被拔掉，插枝不會還給你。`, '拔掉', '算了', ok => { if (ok) pullPot(run, i); render(); });
+      }));
       // 老貓攤：畫出花喵（和橘貓）現在穿戴的樣子
       this.cardEl.querySelectorAll('canvas.cat-look').forEach(cv => {
         const k = 2, art = cv.dataset.who === 'orange' ? orangeCloseup('maneki', 0.35, 'lin', 0, VXR, k) : withGear(catGearFor(run), () => drawMeowArt2({ t: 0.35, v: 1, open: 0.15, mood: 'happy' }, VXR, k));
         cv.width = art.width; cv.height = art.height; cv.getContext('2d').drawImage(art, 0, 0);
       });
-      this.cardEl.querySelectorAll('.buy').forEach(b => b.addEventListener('click', () => {
+      this.cardEl.querySelectorAll('.buy[data-id]').forEach(b => b.addEventListener('click', () => {
         if (tab === 'store') {
           const u = STORE_UPGRADES.find(x => x.id === b.dataset.id), lv = st[u.id] || 0;
           if (lv >= u.max || run.money < u.cost[lv]) return;
@@ -11253,10 +11371,11 @@ const UI = {
 function newRun() {
   return {
     money: 0, cans: 0,
-    upg: { mouth: 0, gentle: 0, paws: 0, owl: 0, cute: 0, jump: 0, orange: 0, lucky: 0, catwalk: 0, nightvis: 0, sniff: 0, bribe: 0 },
+    upg: { mouth: 0, gentle: 0, paws: 0, owl: 0, cute: 0, jump: 0, orange: 0, lucky: 0, catwalk: 0, nightvis: 0, sniff: 0, bribe: 0, call: 0, tunnel: 0 },
     store: { lights: 0, fridge: 0, neon: 0, scooter: 0, decor: 0 },
     intel: {}, immune: {}, flags: {},
     stats: { caught: 0, cuteWin: 0, cuteFail: 0, petals: 0, stolen: 0 },
+    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [],
     month: 1, debt: 0, graceUsed: false, heat: {}, familiar: {}, nightIdx: 0, plan: {}, rentPaid: [],
     lastNight: null, rosePending: false, roseDone: false, night: 0,
     stock: [], orders: {}, regrow: {}, react: {},
@@ -11340,7 +11459,13 @@ const Flow = {
     const stockValue = stock.reduce((s, f) => s + flowerValue(run, f.t, f.fresh), 0);
     const orange = ORANGE_INCOME[run.upg.orange] * LUCKY_MULT[run.upg.lucky];
     const now = Math.round(ordersBonus + orderSales + orange);
-    const total = Math.round(now + stockValue);
+    // 頂樓花園：收成直接進店裡；粉絲在門口放的花；順便叼回的插枝
+    const cuts = collectCuttings(run, dep);
+    const hv = gardenTick(run), gifts = fanGifts(run);
+    let gardenValue = 0;
+    for (const h of hv) for (let i = 0; i < h.n; i++) { stock.push({ t: h.t, fresh: 1, owner: 'garden' }); gardenValue += flowerValue(run, h.t, 1); }
+    for (const gf of gifts) { stock.push({ t: gf.t, fresh: 1, owner: 'gift' }); gardenValue += flowerValue(run, gf.t, 1); }
+    const total = Math.round(now + stockValue + gardenValue);
     const cans = Math.floor(total / CANS_PER);
     run.money += now; run.cans += cans; run.stats.stolen += dep.length;
     run.stock = stock;
@@ -11350,7 +11475,7 @@ const Flow = {
     for (const f of dep) if (f.idx !== undefined) run.regrow[f.idx] = run.nightIdx || n;
     const heat = settleNight(run, dep, res);
     const newReact = heat.changes.filter(c => c.to >= 2 && c.from < 2 && REACTIONS[c.o]).map(c => c.o);
-    run.lastNight = { n, deposited: dep, stock: stock.slice(), stockValue, oRes, ordersBonus, orderSales, orange, now, total, cans, lucky: LUCKY_MULT[run.upg.lucky], lights: LIGHTS_MULT[st.lights || 0], decor: DECOR_MULT[st.decor || 0], lost: res.lost, tanhua: res.tanhua, rosePetals: res.rosePetals, newReact, heat, cuteCans: (res.stats && res.stats.cuteCans) || 0 };
+    run.lastNight = { n, deposited: dep, stock: stock.slice(), stockValue, oRes, ordersBonus, orderSales, orange, now, total, cans, lucky: LUCKY_MULT[run.upg.lucky], lights: LIGHTS_MULT[st.lights || 0], decor: DECOR_MULT[st.decor || 0], lost: res.lost, tanhua: res.tanhua, rosePetals: res.rosePetals, newReact, heat, cuteCans: (res.stats && res.stats.cuteCans) || 0, garden: hv, gifts, gardenValue, cuts };
     if (stock.some(f => f.t === 'rose' && f.owner === 'wang') && !run.roseDone) run.rosePending = true;
     setTimeout(() => UI.fade(() => setScene(new DayScene(n + 1))), res.timeUp ? 900 : 200);
     if (res.timeUp) UI.toast(res.lost ? '天亮了！嘴裡的花來不及帶回家……' : '天快亮了，回家睡覺', 2400);
@@ -12045,6 +12170,374 @@ function genOrder(run, n) {
   const base = FLOWERS[t].price;
   const reward = Math.round((each ? base * 0.6 : base * nn * 0.5 + 200) * k / 50) * 50;
   return { id: 'g' + m + '-' + n + '-' + Math.floor(Math.random() * 1e6), who: pick(ORDER_WHO), t, n: nn, mode: each ? 'each' : 'all', reward };
+}
+
+// ================= 頂樓花園：不用偷也有花 =================
+// 第二個月開放。用現金一級一級蓋；花喵偷花時順便叼回插枝，種在頂樓，每天早上收成。
+// 每升一級都會帶出一段劇情（誰來看花園、誰變成粉絲）和新的玩法。
+const GARDEN_OPEN_MONTH = 2;
+const GARDEN_LV = [
+  { name: '木頭花架', cost: 6000, pots: 3, desc: '頂樓擺上木頭花架，種得下 3 盆', look: '頂樓多了一排木花架' },
+  { name: '層架＋遮陽網', cost: 15000, pots: 6, desc: '6 盆；串燈亮起來，路過的人抬頭就看得到', look: '加了層架、遮陽網和串燈' },
+  { name: '小溫室', cost: 32000, pots: 9, desc: '9 盆；每種花早一晚長好', look: '頂樓蓋了一間玻璃小溫室' },
+  { name: '自動灑水＋補光燈', cost: 60000, pots: 12, desc: '12 盆；每次收成多一朵', look: '溫室裡亮起補光燈，噴頭會噴水霧' },
+  { name: '玻璃花房', cost: 110000, pots: 16, desc: '16 盆；曇花、牡丹、蝴蝶蘭也種得活', look: '整片頂樓變成發光的玻璃花房' },
+];
+const GARDEN_RARE = ['tanhua', 'peony', 'orchid'];
+function gardenOf(run) {
+  const g = run.garden || (run.garden = { lv: 0, plots: [], story: {} });
+  if (!g.plots) g.plots = []; if (!g.story) g.story = {};
+  return g;
+}
+function gardenOpen(run) { return (run.month || 1) >= GARDEN_OPEN_MONTH; }
+function gardenPots(run) { const lv = gardenOf(run).lv; return lv ? GARDEN_LV[lv - 1].pots : 0; }
+function growNights(run, t) {
+  const p = FLOWERS[t].price;
+  let g = p <= 150 ? 1 : p <= 400 ? 2 : 3;
+  if (gardenOf(run).lv >= 3) g = Math.max(1, g - 1);
+  return g;
+}
+function gardenYield(run) { return gardenOf(run).lv >= 4 ? 2 : 1; }
+function plantable(run, t) { return !GARDEN_RARE.includes(t) || gardenOf(run).lv >= 5; }
+// 晚上偷到的每一種花，順便帶回一支插枝（每種最多存 9 支）
+function collectCuttings(run, dep) {
+  const cut = run.cuttings || (run.cuttings = {}), got = [];
+  for (const t of new Set(dep.map(f => f.t))) {
+    if (!FLOWERS[t] || FLOWERS[t].toxic) continue;
+    if ((cut[t] || 0) < 9) { cut[t] = (cut[t] || 0) + 1; got.push(t); }
+  }
+  return got;
+}
+function plantPot(run, i, t) {
+  const g = gardenOf(run), cut = run.cuttings || {};
+  if (i >= gardenPots(run) || g.plots[i] || !(cut[t] > 0) || !plantable(run, t)) return false;
+  cut[t]--; g.plots[i] = { t, age: 0, n: 0 };
+  return true;
+}
+function pullPot(run, i) { const g = gardenOf(run); g.plots[i] = null; }
+// 過了一晚：花長大，長好的就收成（回傳 [{t, n}]）
+function gardenTick(run) {
+  const g = gardenOf(run), out = {};
+  const pots = gardenPots(run);
+  for (let i = 0; i < pots; i++) {
+    const p = g.plots[i]; if (!p) continue;
+    p.age++;
+    if (p.age >= growNights(run, p.t)) { p.age = 0; p.n = (p.n || 0) + 1; out[p.t] = (out[p.t] || 0) + gardenYield(run); }
+  }
+  return Object.keys(out).map(t => ({ t, n: out[t] }));
+}
+// 明天早上會收成什麼
+function gardenForecast(run) {
+  const g = gardenOf(run), out = {};
+  for (let i = 0; i < gardenPots(run); i++) {
+    const p = g.plots[i]; if (!p) continue;
+    if (p.age + 1 >= growNights(run, p.t)) out[p.t] = (out[p.t] || 0) + gardenYield(run);
+  }
+  return Object.keys(out).map(t => ({ t, n: out[t] }));
+}
+
+// ---------- 粉絲：花園讓鄰居變成粉絲，早上會在門口放花 ----------
+const FAN_GIFTS = { wang: ['rose', 'lisianthus'], bo: ['osmanthus', 'tanhua'], lin: ['jasmine', 'hydrangea'], chief: ['carnation', 'sunflower'] };
+const FAN_NAMES = { wang: '王太太', bo: '阿伯', lin: '林先生', chief: '里長' };
+function addFan(run, who) { run.fans = run.fans || []; if (!run.fans.includes(who)) run.fans.push(who); }
+function fanGifts(run) {
+  const out = [];
+  for (const who of run.fans || []) if (Math.random() < 0.45) out.push({ who, t: pick(FAN_GIFTS[who]) });
+  return out;
+}
+
+// ---------- 每一級的劇情（蓋好的隔天早上） ----------
+function* gardenStoryScript(S) {
+  const run = S.run, g = gardenOf(run), M = S.meiling;
+  for (let lv = 1; lv <= g.lv; lv++) {
+    if (g.story[lv]) continue;
+    g.story[lv] = 1;
+    const wasOn = S.shopOn; S.shopOn = false;
+    if (lv === 1) {
+      yield S.say('花喵！我昨天在頂樓擺了花架。');
+      yield S.say('我發現你每天晚上叼回來的花，都會連著一小段枝……');
+      yield S.say('那就是插枝呀！插進土裡，就會長出新的花。以後我們也有自己種的花了！');
+      UI.hideDialog();
+      UI.toast('頂樓花園開張：傍晚的「頂樓花園」分頁可以種插枝，花長好了早上自動收成', 4200);
+    } else if (lv === 2) {
+      const w = S.customer('wang');
+      yield S.walkIn(w);
+      yield* S.talk(w, '王太太', [
+        ['美玲啊，妳家頂樓晚上亮晶晶的，那是什麼？'],
+        ['是我們的小花園！我跟花喵一起種的。', null, 'M'],
+        ['哎唷，好漂亮……我也好想要一個這樣的陽台。'],
+        ['我家玫瑰開太多了，以後我剪一些放妳門口，換妳教我種花好不好？'],
+      ]);
+      addFan(run, 'wang'); heatAdd(run, 'wang', -30);
+      UI.toast('王太太變成花園的粉絲了！她偶爾會在門口放花（她家的警戒也降了）', 3800); SFX.play('heart');
+      yield S.walkOut(w);
+    } else if (lv === 3) {
+      const b = S.customer('bo');
+      yield S.walkIn(b);
+      yield* S.talk(b, '阿伯', [
+        ['……聽說妳頂樓蓋了溫室？'],
+        ['阿伯年輕的時候也有一間。曇花、桂花，什麼都種過。'],
+        ['那隻花貓……我在溫室裡看過牠，叼著插枝跑來跑去。'],
+        ['……算了。種花的人不會是壞人。我家的桂花，開了我就分妳一點。'],
+      ]);
+      addFan(run, 'bo'); heatAdd(run, 'bo', -30);
+      UI.toast('阿伯也變成粉絲了！小溫室讓每種花早一晚長好', 3800); SFX.play('heart');
+      yield S.walkOut(b);
+    } else if (lv === 4) {
+      const r = S.customer('shopC');
+      yield S.walkIn(r);
+      yield* S.talk(r, '雜誌記者', [
+        ['您好，我是《城市花事》的記者！'],
+        ['網路上都在傳「巷子裡有一間頂樓會發光的花店」，就是這裡吧？'],
+        ['可以拍一下頂樓和……那隻虎斑貓嗎？讀者一定會愛死。'],
+        ['花喵，看鏡頭～', null, 'M'],
+      ]);
+      S.cat.pose = 'belly'; S.fx.hearts(S.cat.x, S.cat.y - 10, 6); SFX.play('heart');
+      yield wait(1.2); S.cat.pose = null;
+      run.flags.famous = 1;
+      UI.toast('上雜誌了！之後每天上門的客人變多', 3600);
+      yield S.walkOut(r);
+    } else if (lv === 5) {
+      const bt = S.customer('butler');
+      yield S.walkIn(bt);
+      yield* S.talk(bt, '管家', [
+        ['打擾了。我是巷底大宅的管家。'],
+        ['夫人從窗戶看到您的玻璃花房，十分欣賞。'],
+        ['下個月小姐的婚禮，夫人希望由您負責花藝。今晚請先準備三株蝴蝶蘭。'],
+        ['蝴蝶蘭……！好、好的！', null, 'M'],
+      ]);
+      run.flags.weddingAsked = 1;
+      S.addOrderObj({ id: 'wedding-' + (run.month || 1), who: '大宅婚禮', t: 'orchid', n: 3, mode: 'all', reward: 9000 });
+      UI.toast('玻璃花房：曇花、牡丹、蝴蝶蘭也種得活了', 3400);
+      yield S.walkOut(bt);
+    }
+    if (wasOn) S.startShop();
+    return;   // 一天只演一段，留到明天
+  }
+}
+// 早上：收成、粉絲送的花
+function* gardenMorningScript(S) {
+  const run = S.run, nb = run.lastNight || {};
+  const hv = nb.garden || [], gifts = nb.gifts || [];
+  if (hv.length) {
+    yield S.say('頂樓收成了：' + hv.map(h => FLOWERS[h.t].name + ' ×' + h.n).join('、') + '！');
+    S.fx.hearts(S.cat.x, S.cat.y - 10, 3);
+  }
+  for (const gf of gifts) {
+    yield S.say(`門口有${FAN_NAMES[gf.who]}放的${FLOWERS[gf.t].name}，還夾了一張小卡片。`);
+  }
+  if (hv.length || gifts.length) UI.hideDialog();
+}
+
+// ---------- 圖：花苗、空盆 ----------
+function toonSprout(k) {
+  return toonFrameInfo(toonFrame('sprout-' + k, 34, 38, () => {
+    if (k > 0) {
+      const s = 0.6 + k * 0.35;
+      O.curve([[0, -12], [0, -12 - 6 * s]], PC.stem, 1.4);
+      leafBall(-3.5 * s, -13 - 4 * s, 3.4 * s, 2.6 * s); leafBall(3.5 * s, -13 - 4.5 * s, 3.4 * s, 2.6 * s);
+      if (k >= 2) leafBall(0, -15 - 7 * s, 3.6 * s, 2.8 * s);
+    }
+    drawPotBase('clay', 18);
+    if (k === 0) { O.e(0, -12.4, 6.5, 1.4, '#5a3a2a'); O.curve([[-1, -12.5], [0, -16], [1.5, -18]], PC.stem, 1.2); O.e(2.2, -18.2, 1.8, 1.1, PC.leaf); }
+  }), false, 0.5, 0.95);
+}
+function gardenPlotArt(run, p) {
+  if (!p) return null;
+  const g = growNights(run, p.t);
+  if (p.age >= g - 1) return toonPot(p.t);           // 明天就開：已經結滿花苞
+  if (p.n > 0) return toonSprout(2);                  // 收成過，正在長下一批
+  return toonSprout(Math.min(2, Math.floor((p.age / (g - 1)) * 2)));
+}
+
+// ---------- 夜晚 3D：頂樓長出花園 ----------
+const ROOF_Y = 3.0;
+const GARDEN_SPOTS = (() => {
+  const out = [];
+  const xs = [1.9, 3.5, 5.0, 6.5, 8.0, 9.5, 11.0, 12.6];
+  for (const z of [4.05, 3.15]) for (const x of xs) out.push([x, z]);
+  // 依照蓋花架的順序：中間先、往兩邊
+  const order = [3, 4, 2, 5, 1, 6, 0, 7];
+  return [...order.map(i => out[i]), ...order.map(i => out[8 + i])];
+})();
+function gardenRender3D(sc, F, L, st) {
+  const run = sc.run, g = gardenOf(run), lv = g.lv;
+  // 溫室玻璃（第 3 級起）
+  const want = lv >= 5 ? 2 : lv >= 3 ? 1 : 0;
+  if ((st.roofGH || 0) !== want) {
+    st.glassMeshes = (st.glassMeshes || []).filter(p => !p.roofGH);
+    if (want === 1) st.glassMeshes.push(...buildGreenhouse(4.4, 10.6, 2.75, 4.5, [[7, 8]], ROOF_Y, 0.5).map(p => Object.assign(p, { roofGH: 1 })));
+    if (want === 2) st.glassMeshes.push(...buildGreenhouse(1.2, 13.8, 2.7, 4.55, [[7, 8]], ROOF_Y, 0.56).map(p => Object.assign(p, { roofGH: 1 })));
+    st.roofGH = want;
+  }
+  if (!lv) return;
+  const cp = Math.cos(R3.pitch), vt = sc.cat.t;
+  const pots = gardenPots(run);
+  for (let i = 0; i < pots; i++) {
+    const [x, z] = GARDEN_SPOTS[i];
+    const a = gardenPlotArt(run, g.plots[i]) || toonSprout(-1);
+    pushSprite(F.sprites, ART.fix(a), x * TS, z * TS, { lift: ROOF_Y * cp, minLight: [0.5, 0.45, 0.5] });
+    shadowAt(F, x * TS, z * TS - 1, 0.6, 0.24, 1, ROOF_Y);
+  }
+  // 串燈（第 2 級起）
+  if (lv >= 2) {
+    for (let i = 0; i <= 14; i++) {
+      const k = i / 14, x = 1.6 + k * 11.8, y = ROOF_Y + 1.15 - Math.abs(Math.sin(k * Math.PI * 3)) * 0.18;
+      const on = 0.7 + 0.3 * Math.sin(vt * 3 + i * 1.3);
+      glowQuad(F.glow, x, y, 4.6, 0.09, [1, 0.8, 0.45, 0.9 * on]);
+    }
+    L.push({ x: 7.5, y: ROOF_Y + 0.9, z: 3.9, r: 3.6, c: [0.6, 0.42, 0.24], pri: 0.7 });
+  }
+  // 補光燈（第 4 級起）：粉紫色的光、水霧
+  if (lv >= 4) {
+    L.push({ x: 7.5, y: ROOF_Y + 1.0, z: 3.5, r: 3.8, c: [0.5, 0.26, 0.6], pri: 0.9 });
+    for (let i = 0; i < 6; i++) {
+      const ph = (vt * 0.6 + i / 6) % 1, x = 2.5 + i * 2, z = 3.6;
+      glowQuad(F.glow, x + Math.sin(i * 7 + vt) * 0.2, ROOF_Y + 0.5 + ph * 0.6, z, 0.16 + ph * 0.12, [0.65, 0.85, 1, 0.35 * (1 - ph)]);
+    }
+  }
+  if (lv >= 5) L.push({ x: 7.5, y: ROOF_Y + 1.1, z: 3.4, r: 4.4, c: [0.6, 0.46, 0.3], pri: 1.1 });
+}
+
+// ---------- 傍晚的分頁 ----------
+function gardenTabHTML(run, pickIdx) {
+  const g = gardenOf(run), lv = g.lv, pots = gardenPots(run), cut = run.cuttings || {};
+  if (!gardenOpen(run)) {
+    return `<p class="lead">「頂樓空空的……以後如果有自己的花園就好了。」</p><p class="hint">第二個月開放。</p>`;
+  }
+  const next = GARDEN_LV[lv];
+  const lvRow = next ? `<li class="up">
+      <div class="up-main"><div class="up-name"><span class="grp garden">頂樓</span><b>${next.name}</b><span class="pips">${GARDEN_LV.map((_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('')}</span></div>
+      <div class="up-now">${lv ? '現在：' + esc(GARDEN_LV[lv - 1].name) : '頂樓還空空的'}</div><div class="up-next">蓋了：${esc(next.desc)}</div></div>
+      <button type="button" class="buy cash" data-garden="up" ${run.money >= next.cost ? '' : 'disabled'}><b class="px">${next.cost.toLocaleString('en-US')}</b></button></li>`
+    : `<li class="up maxed"><div class="up-main"><div class="up-name"><span class="grp garden">頂樓</span><b>玻璃花房</b></div><div class="up-now">頂樓已經蓋到最高級了</div></div><button type="button" class="buy cash" disabled>完成</button></li>`;
+  let potsHTML = '';
+  if (lv) {
+    const cells = [];
+    for (let i = 0; i < pots; i++) {
+      const p = g.plots[i];
+      if (!p) { cells.push(`<button type="button" class="gpot empty ${pickIdx === i ? 'on' : ''}" data-pot="${i}"><span class="gp-plus">＋</span><small>種插枝</small></button>`); continue; }
+      const gn = growNights(run, p.t), left = gn - p.age;
+      cells.push(`<div class="gpot"><img src="${G.icons[p.t]}" alt=""><b>${FLOWERS[p.t].name}</b><small>${left <= 1 ? '明天收成' : `再 ${left} 晚`}</small><button type="button" class="gp-pull" data-pull="${i}" aria-label="拔掉${FLOWERS[p.t].name}">拔掉</button></div>`);
+    }
+    potsHTML = `<div class="gpots">${cells.join('')}</div>`;
+    if (pickIdx >= 0) {
+      const types = FLOWER_ORDER.filter(t => (cut[t] || 0) > 0);
+      potsHTML += types.length ? `<div class="gpick"><p>選一支插枝種下去：</p>${types.map(t => {
+        const ok = plantable(run, t);
+        return `<button type="button" class="gpick-b" data-plant="${t}" ${ok ? '' : 'disabled'}><img src="${G.icons[t]}" alt=""><b>${FLOWERS[t].name}</b><small>${ok ? `${growNights(run, t)} 晚開花・NT$ ${Math.round(flowerValue(run, t, 1))}` : '要玻璃花房'}</small><i class="px">×${cut[t]}</i></button>`;
+      }).join('')}</div>` : `<div class="gpick"><p>還沒有插枝。晚上偷到花，就會順便帶回那種花的插枝。</p></div>`;
+    }
+    const fc = gardenForecast(run);
+    const val = fc.reduce((s, f) => s + flowerValue(run, f.t, 1) * f.n, 0);
+    potsHTML += `<p class="gforecast">${fc.length ? `明天早上收成：${fc.map(f => FLOWERS[f.t].name + ' ×' + f.n).join('、')}（約 ${money(Math.round(val))}）` : '明天沒有花會開。'}</p>`;
+    const inv = FLOWER_ORDER.filter(t => (cut[t] || 0) > 0);
+    potsHTML += `<p class="gcuts">插枝：${inv.length ? inv.map(t => `${FLOWERS[t].name} ×${cut[t]}`).join('、') : '還沒有'}</p>`;
+  }
+  return `<p class="lead">「${lv ? '自己種的花，不用怕被鄰居認出來！' : '頂樓空著好可惜……蓋個花架，把插枝種起來吧！'}」</p>
+    <canvas class="garden-art" width="330" height="150" aria-label="頂樓花園現在的樣子"></canvas>
+    ${UI.rentBar(run)}
+    <ul class="ups">${lvRow}</ul>${potsHTML}`;
+}
+// 傍晚分頁裡的頂樓插畫
+function drawGardenArt(cv, run) {
+  const g = gardenOf(run), lv = g.lv, W = cv.width, H = cv.height, x = cv.getContext('2d');
+  const sky = x.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, '#2b2457'); sky.addColorStop(1, '#5a3f6e');
+  x.fillStyle = sky; x.fillRect(0, 0, W, H);
+  x.fillStyle = 'rgba(255,240,200,0.8)'; for (let i = 0; i < 18; i++) x.fillRect((i * 97) % W, (i * 53) % 60, 1.5, 1.5);
+  // 屋頂地板
+  x.fillStyle = '#8c7f86'; x.fillRect(0, H - 46, W, 46);
+  x.fillStyle = '#7a6d75'; for (let i = 0; i < W; i += 22) x.fillRect(i, H - 46, 1, 46);
+  x.fillStyle = '#b4a5aa'; x.fillRect(0, H - 48, W, 3);
+  // 水塔
+  const tower = tx => { x.fillStyle = '#6c7a86'; x.fillRect(tx - 14, H - 96, 28, 34); x.fillStyle = '#8e9ca8'; x.fillRect(tx - 14, H - 96, 28, 6); x.fillStyle = '#4b5560'; x.fillRect(tx - 12, H - 62, 3, 16); x.fillRect(tx + 9, H - 62, 3, 16); };
+  tower(30); tower(W - 30);
+  if (lv >= 3) {
+    const big = lv >= 5, gx0 = big ? 18 : 80, gx1 = big ? W - 18 : W - 80, gy = H - (big ? 128 : 118);
+    x.fillStyle = big ? 'rgba(255,214,150,0.22)' : 'rgba(190,230,255,0.18)'; x.fillRect(gx0, gy + 20, gx1 - gx0, H - 46 - gy - 18);
+    x.beginPath(); x.moveTo(gx0, gy + 20); x.lineTo((gx0 + gx1) / 2, gy); x.lineTo(gx1, gy + 20); x.closePath(); x.fill();
+    x.strokeStyle = 'rgba(240,250,255,0.75)'; x.lineWidth = 1.5;
+    x.strokeRect(gx0, gy + 20, gx1 - gx0, H - 46 - gy - 18);
+    x.beginPath(); x.moveTo(gx0, gy + 20); x.lineTo((gx0 + gx1) / 2, gy); x.lineTo(gx1, gy + 20); x.stroke();
+    for (let i = gx0; i < gx1; i += 26) { x.beginPath(); x.moveTo(i, gy + 20); x.lineTo(i, H - 28); x.stroke(); }
+  }
+  if (lv >= 2) {
+    x.strokeStyle = '#3a2f3c'; x.lineWidth = 1; x.beginPath();
+    for (let i = 0; i <= 20; i++) { const k = i / 20, px = 10 + k * (W - 20), py = 28 + Math.abs(Math.sin(k * Math.PI * 3)) * 10; i ? x.lineTo(px, py) : x.moveTo(px, py); }
+    x.stroke();
+    for (let i = 0; i <= 20; i++) { const k = i / 20, px = 10 + k * (W - 20), py = 28 + Math.abs(Math.sin(k * Math.PI * 3)) * 10; x.fillStyle = i % 2 ? '#ffd27a' : '#ff9fcb'; x.beginPath(); x.arc(px, py + 3, 2.4, 0, 7); x.fill(); }
+  }
+  if (lv >= 4) { x.fillStyle = 'rgba(220,120,255,0.14)'; x.fillRect(0, 0, W, H); }
+  // 花架和盆栽
+  const pots = gardenPots(run);
+  if (lv >= 1) { x.fillStyle = '#8a5a34'; x.fillRect(14, H - 30, W - 28, 6); x.fillStyle = '#6a4224'; x.fillRect(14, H - 24, W - 28, 2); }
+  const cols = Math.min(8, Math.max(3, pots > 8 ? 8 : pots)), rows = pots > 8 ? 2 : 1;
+  for (let i = 0; i < pots; i++) {
+    const r = Math.floor(i / 8), c = i % 8, n = Math.min(8, pots - r * 8);
+    const px = W / 2 + (c - (n - 1) / 2) * 36, py = H - 30 - (rows === 2 && r === 1 ? 26 : 0) - (rows === 2 && r === 0 ? -6 : 0);
+    const a = gardenPlotArt(run, g.plots[i]) || toonSprout(-1), img = a.img;
+    const hh = 50, s = hh / img.height, w = img.width * s;
+    x.drawImage(img, px - w / 2, py - hh + 4, w, hh);
+  }
+  if (!lv) { x.fillStyle = 'rgba(255,255,255,0.75)'; x.font = '14px sans-serif'; x.textAlign = 'center'; x.fillText('空空的頂樓', W / 2, H - 20); }
+  void cols;
+}
+
+// ================= 花喵的新本事：喵喵廣播、貓道 =================
+// 喵喵廣播：把叫聲丟到前方幾格，附近的人會走過去看（跟撥倒東西一樣，但隨身帶著）
+const TUNNEL_ENDS = [[5.5, 5.5], [7.5, 40.4]];   // 花店門口旁邊、巷底
+function callCount(run) { const lv = run.upg.call || 0; return lv >= 2 ? 5 : lv ? 3 : 0; }
+NightScene.prototype.initCatSkills = function () {
+  this.calls = callCount(this.run);
+};
+NightScene.prototype.catSkillButtons = function (sk) {
+  if (this.mode === 'play' && this.run.upg.call) sk.push({ id: 'call', label: '喵！', n: this.calls, off: this.calls <= 0 });
+};
+NightScene.prototype.doCall = function () {
+  const c = this.cat, lv = this.run.upg.call || 0;
+  if (this.calls <= 0) { SFX.play('nope'); UI.toast('今晚喵不出來了，喉嚨要休息'); return; }
+  if (c.box) { SFX.play('nope'); return; }
+  const d = { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] }[c.dir] || [0, 1];
+  const far = (lv >= 2 ? 6 : 5) * TS;
+  // 沿著面對的方向找最遠、不是牆的位置
+  let tx = c.x, ty = c.y;
+  for (let k = TS; k <= far; k += TS / 2) { const x = c.x + d[0] * k, y = c.y + d[1] * k; if (this.map.solidPx(x, y) && !this.map.solidPx(x, y + TS)) break; tx = x; ty = y; }
+  this.calls--;
+  SFX.play('meow');
+  this.fx.text(c.x, c.y - 16, '喵——', '#ffe2ea');
+  setTimeout(() => {
+    if (this.mode !== 'play') return;
+    this.noise(tx, ty, (lv >= 2 ? 9 : 7) * TS, 'obj');
+    this.fx.text(tx, ty - 10, '喵～？', '#ffd25a', 1.6);
+    this.stats.calls = (this.stats.calls || 0) + 1;
+  }, 260);
+  vibrate(20);
+  if (!this.tips.call) { this.tips.call = 1; UI.toast('叫聲飛到前面去了！人會走去那邊看，趁機從另一邊溜', 3200); }
+};
+// 貓道：兩個洞口
+NightScene.prototype.tunnelTarget = function (cx, cy) {
+  if (!this.run.upg.tunnel || this.cat.top || this.cat.box) return null;
+  for (let i = 0; i < 2; i++) { const [x, y] = TUNNEL_ENDS[i]; if (dist(cx, cy, x * TS, y * TS) < 14) return { kind: 'tunnel', i, ref: { x: x * TS, y: y * TS - 2 } }; }
+  return null;
+};
+NightScene.prototype.useTunnel = function (i) {
+  const c = this.cat, [x, y] = TUNNEL_ENDS[1 - i];
+  this.fx.text(c.x, c.y - 12, '咻！', '#ffe2ea');
+  SFX.play('door');
+  c.x = x * TS; c.y = y * TS + 4; c.dir = i === 0 ? 'down' : 'up';
+  this.snapCam = true;
+  setTimeout(() => SFX.play('door'), 220);
+  this.stats.tunnels = (this.stats.tunnels || 0) + 1;
+  if (!this.tips.tunnel) { this.tips.tunnel = 1; UI.toast(i === 0 ? '從貓道鑽到巷底了！' : '一下就回到花店門口了', 2600); }
+};
+function tunnelRender3D(sc, F) {
+  if (!sc.run.upg.tunnel) return;
+  for (const [x, y] of TUNNEL_ENDS) {
+    groundQuad(F.decal, x, y + 0.05, 0.8, 0.42, 0, [1, 1, 1, 1], 0.014);
+    groundQuad(F.flat, x, y + 0.05, 0.62, 0.3, 0, [0.06, 0.04, 0.09, 0.92], 0.016);
+    pushSprite(F.sprites, ART.sign('貓道'), (x + 0.7) * TS, (y - 0.1) * TS);
+  }
 }
 
 // ================= 漫畫風的疊加圖層：表情符號、懷疑條、狀聲詞、賣萌特寫 =================
@@ -13719,6 +14212,8 @@ NightScene.prototype.render3D = function () {
   if (this.tanhuaState() === 'tanhua' && th && th.avail) L.push({ x: th.x / TS, y: 0.75, z: th.y / TS + 0.2, r: 1.8, c: [0.75, 0.8, 0.95], pri: 1 });
   L.push({ x: c.x / TS, y: 0.95 + ch, z: c.y / TS + 0.35, r: 1.9, c: [0.3, 0.28, 0.38], pri: 6 });
   nightPlusLights(this, L);
+  gardenRender3D(this, F, L, st);
+  tunnelRender3D(this, F);
   let bb = null;
   if (bbq) {
     if (!st.bbq) st.bbq = buildBBQProps();

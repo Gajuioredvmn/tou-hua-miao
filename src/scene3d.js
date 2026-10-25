@@ -97,6 +97,8 @@ NightScene.prototype.render3D = function () {
   if (this.tanhuaState() === 'tanhua' && th && th.avail) L.push({ x: th.x / TS, y: 0.75, z: th.y / TS + 0.2, r: 1.8, c: [0.75, 0.8, 0.95], pri: 1 });
   L.push({ x: c.x / TS, y: 0.95 + ch, z: c.y / TS + 0.35, r: 1.9, c: [0.3, 0.28, 0.38], pri: 6 });
   nightPlusLights(this, L);
+  gardenRender3D(this, F, L, st);
+  tunnelRender3D(this, F);
   let bb = null;
   if (bbq) {
     if (!st.bbq) st.bbq = buildBBQProps();

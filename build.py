@@ -1,6 +1,6 @@
 import os, re
 ROOT = os.path.dirname(os.path.abspath(__file__))
-order = ['sprites.js','world.js','engine.js','vec.js','cat.js','gl.js','paint.js','stage.js','r3.js','toon.js','gear.js','props.js','shopdeco.js','flowers2.js','art.js','data.js','actors.js','night.js','partner.js','nightplus.js','day.js','ui.js','bouquet.js','bqui.js','progress.js','comic.js','cutegame.js','scene3d.js','main.js']
+order = ['sprites.js','world.js','engine.js','vec.js','cat.js','gl.js','paint.js','stage.js','r3.js','toon.js','gear.js','props.js','shopdeco.js','flowers2.js','art.js','data.js','actors.js','night.js','partner.js','nightplus.js','day.js','ui.js','bouquet.js','bqui.js','progress.js','garden.js','catskills.js','comic.js','cutegame.js','scene3d.js','main.js']
 js = '\n'.join(open(os.path.join(ROOT,'src',f),encoding='utf-8').read() for f in order)
 head = open(os.path.join(ROOT,'src','head.html'),encoding='utf-8').read()
 page = head + "\n<script>\n(function () {\n'use strict';\n" + js + "\n})();\n</script>\n"

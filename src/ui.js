@@ -14,7 +14,7 @@ const UI = {
     const press = (el, fn) => el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); SFX.init(); SFX.resume(); fn(); });
     press(this.actBtn, () => Flow.action());
     press(this.waitBtn, () => Flow.wait());
-    this.skBtns = [$('btn-sk1'), $('btn-sk2')]; this.skIds = [null, null];
+    this.skBtns = [$('btn-sk1'), $('btn-sk2'), $('btn-sk3')]; this.skIds = [null, null, null];
     this.skBtns.forEach((b, i) => press(b, () => Flow.skill(i)));
     this.ordersEl = $('hud-orders');
     press($('btn-pause'), () => this.pause());
@@ -39,7 +39,7 @@ const UI = {
       this.skIds[i] = it ? it.id : null;
       b.hidden = !it;
       if (!it) return;
-      b.innerHTML = `<span>${esc(it.label)}</span><i class="px">${it.n}</i><kbd>${i ? 'R' : 'F'}</kbd>`;
+      b.innerHTML = `<span>${esc(it.label)}</span><i class="px">${it.n}</i><kbd>${'FRT'[i]}</kbd>`;
       b.classList.toggle('on', !!it.on); b.classList.toggle('off', !!it.off);
       b.setAttribute('aria-label', it.label + '，剩 ' + it.n + ' 次');
     });
@@ -280,6 +280,11 @@ const UI = {
     const HS = R.heat || { changes: [], newMaster: [] };
     const heatHtml = HS.changes.length ? `<h3>鄰居的警戒</h3><ul class="tally heat">${HS.changes.map(c => `<li class="${c.to > c.from ? 'up' : c.to < c.from ? 'down' : ''}"><span class="nm">${esc(OWNERS[c.o].person)}<em>${c.taken ? '昨晚少了 ' + c.taken + ' 朵' : '昨晚沒去'}</em></span><span class="fr">${c.to > c.from ? '變緊張了' : c.to < c.from ? '放鬆了' : ''}</span><b class="stars">${starStr(c.to)}</b></li>`).join('')}</ul>${HS.changes.some(c => c.to >= 1) ? '<p class="hint">一顆星：隔天會來店裡問問題　兩顆星：裝防貓設施　三顆星：里長約談。送花賠罪、幾晚不去，星星就會降。</p>' : ''}` : '';
     const masterHtml = HS.newMaster.length ? `<div class="newab master"><span class="tagnew">熟門熟路</span><b>${HS.newMaster.map(o => OWNERS[o].name).join('、')}</b><p>偷熟了！${raidUnlocked(run) ? '' : '第二個月起，'}晚上在花店貓門按「熟門」，花喵就會自己去把那一家的花帶回來（會花一點時間）。</p></div>` : '';
+    const gv = R.gardenValue || 0, GH = R.garden || [], GF = R.gifts || [], CU = R.cuts || [];
+    const gardenHtml = (GH.length || GF.length || (CU.length && gardenOpen(run))) ? `<div class="newab garden"><span class="tagnew">頂樓花園</span>
+      ${GH.length ? `<p>收成：<b>${GH.map(h => FLOWERS[h.t].name + ' ×' + h.n).join('、')}</b></p>` : ''}
+      ${GF.length ? `<p>門口的禮物：${GF.map(g => FAN_NAMES[g.who] + '送的' + FLOWERS[g.t].name).join('、')}</p>` : ''}
+      ${CU.length && gardenOpen(run) ? `<p>順便叼回插枝：${CU.map(t => FLOWERS[t].name).join('、')}</p>` : ''}</div>` : '';
     const title = R.deposited.length ? `帶回 ${R.deposited.length} 朵花` : '昨晚空手而回';
     const prev = run.nightTotals && run.nightTotals.length > 1 ? run.nightTotals[run.nightTotals.length - 2] : 0;
     const growth = prev > 0 && R.total > 0 ? `<p class="growth">這一晚的總價值 <b class="px">${N(R.total)}</b>，是上一晚的 <b class="px">×${(R.total / prev).toFixed(1)}</b></p>` : '';
@@ -287,12 +292,12 @@ const UI = {
       ${items.length ? `<h3>今天店裡要賣的花</h3><ul class="tally">${rows}</ul>` : (R.deposited.length ? '' : '<p class="lead">店裡今天又是空的……</p>')}
       ${mults.length ? `<p class="mults">${mults.map(esc).join('<span>・</span>')}</p>` : ''}
       ${orders ? `<h3>訂單${st.scooter ? '<small>外送機車：獎勵 ×2</small>' : ''}</h3><ul class="tally">${orders}</ul>` : ''}
-      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${masterHtml}${heatHtml}
+      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${gardenHtml}${masterHtml}${heatHtml}
       <div class="total"><span>現在入帳</span><b class="px" id="tally-total">0</b></div>
-      ${R.stockValue > 0 ? `<div class="total sub"><span>白天客人上門買花</span><b class="px">≈ ${N(R.stockValue)}</b></div>` : ''}
+      ${R.stockValue + gv > 0 ? `<div class="total sub"><span>白天客人上門買花</span><b class="px">≈ ${N(R.stockValue + gv)}</b></div>` : ''}
       ${growth}
       <div class="cans-earn"><img src="${G.icons.can}" alt=""><span>美玲賞你罐罐</span><b class="px" id="tally-cans">+0</b></div>
-      ${this.rentBar(run, -R.now, R.stockValue)}`;
+      ${this.rentBar(run, -R.now, R.stockValue + gv)}`;
     const req = S && S.request ? `<p class="bq-req">今天有熟客指定：<b>${esc(S.request.label)}</b>（包好馬上買走，多給 ${money(S.request.bonus)}）</p>` : '';
     const sorry = apologyTargets(run);
     this.modal(html + (canBq ? `<p class="hint">可以先把花包成花束：配色漂亮、或湊成有名字的花束，賣得比一枝一枝還貴。${sorry.length ? `<br>${sorry.map(o => OWNERS[o].person).join('、')}在起疑：包好的花束也可以送去賠罪，警戒會降。` : ''}</p>${req}` : ''),
@@ -315,7 +320,7 @@ const UI = {
   },
   shop(run, done) {
     const st = storeOf(run);
-    let tab = 'store';
+    let tab = 'store', pickIdx = -1;
     const render = () => {
       const pips = (lv, max) => Array.from({ length: max }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('');
       let body;
@@ -334,15 +339,18 @@ const UI = {
           <p class="hint">還剩 <b>${nightsLeft}</b> 晚。越早裝回本越多；買下去馬上會看到店裡變樣。</p>
           ${this.rentBar(run)}
           <ul class="ups">${rows}</ul>`;
+      } else if (tab === 'garden') {
+        body = gardenTabHTML(run, pickIdx);
       } else {
         const rows = UPGRADES.map(u => {
           const lv = run.upg[u.id] || 0;
-          const locked = u.need && !run.intel[u.need];
           const maxed = lv >= u.max;
+          const monNeed = !maxed && u.mon ? u.mon[lv] : 1;
+          const locked = (u.need && !run.intel[u.need]) || (run.month || 1) < monNeed;
           const cost = maxed ? 0 : u.cost[lv];
           const can = !locked && !maxed && run.cans >= cost;
           const now = lv > 0 ? u.lv[lv - 1] : u.base;
-          const next = maxed ? '已經滿級' : (locked ? '白天沒聽說過這號人物' : '下一級：' + u.lv[lv]);
+          const next = maxed ? '已經滿級' : (u.need && !run.intel[u.need]) ? '白天沒聽說過這號人物' : (run.month || 1) < monNeed ? `第${cn(monNeed)}個月才進貨：${u.lv[lv]}` : '下一級：' + u.lv[lv];
           return `<li class="up ${maxed ? 'maxed' : ''} ${locked ? 'locked' : ''}">
             <div class="up-main"><div class="up-name"><span class="grp">${u.group}</span><b>${u.name}</b><span class="pips">${pips(lv, u.max)}</span></div>
             <div class="up-now">${esc(now)}</div><div class="up-next">${esc(next)}</div></div>
@@ -353,19 +361,38 @@ const UI = {
           <div class="cat-looks"><figure><canvas class="cat-look" data-who="tab"></canvas><figcaption>花喵現在的樣子</figcaption></figure>${run.upg.orange ? '<figure><canvas class="cat-look" data-who="orange"></canvas><figcaption>橘貓夥伴</figcaption></figure>' : ''}</div>
           <ul class="ups">${rows}</ul>`;
       }
-      const html = `<p class="eyebrow">傍晚</p><h2>${tab === 'store' ? '美玲的花店' : '巷口・老貓的攤子'}</h2>
+      const html = `<p class="eyebrow">傍晚</p><h2>${tab === 'store' ? '美玲的花店' : tab === 'garden' ? '頂樓花園' : '巷口・老貓的攤子'}</h2>
         <div class="tabs" role="tablist">
           <button type="button" class="tab ${tab === 'store' ? 'on' : ''}" data-tab="store" role="tab" aria-selected="${tab === 'store'}">花店升級<small>現金 ${Math.round(run.money).toLocaleString('en-US')}</small></button>
+          <button type="button" class="tab ${tab === 'garden' ? 'on' : ''}" data-tab="garden" role="tab" aria-selected="${tab === 'garden'}">頂樓花園<small>${gardenOpen(run) ? (gardenOf(run).lv ? GARDEN_LV[gardenOf(run).lv - 1].pots + ' 盆' : '還沒蓋') : '第二個月'}</small></button>
           <button type="button" class="tab ${tab === 'cat' ? 'on' : ''}" data-tab="cat" role="tab" aria-selected="${tab === 'cat'}">老貓攤<small>罐罐 ${run.cans}</small></button>
         </div>${body}`;
       this.modal(html, [{ label: '圖鑑', keep: true, onClick: () => UI.book(run, () => render(), 'bq') }, { label: '天黑了，出門', primary: true, onClick: done }], { cls: 'shop' });
-      this.cardEl.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); tab = b.dataset.tab; render(); }));
+      this.cardEl.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); tab = b.dataset.tab; pickIdx = -1; render(); }));
+      // 頂樓花園
+      const keep = () => { const sc = this.cardEl.scrollTop; render(); this.cardEl.scrollTop = sc; };
+      this.cardEl.querySelectorAll('canvas.garden-art').forEach(cv => drawGardenArt(cv, run));
+      this.cardEl.querySelectorAll('[data-garden="up"]').forEach(b => b.addEventListener('click', () => {
+        const g = gardenOf(run), nx = GARDEN_LV[g.lv]; if (!nx || run.money < nx.cost) return;
+        run.money -= nx.cost; g.lv++; SFX.play('buy');
+        this.toast(`${nx.name}蓋好了！${nx.look}${g.story[g.lv] ? '' : '（明天早上有人會注意到）'}`, 3200);
+        keep();
+      }));
+      this.cardEl.querySelectorAll('[data-pot]').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); pickIdx = pickIdx === +b.dataset.pot ? -1 : +b.dataset.pot; keep(); }));
+      this.cardEl.querySelectorAll('[data-plant]').forEach(b => b.addEventListener('click', () => {
+        if (plantPot(run, pickIdx, b.dataset.plant)) { SFX.play('buy'); this.toast(`種下${FLOWERS[b.dataset.plant].name}，${growNights(run, b.dataset.plant)} 晚後開花`, 2200); }
+        pickIdx = -1; keep();
+      }));
+      this.cardEl.querySelectorAll('[data-pull]').forEach(b => b.addEventListener('click', () => {
+        const i = +b.dataset.pull, p = gardenOf(run).plots[i]; if (!p) return;
+        this.confirm('拔掉這盆？', `${FLOWERS[p.t].name}會被拔掉，插枝不會還給你。`, '拔掉', '算了', ok => { if (ok) pullPot(run, i); render(); });
+      }));
       // 老貓攤：畫出花喵（和橘貓）現在穿戴的樣子
       this.cardEl.querySelectorAll('canvas.cat-look').forEach(cv => {
         const k = 2, art = cv.dataset.who === 'orange' ? orangeCloseup('maneki', 0.35, 'lin', 0, VXR, k) : withGear(catGearFor(run), () => drawMeowArt2({ t: 0.35, v: 1, open: 0.15, mood: 'happy' }, VXR, k));
         cv.width = art.width; cv.height = art.height; cv.getContext('2d').drawImage(art, 0, 0);
       });
-      this.cardEl.querySelectorAll('.buy').forEach(b => b.addEventListener('click', () => {
+      this.cardEl.querySelectorAll('.buy[data-id]').forEach(b => b.addEventListener('click', () => {
         if (tab === 'store') {
           const u = STORE_UPGRADES.find(x => x.id === b.dataset.id), lv = st[u.id] || 0;
           if (lv >= u.max || run.money < u.cost[lv]) return;
@@ -486,10 +513,11 @@ const UI = {
 function newRun() {
   return {
     money: 0, cans: 0,
-    upg: { mouth: 0, gentle: 0, paws: 0, owl: 0, cute: 0, jump: 0, orange: 0, lucky: 0, catwalk: 0, nightvis: 0, sniff: 0, bribe: 0 },
+    upg: { mouth: 0, gentle: 0, paws: 0, owl: 0, cute: 0, jump: 0, orange: 0, lucky: 0, catwalk: 0, nightvis: 0, sniff: 0, bribe: 0, call: 0, tunnel: 0 },
     store: { lights: 0, fridge: 0, neon: 0, scooter: 0, decor: 0 },
     intel: {}, immune: {}, flags: {},
     stats: { caught: 0, cuteWin: 0, cuteFail: 0, petals: 0, stolen: 0 },
+    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [],
     month: 1, debt: 0, graceUsed: false, heat: {}, familiar: {}, nightIdx: 0, plan: {}, rentPaid: [],
     lastNight: null, rosePending: false, roseDone: false, night: 0,
     stock: [], orders: {}, regrow: {}, react: {},
@@ -573,7 +601,13 @@ const Flow = {
     const stockValue = stock.reduce((s, f) => s + flowerValue(run, f.t, f.fresh), 0);
     const orange = ORANGE_INCOME[run.upg.orange] * LUCKY_MULT[run.upg.lucky];
     const now = Math.round(ordersBonus + orderSales + orange);
-    const total = Math.round(now + stockValue);
+    // 頂樓花園：收成直接進店裡；粉絲在門口放的花；順便叼回的插枝
+    const cuts = collectCuttings(run, dep);
+    const hv = gardenTick(run), gifts = fanGifts(run);
+    let gardenValue = 0;
+    for (const h of hv) for (let i = 0; i < h.n; i++) { stock.push({ t: h.t, fresh: 1, owner: 'garden' }); gardenValue += flowerValue(run, h.t, 1); }
+    for (const gf of gifts) { stock.push({ t: gf.t, fresh: 1, owner: 'gift' }); gardenValue += flowerValue(run, gf.t, 1); }
+    const total = Math.round(now + stockValue + gardenValue);
     const cans = Math.floor(total / CANS_PER);
     run.money += now; run.cans += cans; run.stats.stolen += dep.length;
     run.stock = stock;
@@ -583,7 +617,7 @@ const Flow = {
     for (const f of dep) if (f.idx !== undefined) run.regrow[f.idx] = run.nightIdx || n;
     const heat = settleNight(run, dep, res);
     const newReact = heat.changes.filter(c => c.to >= 2 && c.from < 2 && REACTIONS[c.o]).map(c => c.o);
-    run.lastNight = { n, deposited: dep, stock: stock.slice(), stockValue, oRes, ordersBonus, orderSales, orange, now, total, cans, lucky: LUCKY_MULT[run.upg.lucky], lights: LIGHTS_MULT[st.lights || 0], decor: DECOR_MULT[st.decor || 0], lost: res.lost, tanhua: res.tanhua, rosePetals: res.rosePetals, newReact, heat, cuteCans: (res.stats && res.stats.cuteCans) || 0 };
+    run.lastNight = { n, deposited: dep, stock: stock.slice(), stockValue, oRes, ordersBonus, orderSales, orange, now, total, cans, lucky: LUCKY_MULT[run.upg.lucky], lights: LIGHTS_MULT[st.lights || 0], decor: DECOR_MULT[st.decor || 0], lost: res.lost, tanhua: res.tanhua, rosePetals: res.rosePetals, newReact, heat, cuteCans: (res.stats && res.stats.cuteCans) || 0, garden: hv, gifts, gardenValue, cuts };
     if (stock.some(f => f.t === 'rose' && f.owner === 'wang') && !run.roseDone) run.rosePending = true;
     setTimeout(() => UI.fade(() => setScene(new DayScene(n + 1))), res.timeUp ? 900 : 200);
     if (res.timeUp) UI.toast(res.lost ? '天亮了！嘴裡的花來不及帶回家……' : '天快亮了，回家睡覺', 2400);

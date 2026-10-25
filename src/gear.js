@@ -12,7 +12,7 @@ let CAT_GEAR;   // undefined：照 G.run（玩家）的升級；null：什麼都
 function catGearFor(run) {
   if (!run || !run.upg) return null;
   const u = run.upg;
-  const g = { socks: u.paws || 0, mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0 };
+  const g = { socks: u.paws || 0, mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0, horn: u.call || 0, lamp: u.tunnel || 0 };
   for (const k in g) if (g[k]) return g;
   return null;
 }
@@ -31,7 +31,8 @@ const GEARC = {
   bow: [null, { c: '#ff6d9a', d: '#d94a78', s: 0.82 }, { c: '#ff6d9a', d: '#d94a78', s: 1.25, dots: '#ffffff' }],
   flower: [null, { c: '#ff9fcb', ctr: '#ffe48a', s: 0.9 }, { c: '#e8394d', ctr: '#ffd84d', s: 1.3 }],
   pack: [null, { c: '#4f78b8', d: '#34558a' }, { c: '#4f78b8', d: '#34558a', fish: '#d4ecfa' }, { c: '#3f9a72', d: '#2a6e50' }],
-  bag: [null, { c: '#f2dfb8', d: '#c8a878' }, { c: '#d6a45a', d: '#9a6a30' }],
+  bag: [null, { c: '#f2dfb8', d: '#c8a878' }, { c: '#d6a45a', d: '#9a6a30' }, { c: '#c8843c', d: '#8a5420', rib: '#ff6d9a' }],
+  horn: [null, { c: '#ffd84d', d: '#c99a1a' }, { c: '#eef0f6', d: '#9aa0b8', band: '#e8394d' }],
   glow: [null, { eye: '#d6ff5c', eyeD: '#8fdc3c' }, { eye: '#f4ff96', eyeD: '#c8f244' }],
   crown: ['#ff8fb8', '#ffd84d', '#ffffff', '#ff7a8a', '#c9b6f0', '#ffd84d', '#ff8fb8'],
 };
@@ -98,17 +99,53 @@ function gPack(Q, x, y, lv, k = 1) {
   Q.poly([[x - 3.7 * k, y - 3.4 * k], [x + 3.7 * k, y - 3.4 * k], [x + 3.4 * k, y + 0.3 * k], [x - 3.4 * k, y + 0.3 * k]], C.d);
   Q.ellF(x, y + 0.5 * k, 0.9 * k, 0.9 * k, '#ffd84d');
 }
+// 金色小皇冠：x、y 是底部中間
+function gCrown(Q, x, y, k) {
+  Q.poly([[-5, 0], [5, 0], [5.6, -5.2], [2.8, -2.6], [0, -6.8], [-2.8, -2.6], [-5.6, -5.2]].map(([a, b]) => [x + a * k, y + b * k]), '#ffd84d');
+  Q.line([[x - 4.6 * k, y - 1.1 * k], [x + 4.6 * k, y - 1.1 * k]], '#d9a21a', 0.8 * k);
+  for (const [dx, dy, c] of [[0, -6.8, '#ff6d9a'], [-5.6, -5.2, '#7ad3ff'], [5.6, -5.2, '#7ad3ff']]) Q.ellF(x + dx * k, y + dy * k, 0.95 * k, 0.95 * k, c);
+  Q.ellF(x, y - 2.5 * k, 1.15 * k, 1.15 * k, '#e8394d');
+}
+// 小喇叭（喵喵廣播）：x、y 是吹嘴；dir 1 朝右
+function gHorn(Q, x, y, lv, k = 1, dir = 1) {
+  const C = GEARC.horn[lv], b = lv >= 2 ? 1.45 : 1, X = (a) => x + a * k * dir;
+  Q.poly([[X(0), y - 0.9 * k], [X(4.6 * b), y - 2.7 * k * b], [X(4.6 * b), y + 2.7 * k * b], [X(0), y + 0.9 * k]], C.c);
+  Q.ellF(X(4.6 * b), y, 0.9 * k, 2.4 * k * b, C.d);
+  if (C.band) Q.line([[X(2.6 * b), y - 1.9 * k * b], [X(2.6 * b), y + 1.9 * k * b]], C.band, 0.9 * k);
+  Q.ellF(X(-0.5), y, 0.8 * k, 0.8 * k, C.d);
+}
+// 礦工頭燈（貓道）：x、y 是燈的中心
+function gLamp(Q, x, y, k = 1) {
+  Q.ell(x, y, 2.8 * k, 2.4 * k, '#3a3a4a');
+  Q.ellF(x, y, 1.9 * k, 1.6 * k, '#fff3a0');
+  Q.ellF(x - 0.6 * k, y - 0.5 * k, 0.6 * k, 0.5 * k, '#ffffff');
+}
+// 發光的小燈籠（夜貓子第三級）
+function gLantern(Q, x, y, k = 1, lie = false) {
+  const cx = lie ? x + 3 * k : x + 0.3 * k, cy = lie ? y - 1.4 * k : y + 4.6 * k;
+  if (!lie) Q.line([[x, y], [x + 0.3 * k, y + 1.6 * k]], '#c9a43a', 0.7 * k);
+  Q.ellF(cx, cy, 4.2 * k, 4.6 * k, 'rgba(255,200,110,0.35)');
+  Q.ell(cx, cy, 2.5 * k, 3 * k, '#ff7a3a');
+  for (const dx of [-1.2, 0, 1.2]) Q.line([[cx + dx * k, cy - 2.6 * k], [cx + dx * 1.15 * k, cy + 2.6 * k]], '#c4421a', 0.5 * k);
+  Q.ellF(cx, cy, 1.1 * k, 1.5 * k, '#ffe08a');
+  Q.poly([[cx - 1.5 * k, cy - 3.4 * k], [cx + 1.5 * k, cy - 3.4 * k], [cx + 1.5 * k, cy - 2.6 * k], [cx - 1.5 * k, cy - 2.6 * k]], '#3a2a20');
+  Q.poly([[cx - 1.5 * k, cy + 2.6 * k], [cx + 1.5 * k, cy + 2.6 * k], [cx + 1.5 * k, cy + 3.4 * k], [cx - 1.5 * k, cy + 3.4 * k]], '#3a2a20');
+  Q.line([[cx, cy + 3.4 * k], [cx, cy + 5.4 * k]], '#e8394d', 0.7 * k);
+  Q.poly(star4Pts(cx - 3.4 * k, cy - 1.2 * k, 1.8 * k), '#fff3a0');
+}
 // 花袋／花籃：x、y 是底部中間
 function gBag(Q, x, y, lv, k = 1) {
   const C = GEARC.bag[lv];
+  if (lv >= 3) k *= 1.18;
   if (lv >= 2) {
-    const fl = [[-2.6, 5, '#ff8fb8'], [0.4, 6.6, '#ffd84d'], [3, 4.8, '#ffffff']];
+    const fl = lv >= 3 ? [[-3.6, 4.6, '#e8394d'], [-1.6, 6.8, '#ff8fb8'], [0.6, 7.6, '#ffd84d'], [2.6, 6.2, '#ffffff'], [4.2, 4.4, '#9a6ad0']] : [[-2.6, 5, '#ff8fb8'], [0.4, 6.6, '#ffd84d'], [3, 4.8, '#ffffff']];
     for (const [dx, h] of fl) Q.line([[x + dx * k, y - 4 * k], [x + dx * 1.15 * k, y - (4 + h) * k]], PC.stem, 0.9 * k);
     for (const [dx, h, col] of fl) gFlower(Q, x + dx * 1.15 * k, y - (4 + h) * k, 1.8 * k, col);
     Q.poly([[x - 5.2 * k, y - 4.6 * k], [x + 5.2 * k, y - 4.6 * k], [x + 4.2 * k, y], [x - 4.2 * k, y]], C.c);
     for (let i = 1; i <= 2; i++) Q.line([[x - (5.1 - i * 0.35) * k, y - (4.6 - i * 1.5) * k], [x + (5.1 - i * 0.35) * k, y - (4.6 - i * 1.5) * k]], C.d, 0.7 * k);
     for (let i = -2; i <= 2; i++) Q.line([[x + i * 1.9 * k, y - 4.4 * k], [x + i * 1.6 * k, y - 0.4 * k]], C.d, 0.55 * k);
     Q.poly([[x - 5.8 * k, y - 5.7 * k], [x + 5.8 * k, y - 5.7 * k], [x + 5.8 * k, y - 4.2 * k], [x - 5.8 * k, y - 4.2 * k]], C.d);
+    if (C.rib) { for (const sd of [-1, 1]) Q.ell(x + sd * 1.9 * k, y - 2.4 * k, 1.8 * k, 1.1 * k, C.rib, sd * 0.4); Q.ellF(x, y - 2.4 * k, 0.8 * k, 0.8 * k, '#d94a78'); }
   } else {
     Q.line([[x + 0.5 * k, y - 3.6 * k], [x + 1.2 * k, y - 7.2 * k]], PC.stem, 0.9 * k);
     gFlower(Q, x + 1.2 * k, y - 7.5 * k, 1.75 * k, '#ff8fb8');
@@ -126,6 +163,7 @@ function crescentPts(cx, cy, R) {
 function star4Pts(x, y, r) { const pts = []; for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4 - Math.PI / 2, rr = i % 2 ? r * 0.42 : r; pts.push([x + Math.cos(a) * rr, y + Math.sin(a) * rr]); } return pts; }
 // 月亮吊飾：x、y 是尾巴尖。lie：尾巴躺在地上（月亮放旁邊）
 function gMoon(Q, x, y, lv, k = 1, lie = false) {
+  if (lv >= 3) { gLantern(Q, x, y, k, lie); return; }
   const cx = lie ? x + 2.6 * k : x + 0.3 * k, cy = lie ? y - 1 * k : y + 3.9 * k;
   if (!lie) Q.line([[x, y], [x + 0.3 * k, y + 1.7 * k]], '#c9a43a', 0.7 * k);
   Q.poly(crescentPts(cx, cy, 2.4 * k), '#ffe27a');
@@ -156,6 +194,7 @@ function gearHeadUnder(P, s, g) {
     PX.line(...P(-1.9, by0 + 0.8), ...P(1.9, by0 + 0.8), '#a8761a');
     PX.ellipse(bx - br * 0.35, by - br * 0.35, br * 0.28, br * 0.28, '#fffbe0');
   }
+  if (g.horn) { const [hx, hy] = P(7.6, 15.6); PX.curve([P(4, 11.6), P(6.4, 14), P(7.6, 15.6)], '#8a6a3a', { w: 0.8 }); gHorn(GP, hx, hy, g.horn, 1.05 * s); }
 }
 // 眼罩：眼周亮色之後、眼睛之前（眼睛蓋在上面，像挖了洞）
 function gearHeadMask(P, s, g) {
@@ -172,6 +211,7 @@ function gearHeadTop(P, s, rot, g) {
   if (g.bow >= 3) {
     for (let i = 0; i < 6; i++) { const u = -1 + (i + 0.5) / 3, [x, y] = P(u * 14, -14.6 - 1.5 * (1 - u * u)); PX.ellipse(x, y, 2.7 * s + 0.9, 1.5 * s + 0.7, TAB.out, { rot: rot + u * 0.8 }); PX.ellipse(x, y, 2.7 * s, 1.5 * s, '#5aa652', { rot: rot + u * 0.8 }); }
     for (let i = 0; i < 7; i++) { const u = -1 + i / 3, [x, y] = P(u * 14, -14.6 - 1.5 * (1 - u * u)); gFlower(GP, x, y, 3.3 * s, GEARC.crown[i]); }
+    if (g.bow >= 4) { const [x, y] = P(0, -17.2); gCrown(GP, x, y, 1.2 * s); }
   } else if (g.bow) {
     const C = GEARC.bow[g.bow], k = C.s, bx = -10, by = -14;
     gPoly([P(bx - 0.6, by), P(bx - 3.6 * k, by + 5.8 * k), P(bx - 1.2 * k, by + 5.2 * k)], C.d);
@@ -185,6 +225,11 @@ function gearHeadTop(P, s, rot, g) {
     }
     const [kx, ky] = P(bx, by);
     gEll(kx, ky, 2.1 * k * s, 2.1 * k * s, C.c);
+  }
+  if (g.lamp) {
+    PX.curve([P(-16, -6.6), P(-8, -11.6), P(0, -12.6), P(8, -11.6), P(16, -6.6)], TAB.out, { w: 2.4 * s + 1.2 });
+    PX.curve([P(-16, -6.6), P(-8, -11.6), P(0, -12.6), P(8, -11.6), P(16, -6.6)], '#3a3a4a', { w: 2.4 * s });
+    const [lx, ly] = P(0, -12.2); gLamp(GP, lx, ly, 1.25 * s);
   }
   if (g.flower) {
     const C = GEARC.flower[g.flower], [x, y] = g.bow >= 3 ? P(16, -6.5) : P(12.2, -12.8);
@@ -206,6 +251,7 @@ function gearSideTop(P, g) {
   if (g.bow >= 3) {
     for (let i = 0; i < 5; i++) { const a = -2.8 + i * 0.44, [x, y] = P(Math.cos(a) * 7.4, Math.sin(a) * 6.9 - 0.4); O.e(x, y, 2.2, 1.2, CM.ink, { rot: a + 1.57 }); O.e(x, y, 1.6, 0.8, '#5aa652', { rot: a + 1.57 }); }
     for (let i = 0; i < 5; i++) { const a = -2.6 + i * 0.4, [x, y] = P(Math.cos(a) * 7.6, Math.sin(a) * 7.1 - 0.6); gFlower(GO, x, y, 1.75, GEARC.crown[i + 1]); }
+    if (g.bow >= 4) { const [x, y] = P(0.6, -8.4); gCrown(GO, x, y, 0.62); }
   } else if (g.bow) {
     const C = GEARC.bow[g.bow], k = C.s * 0.74, [cx, cy] = P(1.6, -8.1);
     GO.poly([[cx - 0.3, cy], [cx - 1.9 * k, cy + 3.4 * k], [cx - 0.5 * k, cy + 3 * k]], C.d);
@@ -214,6 +260,7 @@ function gearSideTop(P, g) {
     if (C.dots) for (const sd of [-1, 1]) O.dot(cx + sd * 3.4 * k, cy - 0.9 * k, 0.5 * k + 0.1, C.dots);
     O.eo(cx, cy, 1.2 * k, 1.2 * k, C.c);
   }
+  if (g.lamp) { const pts = [P(-6.8, -3.4), P(-3, -7), P(2, -7.4), P(6.6, -4.2)]; O.curve(pts, CM.ink, 2.6); O.curve(pts, '#3a3a4a', 1.4); const [lx, ly] = P(3.4, -6.6); gLamp(GO, lx, ly, 0.72); }
   if (g.flower) {
     const C = GEARC.flower[g.flower], [x, y] = P(-6.4, -5.2);
     if (g.flower >= 2) gHibiscus(GO, x, y, 2.4 * C.s, C.c);
@@ -234,6 +281,7 @@ function gearSideNeck(P, g) {
     const br = g.collar >= 2 ? 1.85 : 1.45, [bx, by] = P(-1.6, 8.9);
     O.eo(bx, by, br, br, '#ffd84d'); O.dot(bx - br * 0.35, by - br * 0.35, br * 0.3, '#fffbe0');
   }
+  if (g.horn) { const [hx, hy] = P(1.2, 10.4); gHorn(GO, hx, hy, g.horn, 0.62, 1); }
 }
 
 // ---- 場景裡的身體（O 畫筆）----
@@ -280,9 +328,10 @@ function gearBackBody(stage, bob, g) {
   const hy = -19.5 + bob;
   if (stage === 'head') {
     if (g.mask) { const C = GEARC.mask[g.mask]; O.limb(-8, hy - 0.6, 8, hy - 0.6, 1.7, C.c); GO.poly([[-7.4, hy - 1.4], [-11.6, hy - 4.2], [-11, hy + 0.2]], C.c); GO.poly([[-7.4, hy], [-10.6, hy + 3], [-8.4, hy + 3.6]], C.c); }
-    if (g.bow >= 3) { for (let i = 0; i < 6; i++) { const u = -1 + i / 2.5; gFlower(GO, u * 6.8, hy - 6.4 - (1 - u * u) * 0.9, 1.7, GEARC.crown[i]); } }
+    if (g.bow >= 3) { for (let i = 0; i < 6; i++) { const u = -1 + i / 2.5; gFlower(GO, u * 6.8, hy - 6.4 - (1 - u * u) * 0.9, 1.7, GEARC.crown[i]); } if (g.bow >= 4) gCrown(GO, 0, hy - 7.6, 0.6); }
     else if (g.bow) { const C = GEARC.bow[g.bow], k = C.s * 0.5, cx = 5, cy = hy - 7; for (const sd of [-1, 1]) O.eo(cx + sd * 2.6 * k, cy - 0.4 * k, 2.6 * k, 1.8 * k, C.c, { rot: sd * 0.35 }); O.eo(cx, cy, 1.1 * k, 1.1 * k, C.c); }
     if (g.flower) { const C = GEARC.flower[g.flower]; gFlower(GO, -6.4, hy - 6.2, 1.9 * C.s, C.c, C.ctr); }
+    if (g.lamp) O.limb(-8.2, hy - 2.6, 8.2, hy - 2.6, 1.5, '#3a3a4a');
     return;
   }
   if (g.wings) for (const sd of [-1, 1]) gWing(GO, sd * 2.4, -13.2 + bob, sd, 1, 0);
@@ -303,7 +352,8 @@ function gearLoafBody(stage, g) {
 }
 // 紙箱偽裝：耳朵旁邊的蝴蝶結／花冠／小花
 function gearBoxTop(wob, g) {
-  if (g.bow >= 3) { for (let i = 0; i < 5; i++) { const u = -1 + i / 2; gFlower(GO, u * 6.4 + wob, -20.4 - (1 - u * u) * 1.2, 1.6, GEARC.crown[i + 1]); } }
+  if (g.bow >= 3) { for (let i = 0; i < 5; i++) { const u = -1 + i / 2; gFlower(GO, u * 6.4 + wob, -20.4 - (1 - u * u) * 1.2, 1.6, GEARC.crown[i + 1]); } if (g.bow >= 4) gCrown(GO, wob, -21.6, 0.55); }
+  if (g.lamp) gLamp(GO, -1 + wob, -18.6, 0.7);
   else if (g.bow) { const C = GEARC.bow[g.bow], k = C.s * 0.55, cx = -6.4 + wob, cy = -21.6; for (const sd of [-1, 1]) O.eo(cx + sd * 2.6 * k, cy - 0.4 * k, 2.6 * k, 1.8 * k, C.c, { rot: sd * 0.35 }); O.eo(cx, cy, 1.1 * k, 1.1 * k, C.c); }
   if (g.flower) { const C = GEARC.flower[g.flower]; gFlower(GO, 7.6 + wob, -21.4, 1.9 * C.s, C.c, C.ctr); }
 }
@@ -366,8 +416,11 @@ function gearCuteHead(c, stage, pal) {
       for (const sd of [-1, 1]) { ell(-10 + sd * 5.4 * k, -15 - 0.8 * k, 5.4 * k, 3.7 * k, C.c, sd * 0.35); if (C.dots) ell(-10 + sd * 6.6 * k, -15.6 - 0.8 * k, 1, 1, C.dots); }
       ell(-10, -15, 2.4 * k + 1.6, 2.4 * k + 1.6, ink); ell(-10, -15, 2.4 * k, 2.4 * k, C.c);
     }
+    if (g.bow >= 4) { const pts = [[-5, 0], [5, 0], [5.6, -5.2], [2.8, -2.6], [0, -6.8], [-2.8, -2.6], [-5.6, -5.2]].map(([a, b]) => [a * 1.3, -17.6 + b * 1.3]); c.lineJoin = 'round'; c.strokeStyle = ink; c.lineWidth = 3; c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.stroke(); poly(pts, '#ffd84d'); ell(0, -20.8, 1.4, 1.4, '#e8394d'); ell(0, -26.4, 1.2, 1.2, '#ff6d9a'); }
+    if (g.lamp) { c.strokeStyle = ink; c.lineWidth = 4.6; c.beginPath(); c.moveTo(-16, -7); c.quadraticCurveTo(0, -17, 16, -7); c.stroke(); c.strokeStyle = '#3a3a4a'; c.lineWidth = 2.6; c.beginPath(); c.moveTo(-16, -7); c.quadraticCurveTo(0, -17, 16, -7); c.stroke(); ell(0, -12.4, 4.6, 4, ink); ell(0, -12.4, 3.4, 2.9, '#3a3a4a'); ell(0, -12.4, 2.4, 2, '#fff3a0'); }
     if (g.flower) { const C = GEARC.flower[g.flower]; flower(g.bow >= 3 ? 16 : 12.4, g.bow >= 3 ? -6 : -13, 3.8 * C.s, C.c); }
   }
+  if (stage === 'under' && g.horn) { const C = GEARC.horn[g.horn], b = g.horn >= 2 ? 1.45 : 1; poly([[7, 14.4], [12 * b, 11.6], [12 * b, 19.4], [7, 16.6]].map(([x, y], i) => [x, y]), ink); poly([[7.6, 14.8], [11.4 * b, 12.4], [11.4 * b, 18.6], [7.6, 16.2]], C.c); ell(11.6 * b, 15.5, 1.2, 3 * b, C.d); }
 }
 function gearCuteEyes(pal) { const g = pal ? null : gearNow(); return { glow: gearEyeCol(g), mask: !!(g && g.mask) }; }
 

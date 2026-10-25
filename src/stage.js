@@ -339,8 +339,10 @@ function buildFences(map) {
   return m.build();
 }
 
-function buildGreenhouse(x0, x1, z0, z1, doors) {
-  const m = new MeshBuilder(), G = TEX.glass, h = 1.5, rh = 2.25, zr = (z0 + z1) / 2;
+function buildGreenhouse(x0, x1, z0, z1, doors, y0 = 0, k = 1) {
+  const m0 = new MeshBuilder(), G = TEX.glass, h = 1.5 * k, rh = 2.25 * k, zr = (z0 + z1) / 2;
+  // 可以整個抬高（蓋在頂樓上）
+  const m = y0 ? { quad: (t, a, b, c, d, ...r) => m0.quad(t, ...[a, b, c, d].map(p => [p[0], p[1] + y0, p[2]]), ...r), tri: (t, a, b, c, ...r) => m0.tri(t, ...[a, b, c].map(p => [p[0], p[1] + y0, p[2]]), ...r), build: () => m0.build() } : m0;
   // 南面（朝相機）與北面
   m.quad(G, [x0, h, z1], [x1, h, z1], [x1, 0, z1], [x0, 0, z1], [0, 0, 1], [0, 0, (x1 - x0) / 1.2, 1]);
   for (let x = x0; x < x1; x += 1) {

@@ -220,6 +220,7 @@ class NightScene {
     // 橘貓夥伴：收了之後每晚都來；第四晚沒收也會來幫忙。體力＝今晚能下幾次指令
     this.hasOrange = this.abil.has('orange') || (this.run.upg.orange || 0) > 0;
     this.oranges = this.hasOrange ? orangeEnergy(this.run) : 0;
+    this.initCatSkills();
     this.visMult = this.event === 'rain' || this.event === 'outage' ? 0.85 : 1;
     this.top = topGrid(this.map); this.topBlocked = new Set();
     for (const [tx, ty] of ROOF_TOWERS) this.topBlocked.add(tx + ',' + ty);
@@ -709,6 +710,7 @@ class NightScene {
         if (d < bd) { bd = d; best = { kind: o.jump ? 'jump' : 'knock', ref: o }; }
       }
     }
+    if (!best) { const tt = this.tunnelTarget(cx, cy); if (tt) best = tt; }
     if (c.home) best = { kind: 'home' };
     this.target = best;
     let label = null;
@@ -719,6 +721,7 @@ class NightScene {
       else if (best.kind === 'climb') label = '爬';
       else if (best.kind === 'drop') label = '跳下';
       else if (best.kind === 'home') label = '收工';
+      else if (best.kind === 'tunnel') label = '鑽';
       if (best.kind === 'climb' && !this.tips.climb) { this.tips.climb = 1; UI.toast('按「爬」從鐵窗、柵欄爬上去！屋頂上地面的人看不到你', 3200); }
       if (best.kind === 'knock' && !this.tips.knock) { this.tips.knock = 1; UI.toast('按「撥」把它弄倒，聲音能把人引過去'); }
     }
@@ -726,9 +729,10 @@ class NightScene {
     UI.setWait(this.mode === 'play' && (c.hidden || c.home), this.waiting);
     const sk = [];
     if (this.mode === 'play' && this.abil.has('box')) sk.push({ id: 'box', label: c.box ? '出來' : '紙箱', n: this.boxes, on: !!c.box, off: !c.box && this.boxes <= 0 });
+    this.catSkillButtons(sk);
     if (this.mode === 'play' && this.orange) sk.push({ id: 'orange', label: '橘貓', n: this.oranges, on: this.orange.state !== 'follow', off: this.oranges <= 0 || this.orange.state !== 'follow' });
     // 在花店貓門：紙箱用不到，換成「熟門熟路」
-    if (this.mode === 'play' && c.home && raidUnlocked(this.run) && masteredList(this.run).length) { const ok = this.raidOptions().filter(o => o.ok).length; const i = sk.findIndex(x => x.id === 'box'); const it = { id: 'raid', label: '熟門', n: ok, off: !ok }; if (i >= 0 && !c.box) sk[i] = it; else sk.unshift(it); if (sk.length > 2) sk.length = 2; }
+    if (this.mode === 'play' && c.home && raidUnlocked(this.run) && masteredList(this.run).length) { const ok = this.raidOptions().filter(o => o.ok).length; const i = sk.findIndex(x => x.id === 'box'); const it = { id: 'raid', label: '熟門', n: ok, off: !ok }; if (i >= 0 && !c.box) sk[i] = it; else sk.unshift(it); if (sk.length > 3) sk.length = 3; }
     UI.setSkills(sk);
   }
   // 能力按鈕：紙箱、橘貓
@@ -744,6 +748,8 @@ class NightScene {
       if (!this.tips.box) { this.tips.box = 1; UI.toast('紙箱裡不動，大家只會看到一個箱子。在人家眼前移動會很可疑！', 3400); }
     } else if (id === 'orange' && this.orange) {
       this.orangeOrder();
+    } else if (id === 'call') {
+      this.doCall();
     } else if (id === 'raid' && c.home && raidUnlocked(this.run)) {
       this.openRaid();
     }
@@ -797,6 +803,8 @@ class NightScene {
     } else if (tg.kind === 'drop') {
       c.jump = { x0: c.x, y0: c.y, x1: tg.x, y1: tg.y, t: 0, dur: 0.42, h0: c.h, h1: 0, top: false, hopPx: 6 };
       SFX.play('jump');
+    } else if (tg.kind === 'tunnel') {
+      this.useTunnel(tg.i);
     } else if (tg.kind === 'home') {
       UI.confirm('今晚收工？', '回花店睡覺，結算今晚的花。', '收工', '再偷一下', ok => { if (ok) this.finish(false); });
     }

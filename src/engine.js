@@ -127,7 +127,7 @@ const Input = {
       if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' ', 'shift', 'w', 'a', 's', 'd', 'e', 'q', 'enter', 'escape', 'p'].includes(k)) e.preventDefault();
       if (k === ' ' || k === 'e' || k === 'enter') { if (!e.repeat && this.onAction) this.onAction(); return; }
       if (k === 'q') { if (!e.repeat && this.onWait) this.onWait(); return; }
-      if (k === 'f' || k === 'r') { e.preventDefault(); if (!e.repeat && this.onSkill) this.onSkill(k === 'f' ? 0 : 1); return; }
+      if (k === 'f' || k === 'r' || k === 't') { e.preventDefault(); if (!e.repeat && this.onSkill) this.onSkill('frt'.indexOf(k)); return; }
       if (k === 'escape' || k === 'p') { if (!e.repeat && this.onPause) this.onPause(); return; }
       this.keys.add(k);
     });

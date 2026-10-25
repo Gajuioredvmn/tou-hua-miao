@@ -150,7 +150,7 @@ class DayScene {
       this.shopT -= dt;
       if (this.shopT <= 0) {
         const max = this.rush ? 4 : 3;
-        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * rnd(0.8, 1.2);
+        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * (this.run.flags && this.run.flags.famous ? 0.65 : 1) * rnd(0.8, 1.2);
         else this.shopT = 1;
       }
     }
@@ -1057,6 +1057,8 @@ function* monthDayScript(S, n) {
   const nb = run.lastNight || {};
   yield S.say(nb.total > 0 ? pick(['門口又有花了！小精靈今天也來了耶。', '今天的花也好漂亮～花喵，你知道是誰放的嗎？', '花店小精靈又來了！']) : '今天門口沒有花……');
   UI.hideDialog();
+  yield* gardenMorningScript(S);
+  yield* gardenStoryScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
   const k = 1 + (Math.random() < 0.5 ? 1 : 0);
