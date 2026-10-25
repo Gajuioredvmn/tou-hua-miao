@@ -291,7 +291,7 @@ const UI = {
       ${items.length ? `<h3>今天店裡要賣的花</h3><ul class="tally">${rows}</ul>` : (R.deposited.length ? '' : '<p class="lead">店裡今天又是空的……</p>')}
       ${mults.length ? `<p class="mults">${mults.map(esc).join('<span>・</span>')}</p>` : ''}
       ${orders ? `<h3>訂單${st.scooter ? '<small>外送機車：獎勵 ×2</small>' : ''}</h3><ul class="tally">${orders}</ul>` : ''}
-      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${gangTallyHTML(R)}${nmTallyHTML(R)}${gardenHtml}${masterHtml}${heatHtml}
+      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${commissionTallyHTML(R)}${gangTallyHTML(R)}${nmTallyHTML(R)}${gardenHtml}${masterHtml}${heatHtml}
       <div class="total"><span>現在入帳</span><b class="px" id="tally-total">0</b></div>
       ${R.stockValue + gv > 0 ? `<div class="total sub"><span>白天客人上門買花</span><b class="px">≈ ${N(R.stockValue + gv)}</b></div>` : ''}
       ${growth}
@@ -338,7 +338,7 @@ const UI = {
         body = `<p class="lead">「先投資店面，之後每天都多賺一點……可是房租也要留著。」</p>
           <p class="hint">還剩 <b>${nightsLeft}</b> 晚。越早裝回本越多；買下去馬上會看到店裡變樣。</p>
           ${this.rentBar(run)}
-          <ul class="ups">${rows}</ul>`;
+          <ul class="ups">${rows}</ul>${windowHTML(run)}`;
       } else if (tab === 'garden') {
         body = gardenTabHTML(run, pickIdx);
       } else if (tab === 'nm') {
@@ -376,6 +376,10 @@ const UI = {
       const keep = () => { const sc = this.cardEl.scrollTop; render(); this.cardEl.scrollTop = sc; };
       this.cardEl.querySelectorAll('canvas.garden-art').forEach(cv => drawGardenArt(cv, run));
       drawGangFaces(this.cardEl);
+      this.cardEl.querySelectorAll('[data-win]').forEach(b => b.addEventListener('click', () => {
+        if (setWindow(run, b.dataset.win)) { SFX.play('buy'); this.toast(`櫥窗換成「${winTheme(run).name}」！主題花 ×${WINDOW_MULT}`, 2600); }
+        keep();
+      }));
       this.cardEl.querySelectorAll('canvas.nm-art').forEach(cv => drawNmArt(cv, run));
       this.cardEl.querySelectorAll('[data-nm="up"]').forEach(b => b.addEventListener('click', () => {
         const N = nmOf(run), nx = NM_LV[N.lv]; if (!nx || run.money < nx.cost || (run.month || 1) < nx.mon) return;
@@ -469,7 +473,7 @@ const UI = {
     const xeHtml = XE ? `<div class="event ev-x"><b>還有：${esc(XE.name)}${XE.when ? `<small>大約 ${fmtTime(xe.t0)}</small>` : ''}</b><span>${esc(XE.desc)}</span></div>` : '';
     const html = `<p class="eyebrow">${monthPre(run)}22:30 – ${fmtTime(end)}</p><h2>第${NUM[n]}晚</h2>
       <div class="event ev-${rules.event}"><b>${esc(ev.name)}</b><span>${esc(ev.desc)}</span></div>${xeHtml}
-      ${abHtml}${gangBriefHTML(run)}${masterHtml}${reactHtml}${ordHtml}
+      ${abHtml}${commissionBriefHTML(run)}${gangBriefHTML(run)}${masterHtml}${reactHtml}${ordHtml}
       ${news ? `<ul class="news">${news}</ul>` : ''}
       ${m <= 1 ? `<h3>${n === 1 ? '白天聽到的情報' : '今天聽到的情報'}</h3>
       ${intel || '<p class="lead">什麼都沒聽到……今晚只能見機行事。</p>'}` : (known.length ? `<details class="old"><summary>之前聽到的情報 ${known.length} 則</summary><ul class="intel">${li(known)}</ul></details>` : '')}
@@ -530,11 +534,11 @@ const UI = {
 function newRun() {
   return {
     money: 0, cans: 0,
-    upg: { mouth: 0, gentle: 0, paws: 0, owl: 0, cute: 0, jump: 0, orange: 0, lucky: 0, catwalk: 0, nightvis: 0, sniff: 0, bribe: 0, call: 0, tunnel: 0 },
+    upg: { mouth: 0, gentle: 0, paws: 0, owl: 0, cute: 0, jump: 0, orange: 0, lucky: 0, catwalk: 0, nightvis: 0, sniff: 0, bribe: 0, call: 0, tunnel: 0, tilt: 0, dead: 0, roofway: 0 },
     store: { lights: 0, fridge: 0, neon: 0, scooter: 0, decor: 0 },
     intel: {}, immune: {}, flags: {},
     stats: { caught: 0, cuteWin: 0, cuteFail: 0, petals: 0, stolen: 0 },
-    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} }, bond: {}, storyCh: {},
+    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} }, bond: {}, storyCh: {}, regulars: {}, comm: null,
     month: 1, debt: 0, graceUsed: false, heat: {}, familiar: {}, nightIdx: 0, plan: {}, rentPaid: [],
     lastNight: null, rosePending: false, roseDone: false, night: 0,
     stock: [], orders: {}, regrow: {}, react: {},
@@ -616,13 +620,14 @@ const Flow = {
     });
     const left = Object.assign({}, used), stock = [], orderSold = [];
     for (const f of dep) { if (left[f.t] > 0) { left[f.t]--; orderSold.push(f); } else stock.push({ t: f.t, fresh: f.fresh, owner: f.owner }); }
-    // 夜市花攤：天亮前把一部分的花帶去夜市賣掉
+    // 大型委託：先把要的花留下來；夜市花攤：再把一部分的花帶去夜市賣掉
+    const commRes = commissionTake(run, stock);
     const nmRes = nmSell(run, stock);
     const ordersBonus = oRes.reduce((s, r) => s + r.bonus, 0);
     const orderSales = orderSold.reduce((s, f) => s + flowerValue(run, f.t, f.fresh), 0);
     const stockValue = stock.reduce((s, f) => s + flowerValue(run, f.t, f.fresh), 0);
     const orange = ORANGE_INCOME[run.upg.orange] * LUCKY_MULT[run.upg.lucky];
-    const now = Math.round(ordersBonus + orderSales + orange + (nmRes ? nmRes.v : 0));
+    const now = Math.round(ordersBonus + orderSales + orange + (nmRes ? nmRes.v : 0) + (commRes ? commRes.paid : 0));
     // 頂樓花園：收成直接進店裡；粉絲在門口放的花；順便叼回的插枝
     const cuts = collectCuttings(run, dep);
     const hv = gardenTick(run), gifts = fanGifts(run);
@@ -639,7 +644,7 @@ const Flow = {
     for (const f of dep) if (f.idx !== undefined) run.regrow[f.idx] = run.nightIdx || n;
     const heat = settleNight(run, dep, res);
     const newReact = heat.changes.filter(c => c.to >= 2 && c.from < 2 && REACTIONS[c.o]).map(c => c.o);
-    run.lastNight = { n, deposited: dep, stock: stock.slice(), stockValue, oRes, ordersBonus, orderSales, orange, now, total, cans, lucky: LUCKY_MULT[run.upg.lucky], lights: LIGHTS_MULT[st.lights || 0], decor: DECOR_MULT[st.decor || 0], lost: res.lost, tanhua: res.tanhua, rosePetals: res.rosePetals, newReact, heat, cuteCans: (res.stats && res.stats.cuteCans) || 0, garden: hv, gifts, gardenValue, cuts, gang: gangRes.report, nm: nmRes };
+    run.lastNight = { n, deposited: dep, stock: stock.slice(), stockValue, oRes, ordersBonus, orderSales, orange, now, total, cans, lucky: LUCKY_MULT[run.upg.lucky], lights: LIGHTS_MULT[st.lights || 0], decor: DECOR_MULT[st.decor || 0], lost: res.lost, tanhua: res.tanhua, rosePetals: res.rosePetals, newReact, heat, cuteCans: (res.stats && res.stats.cuteCans) || 0, garden: hv, gifts, gardenValue, cuts, gang: gangRes.report, nm: nmRes, comm: commRes };
     if (stock.some(f => f.t === 'rose' && f.owner === 'wang') && !run.roseDone) run.rosePending = true;
     setTimeout(() => UI.fade(() => setScene(new DayScene(n + 1))), res.timeUp ? 900 : 200);
     if (res.timeUp) UI.toast(res.lost ? '天亮了！嘴裡的花來不及帶回家……' : '天快亮了，回家睡覺', 2400);

@@ -150,7 +150,7 @@ button { font-family: var(--font-ui); -webkit-tap-highlight-color: transparent; 
 .sheet-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 10px; }
 .sheet-head b { font-size: 19px; font-weight: 400; color: var(--petal); }
 .sheet-head span { color: var(--ink-dim); font-size: 13px; }
-.cute-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.cute-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; }
 .cute-btn { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 13px 4px 10px; background: var(--paper); color: var(--paper-ink); border: 2px solid var(--edge); border-radius: 12px; box-shadow: 0 4px 0 var(--edge); font-size: 17px; cursor: pointer; touch-action: none; }
 .cute-btn .ch { color: #d93a66; font-size: 14px; letter-spacing: 1px; }
 .cute-btn .ch.unk { color: var(--paper-dim); }
@@ -340,6 +340,22 @@ button { font-family: var(--font-ui); -webkit-tap-highlight-color: transparent; 
 .grp.garden { background: #9ad86a; color: #1f3a10; }
 .grp.gangtag { background: #f2b24a; color: #3a2408; }
 .grp.nm { background: #ff8fd0; color: #3a0f2a; }
+.win-themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 8px; }
+.win-t { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 8px 10px 8px 16px; border-radius: 12px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.38); color: var(--ink); font: inherit; text-align: left; cursor: pointer; overflow: hidden; }
+.win-t::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: linear-gradient(var(--wc), var(--wc2)); }
+.win-t b { font-weight: 400; font-size: 14.5px; }
+.win-t span { font-size: 12px; color: var(--ink-dim); }
+.win-t i { font-style: normal; font-size: 11.5px; color: #ffe27a; }
+.win-t.on { border-color: var(--wc); }
+.win-t:disabled:not(.on) { opacity: 0.5; cursor: default; }
+.gang-row em.ok { color: #9fe8a8; }
+.newab.commbox { border-color: #8ab8ff; background: rgba(138, 184, 255, 0.1); }
+.newab.commbox .tagnew { background: #4a7ad0; }
+.comm-r { float: right; color: #ffe27a; font-size: 13px; }
+.comm-need { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.comm-need span { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 8px; background: rgba(10, 11, 24, 0.4); font-size: 13px; color: var(--ink-dim); }
+.comm-need span.ok { color: #9fe8a8; }
+.comm-need img { width: 20px; height: 20px; }
 .nb-list, .ev-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
 .nb { padding: 10px 12px; border-radius: 12px; border: 2px solid var(--edge); background: var(--panel-2); }
 .nb-h { display: flex; justify-content: space-between; align-items: center; }
@@ -2431,7 +2447,7 @@ function drawMeowArt2(s, pen = PXR, k = 4) {
     const eyes = happy ? 'happy' : fail ? 'blink' : (s.blink ? 'blink' : 'open');
     if (v === 1) {
       // 招財貓：坐起來，一隻手一直招
-      const wave = fail ? -0.4 : Math.sin(t * 9) * (happy ? 1.3 : 1);
+      const wave = fail ? -0.4 : s.wave !== undefined ? s.wave : Math.sin(t * 9) * (happy ? 1.3 : 1);
       const tp = []; for (let i = 0; i < 10; i++) { const q = i / 9; tp.push([60 + q * 14 - q * q * 3, 60 - q * 14 + Math.sin(t * 3 + q * 3) * q * 2]); }
       tail(tp, 2.3);
       gearClose('sit', 'back');
@@ -2448,7 +2464,7 @@ function drawMeowArt2(s, pen = PXR, k = 4) {
       if (fail) sweatDrop(60, 14);
     } else {
       // v0 趴著喵；v2 歪頭、瞳孔放大
-      const tilt = v === 2 ? 0.34 + Math.sin(t * 2) * 0.04 : Math.sin(t * 2.4) * 0.07 - 0.03;
+      const tilt = s.tilt !== undefined ? s.tilt + Math.sin(t * 2) * 0.02 : v === 2 ? 0.34 + Math.sin(t * 2) * 0.04 : Math.sin(t * 2.4) * 0.07 - 0.03;
       gearClose('lie', 'back');
       furBlob(48, 57, 34, 12, 0, 0.6, 9);
       PX.ellipse(48, 50, 11, 7, TAB.cream);
@@ -2493,7 +2509,7 @@ function drawBellyArt2(s, pen = PXR, k = 4) {
     PX.ellipse((rx2 + 38) / 2, (ry2 + 50) / 2, 9, 3, TAB.fur, { rot: Math.atan2(ry2 - 50, rx2 - 38), part: 1 });
     paw(rx2, ry2, 4.4, 3.4, 0.2);
     const hrot = p * Math.PI * 0.92 + wig * 0.1 + over * 0.6;
-    const eyes = fail ? (over > 0 || s.dizzy ? 'dizzy' : 'blink') : happy ? 'happy' : (Math.floor(t * 2.2) % 7 === 3 ? 'blink' : 'open');
+    const eyes = fail ? (over > 0 || s.dizzy ? 'dizzy' : 'blink') : happy ? 'happy' : s.dead ? 'dizzy' : (Math.floor(t * 2.2) % 7 === 3 ? 'blink' : 'open');
     drawCatHead(lerp(30, 27, p), lerp(27, 45, p), hrot, 0.78, { open, eyes, earL: p * 0.25, earR: p * 0.15, look: -0.4, whisk: 0, blep: v === 2 && p > 0.85 && !fail, big: v === 0 && p > 0.9 && !fail && !happy }, late);
     if (fail) sweatDrop(16, 30);
     PX.outline(TAB.out);
@@ -5635,7 +5651,7 @@ let CAT_GEAR;   // undefined：照 G.run（玩家）的升級；null：什麼都
 function catGearFor(run) {
   if (!run || !run.upg) return null;
   const u = run.upg;
-  const g = { socks: u.paws || 0, mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0, horn: u.call || 0, lamp: u.tunnel || 0 };
+  const g = { socks: u.paws || 0, mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0, horn: u.call || 0, lamp: u.tunnel || 0, ahoge: u.tilt || 0, band: u.dead || 0, plank: u.roofway || 0 };
   for (const k in g) if (g[k]) return g;
   return null;
 }
@@ -5721,6 +5737,16 @@ function gPack(Q, x, y, lv, k = 1) {
   Q.poly([[x - 3.9 * k, y - 3.4 * k], [x + 3.9 * k, y - 3.4 * k], [x + 4.3 * k, y + 3.3 * k], [x - 4.3 * k, y + 3.3 * k]], C.c);
   Q.poly([[x - 3.7 * k, y - 3.4 * k], [x + 3.7 * k, y - 3.4 * k], [x + 3.4 * k, y + 0.3 * k], [x - 3.4 * k, y + 0.3 * k]], C.d);
   Q.ellF(x, y + 0.5 * k, 0.9 * k, 0.9 * k, '#ffd84d');
+}
+// 屋頂走廊：背上的木板（第二級換成登山繩和扣環）
+function gPlank(Q, x, y, lv, k = 1) {
+  if (lv >= 2) {
+    Q.ell(x, y - 2 * k, 3.6 * k, 2.6 * k, '#e0702a'); Q.ellF(x, y - 2 * k, 1.8 * k, 1.1 * k, '#a84a18');
+    Q.ell(x + 3.4 * k, y - 0.6 * k, 1.3 * k, 1.8 * k, '#c9ccd8');
+    return;
+  }
+  for (let i = 0; i < 3; i++) Q.poly([[x - 4.6 * k, y - (1.6 + i * 1.5) * k], [x + 4.6 * k, y - (1.2 + i * 1.5) * k], [x + 4.6 * k, y - (0.1 + i * 1.5) * k], [x - 4.6 * k, y - (0.5 + i * 1.5) * k]], ['#c99a62', '#b88a52', '#d8aa72'][i]);
+  Q.line([[x - 1, y - 5.6 * k], [x - 1, y + 0.4 * k]], '#7a4a2a', 0.8 * k);
 }
 // 金色小皇冠：x、y 是底部中間
 function gCrown(Q, x, y, k) {
@@ -5831,6 +5857,8 @@ function gearHeadMask(P, s, g) {
 }
 // 蝴蝶結／花冠、耳邊的花：頭的最後面
 function gearHeadTop(P, s, rot, g) {
+  if (g.ahoge) { const pts = [P(1, -14.6), P(3.4, -21.5), P(0.4, -25.4), P(-2.4, -23.6)]; PX.curve(pts, TAB.out, { w: 2.6 * s + 1.4 }); PX.curve(pts, TAB.fur, { w: 2.6 * s }); }
+  if (g.band) { for (const r of [0.6, -0.6]) { const c = P(8.6, -8.6), dx = Math.cos(r) * 4.2 * s, dy = Math.sin(r) * 4.2 * s, nx = -Math.sin(r) * 1.5 * s, ny = Math.cos(r) * 1.5 * s; gPoly([[c[0] - dx - nx, c[1] - dy - ny], [c[0] + dx - nx, c[1] + dy - ny], [c[0] + dx + nx, c[1] + dy + ny], [c[0] - dx + nx, c[1] - dy + ny]], '#f2cfa2'); } const c = P(8.6, -8.6); PX.ellipse(c[0], c[1], 1.1 * s, 1.1 * s, '#e0b080'); }
   if (g.bow >= 3) {
     for (let i = 0; i < 6; i++) { const u = -1 + (i + 0.5) / 3, [x, y] = P(u * 14, -14.6 - 1.5 * (1 - u * u)); PX.ellipse(x, y, 2.7 * s + 0.9, 1.5 * s + 0.7, TAB.out, { rot: rot + u * 0.8 }); PX.ellipse(x, y, 2.7 * s, 1.5 * s, '#5aa652', { rot: rot + u * 0.8 }); }
     for (let i = 0; i < 7; i++) { const u = -1 + i / 3, [x, y] = P(u * 14, -14.6 - 1.5 * (1 - u * u)); gFlower(GP, x, y, 3.3 * s, GEARC.crown[i]); }
@@ -5871,6 +5899,8 @@ function gearSideMask(P, g) {
   if (C.trim) { O.curve([P(-4, -4.6), P(2.2, -4.9), P(7.6, -3.4)], C.trim, 0.7); O.curve([P(7.8, 0.8), P(2.4, 1.3), P(-4, 0.4)], C.trim, 0.7); }
 }
 function gearSideTop(P, g) {
+  if (g.ahoge) { const pts = [P(0.4, -7.4), P(1.8, -11.6), P(-0.4, -13.8), P(-2, -12.6)]; O.curve(pts, CM.ink, 2.4); O.curve(pts, TAB.fur, 1.3); }
+  if (g.band) { const [x, y] = P(-4.6, -4.4); O.blobO([[x - 2.4, y - 0.8], [x + 2.4, y - 0.8], [x + 2.4, y + 0.8], [x - 2.4, y + 0.8]], '#f2cfa2'); }
   if (g.bow >= 3) {
     for (let i = 0; i < 5; i++) { const a = -2.8 + i * 0.44, [x, y] = P(Math.cos(a) * 7.4, Math.sin(a) * 6.9 - 0.4); O.e(x, y, 2.2, 1.2, CM.ink, { rot: a + 1.57 }); O.e(x, y, 1.6, 0.8, '#5aa652', { rot: a + 1.57 }); }
     for (let i = 0; i < 5; i++) { const a = -2.6 + i * 0.4, [x, y] = P(Math.cos(a) * 7.6, Math.sin(a) * 7.1 - 0.6); gFlower(GO, x, y, 1.75, GEARC.crown[i + 1]); }
@@ -5928,6 +5958,7 @@ function gearSideBody(stage, B, rx, ry, g) {
     const [x, y] = B(-2.6, -ry - 1.2); gPack(GO, x, y, g.pack, 0.9);
   }
   if (g.wings) { const [x, y] = B(4.4, -ry * 0.8); gWing(GO, x, y, -1, 1, 0.35); }
+  if (g.plank) gPlank(GO, ...B(-6.4, -ry - 0.6), g.plank, 0.9);
   if (g.bag) {
     const C = GEARC.bag[g.bag], [x, y] = B(0.6, ry * 0.95);
     gStrap([B(-4.4, -ry * 0.95), B(-2.2, ry * 0.2), [x - 2.6, y - 3.6]], C.d);
@@ -5955,6 +5986,7 @@ function gearBackBody(stage, bob, g) {
     else if (g.bow) { const C = GEARC.bow[g.bow], k = C.s * 0.5, cx = 5, cy = hy - 7; for (const sd of [-1, 1]) O.eo(cx + sd * 2.6 * k, cy - 0.4 * k, 2.6 * k, 1.8 * k, C.c, { rot: sd * 0.35 }); O.eo(cx, cy, 1.1 * k, 1.1 * k, C.c); }
     if (g.flower) { const C = GEARC.flower[g.flower]; gFlower(GO, -6.4, hy - 6.2, 1.9 * C.s, C.c, C.ctr); }
     if (g.lamp) O.limb(-8.2, hy - 2.6, 8.2, hy - 2.6, 1.5, '#3a3a4a');
+    if (g.ahoge) { const pts = [[0.6, hy - 7.6], [1.8, hy - 11.8], [-0.4, hy - 13.6], [-1.8, hy - 12.4]]; O.curve(pts, CM.ink, 2.4); O.curve(pts, TAB.fur, 1.3); }
     return;
   }
   if (g.wings) for (const sd of [-1, 1]) gWing(GO, sd * 2.4, -13.2 + bob, sd, 1, 0);
@@ -5962,6 +5994,7 @@ function gearBackBody(stage, bob, g) {
   if (g.collar) O.limb(-5.8, -13.2 + bob, 5.8, -13.2 + bob, 1.8, collarCol(g));
   if (g.bag) { gStrap([[5.4, -15 + bob], [-0.6, -10.6 + bob], [-6.4, -7.4 + bob]], GEARC.bag[g.bag].d); gBag(GO, -8.6, -2.6 + bob, g.bag, 0.74); }
   if (g.pack) gPack(GO, 0, -9.8 + bob, g.pack, 0.95);
+  if (g.plank) gPlank(GO, 0, -14.6 + bob, g.plank, 0.95);
 }
 // 母雞蹲（正面）：'back' 身體之前；'over' 身體之後、頭之前
 function gearLoafBody(stage, g) {
@@ -6040,6 +6073,8 @@ function gearCuteHead(c, stage, pal) {
       ell(-10, -15, 2.4 * k + 1.6, 2.4 * k + 1.6, ink); ell(-10, -15, 2.4 * k, 2.4 * k, C.c);
     }
     if (g.bow >= 4) { const pts = [[-5, 0], [5, 0], [5.6, -5.2], [2.8, -2.6], [0, -6.8], [-2.8, -2.6], [-5.6, -5.2]].map(([a, b]) => [a * 1.3, -17.6 + b * 1.3]); c.lineJoin = 'round'; c.strokeStyle = ink; c.lineWidth = 3; c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.stroke(); poly(pts, '#ffd84d'); ell(0, -20.8, 1.4, 1.4, '#e8394d'); ell(0, -26.4, 1.2, 1.2, '#ff6d9a'); }
+    if (g.ahoge) { c.lineCap = 'round'; c.strokeStyle = ink; c.lineWidth = 5; c.beginPath(); c.moveTo(1, -14.5); c.quadraticCurveTo(5, -24, -1, -27); c.stroke(); c.strokeStyle = pal ? pal.fur : TAB.fur; c.lineWidth = 2.6; c.beginPath(); c.moveTo(1, -14.5); c.quadraticCurveTo(5, -24, -1, -27); c.stroke(); }
+    if (g.band) { c.save(); c.translate(9, -8.5); for (const r of [0.6, -0.6]) { c.save(); c.rotate(r); c.fillStyle = ink; c.fillRect(-5.4, -2.4, 10.8, 4.8); c.fillStyle = '#f2cfa2'; c.fillRect(-4.4, -1.4, 8.8, 2.8); c.restore(); } c.restore(); }
     if (g.lamp) { c.strokeStyle = ink; c.lineWidth = 4.6; c.beginPath(); c.moveTo(-16, -7); c.quadraticCurveTo(0, -17, 16, -7); c.stroke(); c.strokeStyle = '#3a3a4a'; c.lineWidth = 2.6; c.beginPath(); c.moveTo(-16, -7); c.quadraticCurveTo(0, -17, 16, -7); c.stroke(); ell(0, -12.4, 4.6, 4, ink); ell(0, -12.4, 3.4, 2.9, '#3a3a4a'); ell(0, -12.4, 2.4, 2, '#fff3a0'); }
     if (g.flower) { const C = GEARC.flower[g.flower]; flower(g.bow >= 3 ? 16 : 12.4, g.bow >= 3 ? -6 : -13, 3.8 * C.s, C.c); }
   }
@@ -6971,6 +7006,8 @@ function shopDecor3D(sc, F, st, store) {
   }
   expDecor3D(sc, F);
   gangDay3D(sc, F);
+  winDay3D(sc, F);
+  catCornerDay3D(sc, F);
 }
 
 // ================= 新的花：向日葵、繡球花、桔梗、康乃馨、滿天星、桂花、玉蘭花、牡丹 =================
@@ -7267,11 +7304,14 @@ const UPGRADES = [
   { id: 'bribe', name: '罐罐收買', group: '技能', max: 2, cost: [10, 22], lv: ['小柴要叫的時候丟一個罐罐，安靜 18 秒（背上藍色小背包）', '安靜 30 秒，野狗也收買得到（背包掛著小魚乾）'], base: '狗看到你就叫' },
   { id: 'owl', name: '夜貓子', group: '技能', max: 3, cost: [10, 26, 50], mon: [1, 1, 3], lv: ['每晚多 45 分鐘（尾巴綁上月亮吊飾）', '每晚多 90 分鐘（月亮旁邊多一顆星星）', '每晚多 135 分鐘（尾巴掛上會發光的小燈籠）'], base: '02:30 前回家' },
   { id: 'cute', name: '萌力', group: '技能', max: 4, cost: [8, 18, 36, 70], mon: [1, 1, 1, 3], lv: ['賣萌成功率 +12%（頭上小蝴蝶結）', '賣萌成功率 +24%（大蝴蝶結）', '賣萌成功率 +36%（花冠）', '賣萌成功率 +48%（花冠中間多一頂金色小皇冠）'], base: '賣萌靠天分' },
+  { id: 'tilt', name: '歪頭殺', group: '撒嬌', max: 1, cost: [22], mon: [2], lv: ['賣萌多一招「歪頭殺」：王太太最吃這套（頭頂長出一根呆毛）'], base: '賣萌只會三招' },
+  { id: 'dead', name: '裝死', group: '撒嬌', max: 1, cost: [35], mon: [3], lv: ['賣萌多一招「裝死」：林先生和管家會被嚇到（額頭貼一個 OK 繃）'], base: '還不會裝死' },
+  { id: 'roofway', name: '屋頂走廊', group: '技能', max: 2, cost: [45, 90], mon: [3, 4], lv: ['屋頂之間搭木板：花店↔林家、王家↔空屋、空屋↔阿伯家，在屋頂上按「過」就到另一家（背上多一捆小木板）', '再拉兩條電線：林家→王家、花店→王家，按「滑」一下就到；過橋也變快（換成登山繩和扣環）'], base: '要過去別家屋頂，得先下到地面' },
   { id: 'call', name: '喵喵廣播', group: '技能', max: 2, cost: [24, 48], mon: [3, 3], lv: ['多一個「喵！」按鈕：把叫聲丟到前方，附近的人會走過去看（每晚 3 次；脖子掛一個金色小喇叭）', '每晚 5 次、聲音傳得更遠（喇叭換成紅白大聲公）'], base: '只能撥倒東西把人引開' },
   { id: 'tunnel', name: '貓道', group: '技能', max: 1, cost: [80], mon: [4], lv: ['花店貓門和巷底之間挖一條秘密貓道，在洞口按「鑽」一下就到另一頭（戴上礦工頭燈）'], base: '每次都要走完整條巷子' },
   { id: 'jump', name: '跳高高', group: '技能', max: 1, cost: [20], lv: ['翻過大宅圍牆，偷溫室蝴蝶蘭（背上長出小翅膀）'], base: '大宅圍牆太高' },
   { id: 'orange', name: '橘貓夥伴', group: '夥伴', max: 3, cost: [15, 32, 60], lv: ['每晚跟你出門（體力 3），還自己帶回 NT$ 400（藍色領巾）', '體力 4，自己帶回 NT$ 900（加一個小背包）', '體力 5，自己帶回 NT$ 1,600（披上紅披風）'], base: '還沒有夥伴', need: 'orangeCat' },
-  { id: 'lucky', name: '招財貓', group: '花店', max: 3, cost: [12, 28, 55], lv: ['花的賣價 ×1.2（紅項圈小金鈴，櫃台多一隻招財貓）', '花的賣價 ×1.45（鈴鐺變大、招財貓抱金幣）', '花的賣價 ×1.75（金項圈，招財貓變金色）'], base: '賣價 ×1' },
+  { id: 'lucky', name: '招財貓', group: '花店', max: 3, cost: [12, 28, 55], lv: ['花的賣價 ×1.2，賣萌多一招「招財手」（紅項圈小金鈴，櫃台多一隻招財貓）', '花的賣價 ×1.45（鈴鐺變大、招財貓抱金幣）', '花的賣價 ×1.75（金項圈，招財貓變金色）'], base: '賣價 ×1' },
 ];
 // 花店升級：用美玲賺的現金（會跟房租搶錢，越早投資回本越多）
 const STORE_UPGRADES = [
@@ -7283,6 +7323,9 @@ const STORE_UPGRADES = [
   { id: 'expand', name: '花店擴建', max: 4, cost: [30000, 60000, 100000, 180000], mon: [2, 2, 3, 4],
     lv: ['咖啡角：店裡擺兩張小咖啡桌、櫃台多一台咖啡機；每位客人多買一杯咖啡 NT$ 80', '騎樓座位：門口擺上條紋陽傘和桌椅（晚上也看得到）；上門的客人變多', '花藝教室：後門搭起花拱門、開插花課；每天傍晚收學費', '旗艦店：水晶吊燈、門口紅地毯、金色燈；所有花的賣價 ×1.25'],
     base: '小小一間，只賣花', reveal: ['咖啡機到了！花香配咖啡香，好像在國外的小店。', '陽傘撐起來了！路過的人都會想坐一下。', '花拱門好美……花藝教室，開課囉！', '水晶燈亮起來了……這是我們的店嗎？'] },
+  { id: 'catcorner', name: '貓咪店長區', max: 3, cost: [20000, 45000, 80000], mon: [3, 3, 4],
+    lv: ['角落擺一座貓跳台：花喵幫的小弟可以留在店裡上班（出門前選「店裡上班」），每隻每天招來 NT$ 400', '加上貓吊床和逗貓棒：每隻每天 NT$ 800', '蓋一間貓咪小屋：每隻每天 NT$ 1,200，客人專程來看貓'],
+    base: '貓咪們沒地方待', reveal: ['貓跳台組好了！小弟們一定會搶著上去。', '吊床晃呀晃……客人都在拍照。', '貓咪小屋！這間店快變成貓咖啡了。'] },
 ];
 const LIGHTS_MULT = [1, 1.5, 2];
 const DECOR_MULT = [1, 1.15, 1.3, 1.5];
@@ -7295,7 +7338,7 @@ function flowerValue(run, t, fresh) {
   const cold = s.fridge && DELICATE.includes(t) ? 1.5 : 1;
   // 佈置第 2 級起：掉了花瓣的殘花做成乾燥花，最少也有七成價
   const fr = s.fridge ? 1 : (s.decor || 0) >= 2 ? Math.max(0.7, fresh) : fresh;
-  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t) * EXP_PRICE_MULT[s.expand || 0] * (run.flags && run.flags.oldShears ? 1.1 : 1);
+  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t) * EXP_PRICE_MULT[s.expand || 0] * (run.flags && run.flags.oldShears ? 1.1 : 1) * winMult(run, t);
 }
 const ORANGE_INCOME = [0, 400, 900, 1600];
 const LUCKY_MULT = [1, 1.2, 1.45, 1.75];
@@ -7854,6 +7897,7 @@ class NightScene {
     this.hasOrange = this.abil.has('orange') || (this.run.upg.orange || 0) > 0;
     this.oranges = this.hasOrange ? orangeEnergy(this.run) : 0;
     this.initCatSkills();
+    this.initRoofway();
     this.visMult = this.event === 'rain' || this.event === 'outage' ? 0.85 : 1;
     this.top = topGrid(this.map); this.topBlocked = new Set();
     for (const [tx, ty] of ROOF_TOWERS) this.topBlocked.add(tx + ',' + ty);
@@ -8098,6 +8142,7 @@ class NightScene {
     this.time += dt * MIN_PER_SEC * this.timeScale;
     this.schedules();
     if (this.time >= this.end) { this.finish(true); return; }
+    this.updatePigeons(dt);
 
     const sub = this.timeScale > 1 ? 3 : 1;
     const sdt = dt * this.timeScale / sub;
@@ -8335,6 +8380,7 @@ class NightScene {
       const d = dist(cx, cy, p.x, p.y - 6);
       if (d < bd) { bd = d; best = { kind: 'pot', ref: p }; }
     }
+    if (c.top) { const bt = this.bridgeTarget(cx, cy); if (bt && (!best || bt.d < 9)) best = bt; }
     if (!best && this.abil.has('climb') && !c.jump) best = c.top ? this.dropSpot() : this.climbSpot();
     if (!best && !c.top) {
       bd = 17;
@@ -8356,6 +8402,7 @@ class NightScene {
       else if (best.kind === 'drop') label = '跳下';
       else if (best.kind === 'home') label = '收工';
       else if (best.kind === 'tunnel') label = '鑽';
+      else if (best.kind === 'bridge') label = best.b.kind === 'wire' ? '滑' : '過';
       if (best.kind === 'climb' && !this.tips.climb) { this.tips.climb = 1; UI.toast('按「爬」從鐵窗、柵欄爬上去！屋頂上地面的人看不到你', 3200); }
       if (best.kind === 'knock' && !this.tips.knock) { this.tips.knock = 1; UI.toast('按「撥」把它弄倒，聲音能把人引過去'); }
     }
@@ -8437,6 +8484,8 @@ class NightScene {
     } else if (tg.kind === 'drop') {
       c.jump = { x0: c.x, y0: c.y, x1: tg.x, y1: tg.y, t: 0, dur: 0.42, h0: c.h, h1: 0, top: false, hopPx: 6 };
       SFX.play('jump');
+    } else if (tg.kind === 'bridge') {
+      this.crossBridge(tg);
     } else if (tg.kind === 'tunnel') {
       this.useTunnel(tg.i);
     } else if (tg.kind === 'home') {
@@ -8517,7 +8566,7 @@ class NightScene {
     Cam.zoom = 2;
     const info = CUTE[v.cuteKey];
     const known = info.intel ? !!this.run.intel[info.intel] : true;
-    const opts = CUTE_MOVES.map(m => ({ id: m.id, name: m.name, key: m.key, p: this.cuteChance(v.cuteKey, m.id) }));
+    const opts = cuteMovesFor(this).map(m => ({ id: m.id, name: m.name, key: m.key, how: m.how || CUTE_HOW[m.id], p: this.cuteChance(v.cuteKey, m.id) }));
     UI.cuteChoice(info.name, opts, known, this.run.immune[v.cuteKey] || 0, id => this.resolveCute(id), this.cuteCombo, assist);
   }
   tempActor(key) {
@@ -8527,7 +8576,7 @@ class NightScene {
   }
   cuteChance(key, move) {
     const info = CUTE[key];
-    return clamp(info.base[move] + 0.12 * this.run.upg.cute - 0.22 * (this.run.immune[key] || 0) + (this.event === 'bbq' ? 0.15 : 0), 0.05, 0.95);
+    return clamp(cuteBase(info, key, move) + 0.12 * this.run.upg.cute - 0.22 * (this.run.immune[key] || 0) + (this.event === 'bbq' ? 0.15 : 0), 0.05, 0.95);
   }
   // 選了招式：開始賣萌小遊戲（要操作，做得好才成功）
   resolveCute(move) {
@@ -8535,11 +8584,12 @@ class NightScene {
     const p = this.cuteChance(cu.key, move);
     cu.move = move; cu.phase = 'game'; cu.t = 0; cu.ok = null;
     const c = this.cat;
+    if (move === 'gift') { this.giftCute(p); return; }
     const game = this.cutin = new CuteGame(move, cu.key, cu.actor.key || cu.key, p, { assist: cu.assist });
     Input.stick = null; Input.showStick(false);
     Input.game = (type, a) => game.input(type, a);
-    if (move === 'belly') { c.pose = 'belly'; }
-    else if (move === 'meow') { c.pose = 'meow'; }
+    if (move === 'belly' || move === 'dead') { c.pose = 'belly'; }
+    else if (move === 'meow' || move === 'tilt' || move === 'maneki') { c.pose = 'meow'; }
     else { c.pose = 'rub'; c.wiggle = 1; cu.rubFrom = [c.x, c.y]; }
   }
   updateCute(dt) {
@@ -8586,7 +8636,7 @@ class NightScene {
       }
     }
     if (game && game.done) this.endCute();
-    else if (!game && cu.t > 6) this.endCute();
+    else if (!game && cu.t > (cu.gift ? 2.4 : 6)) this.endCute();
   }
   endCute() {
     const cu = this.cute, c = this.cat, v = cu.v, a = cu.actor;
@@ -9966,7 +10016,7 @@ class DayScene {
       this.shopT -= dt;
       if (this.shopT <= 0) {
         const max = this.rush ? 4 : 3;
-        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * (this.run.flags && this.run.flags.famous ? 0.65 : 1) * ((st.expand || 0) >= 2 ? 0.7 : 1) * ((this.run.flags && this.run.flags.buzz || 0) > (this.run.nightIdx || 0) ? 0.7 : 1) * rnd(0.8, 1.2);
+        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * (this.run.flags && this.run.flags.famous ? 0.65 : 1) * ((st.expand || 0) >= 2 ? 0.7 : 1) * ((this.run.flags && this.run.flags.buzz || 0) > (this.run.nightIdx || 0) ? 0.7 : 1) * (this.run.flags && this.run.flags.anVip ? 0.85 : 1) * rnd(0.8, 1.2);
         else this.shopT = 1;
       }
     }
@@ -10091,7 +10141,7 @@ class DayScene {
   }
   // ---- 花店升級：鏡頭帶過去看 ----
   reveal(id, lv, cb) {
-    const spot = { lights: [7.5, 5.2], fridge: [12.6, 9.9], neon: [5.5, 4.4], scooter: [11.2, 17.6], decor: [[5.4, 9.6], [3.4, 6.2], [3.2, 12.4]][lv - 1], expand: [[11.6, 12.4], [11.2, 16.6], [6.5, 5.6], [7.6, 10.2]][lv - 1] }[id] || [7.5, 9];
+    const spot = { lights: [7.5, 5.2], fridge: [12.6, 9.9], neon: [5.5, 4.4], scooter: [11.2, 17.6], decor: [[5.4, 9.6], [3.4, 6.2], [3.2, 12.4]][lv - 1], catcorner: [13.0, 6.6], expand: [[11.6, 12.4], [11.2, 16.6], [6.5, 5.6], [7.6, 10.2]][lv - 1] }[id] || [7.5, 9];
     const u = STORE_UPGRADES.find(x => x.id === id);
     this.focus = { x: spot[0], z: spot[1], t: 0, dur: 3.0, cb, id, lv };
     if (id === 'decor' || id === 'expand') { this.layoutDisplays(); this.cat.unstick(this); }
@@ -10808,7 +10858,10 @@ function* roseScript(S) {
 }
 
 function* endingScript(S) {
-  const run = S.run, due = rentDue(run), ok = run.money >= due;
+  const run = S.run;
+  const cf = commissionFail(run);
+  if (cf) { yield S.say(`「${cf.who}」的花沒湊齊……${cf.client}很失望，說下次不會再找我們了。`); UI.hideDialog(); }
+  const due = rentDue(run), ok = run.money >= due;
   yield S.say('今天要繳房租了……我來算算這個月賺了多少。');
   yield S.say('總共是…… ' + money(run.money) + '！');
   if (ok) {
@@ -10879,6 +10932,7 @@ function* monthDayScript(S, n) {
   if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
+  yield* commissionScript(S, n);
   const k = 1 + (Math.random() < 0.5 ? 1 : 0);
   for (let i = 0; i < k; i++) {
     const o = genOrder(run, n), cu = S.customer(pick(['cust1', 'cust2', 'shopA', 'shopC', 'shopE', 'shopF']));
@@ -10888,13 +10942,14 @@ function* monthDayScript(S, n) {
     yield wait(0.6);
     yield S.walkOut(cu);
   }
+  yield* regularScript(S, n);
   if (n === 4) { const left = Math.max(0, rentDue(run) - run.money); yield S.say(left > 0 ? `這個月還差 ${money(left)}……還有最後一晚。` : '房租夠了！可是多存一點總是好的。'); UI.hideDialog(); }
   if (S.stock.some(f => S.canSell(f)) || S.bouquets.length || storeOf(run).neon) { let w = 0; yield { update: dt => { if (!UI.modalOpen) w += dt; return w > 10 || (!S.stock.length && !S.bouquets.length && !storeOf(run).neon && !S.shoppers.length); } }; }
   yield* S.closeShop();
   S.tint = 'evening';
   UI.banner('傍晚');
   yield wait(0.8);
-  const tuition = classIncome(run);
+  const tuition = classIncome(run) + regularDaily(run) + catCornerIncome(run);
   if (tuition) { run.money += tuition; S.daySales += tuition; UI.toast(`花藝教室的學費 +${money(tuition)}`, 2400); SFX.play('coin'); }
   yield S.say(S.daySales > 0 ? `今天賣了 ${money(S.daySales)}！花喵，賞你罐罐。` : '今天沒什麼生意……花喵，罐罐還是給你。');
   UI.hideDialog();
@@ -11102,9 +11157,8 @@ const UI = {
   cuteChoice(name, opts, known, immune, cb, combo = 0, assist = false) {
     const hearts = p => p >= 0.7 ? '♥♥♥' : p >= 0.45 ? '♥♥' : '♥';
     // 每一招有三種玩法，被抓到時隨機抽一種
-    const how = { meow: '節奏・聲音・眼神', belly: '時機・連打・撲光點', rub: '貼貼・討摸・毛線球' };
     this.sheetEl.innerHTML = `<div class="sheet-head"><b>被${esc(name)}發現了！</b><span>${combo ? `萌連擊 ×${combo} 中` : '快賣萌'}</span></div>
-      <div class="cute-row">${opts.map(o => `<button type="button" class="cute-btn" data-id="${o.id}"><span class="cn">${o.name}</span><span class="ch ${known ? '' : 'unk'}">${known ? hearts(o.p) : '？'}</span><span class="how">${how[o.id] || ''}</span><kbd>${o.key}</kbd></button>`).join('')}</div>
+      <div class="cute-row">${opts.map(o => `<button type="button" class="cute-btn" data-id="${o.id}"><span class="cn">${o.name}</span><span class="ch ${known ? '' : 'unk'}">${known ? hearts(o.p) : '？'}</span><span class="how">${esc(o.how || '')}</span><kbd>${o.key}</kbd></button>`).join('')}</div>
       <p class="sheet-note">${known ? '白天偷聽過' + esc(name) + '的喜好：♥ 越多越好做' : '沒聽過' + esc(name) + '的喜好，只能用猜的'}${immune ? `。同一個人萌越多次越難（已萌 ${immune} 次）` : ''}${assist ? '<br><b class="oc-note">橘貓在旁邊：失敗時牠會救場，再玩一次</b>' : ''}</p>`;
     this.sheetEl.hidden = false;
     this.setAction(null); this.setWait(false, false); this.setSkills([]);
@@ -11196,7 +11250,7 @@ const UI = {
       ${items.length ? `<h3>今天店裡要賣的花</h3><ul class="tally">${rows}</ul>` : (R.deposited.length ? '' : '<p class="lead">店裡今天又是空的……</p>')}
       ${mults.length ? `<p class="mults">${mults.map(esc).join('<span>・</span>')}</p>` : ''}
       ${orders ? `<h3>訂單${st.scooter ? '<small>外送機車：獎勵 ×2</small>' : ''}</h3><ul class="tally">${orders}</ul>` : ''}
-      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${gangTallyHTML(R)}${nmTallyHTML(R)}${gardenHtml}${masterHtml}${heatHtml}
+      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${commissionTallyHTML(R)}${gangTallyHTML(R)}${nmTallyHTML(R)}${gardenHtml}${masterHtml}${heatHtml}
       <div class="total"><span>現在入帳</span><b class="px" id="tally-total">0</b></div>
       ${R.stockValue + gv > 0 ? `<div class="total sub"><span>白天客人上門買花</span><b class="px">≈ ${N(R.stockValue + gv)}</b></div>` : ''}
       ${growth}
@@ -11243,7 +11297,7 @@ const UI = {
         body = `<p class="lead">「先投資店面，之後每天都多賺一點……可是房租也要留著。」</p>
           <p class="hint">還剩 <b>${nightsLeft}</b> 晚。越早裝回本越多；買下去馬上會看到店裡變樣。</p>
           ${this.rentBar(run)}
-          <ul class="ups">${rows}</ul>`;
+          <ul class="ups">${rows}</ul>${windowHTML(run)}`;
       } else if (tab === 'garden') {
         body = gardenTabHTML(run, pickIdx);
       } else if (tab === 'nm') {
@@ -11281,6 +11335,10 @@ const UI = {
       const keep = () => { const sc = this.cardEl.scrollTop; render(); this.cardEl.scrollTop = sc; };
       this.cardEl.querySelectorAll('canvas.garden-art').forEach(cv => drawGardenArt(cv, run));
       drawGangFaces(this.cardEl);
+      this.cardEl.querySelectorAll('[data-win]').forEach(b => b.addEventListener('click', () => {
+        if (setWindow(run, b.dataset.win)) { SFX.play('buy'); this.toast(`櫥窗換成「${winTheme(run).name}」！主題花 ×${WINDOW_MULT}`, 2600); }
+        keep();
+      }));
       this.cardEl.querySelectorAll('canvas.nm-art').forEach(cv => drawNmArt(cv, run));
       this.cardEl.querySelectorAll('[data-nm="up"]').forEach(b => b.addEventListener('click', () => {
         const N = nmOf(run), nx = NM_LV[N.lv]; if (!nx || run.money < nx.cost || (run.month || 1) < nx.mon) return;
@@ -11374,7 +11432,7 @@ const UI = {
     const xeHtml = XE ? `<div class="event ev-x"><b>還有：${esc(XE.name)}${XE.when ? `<small>大約 ${fmtTime(xe.t0)}</small>` : ''}</b><span>${esc(XE.desc)}</span></div>` : '';
     const html = `<p class="eyebrow">${monthPre(run)}22:30 – ${fmtTime(end)}</p><h2>第${NUM[n]}晚</h2>
       <div class="event ev-${rules.event}"><b>${esc(ev.name)}</b><span>${esc(ev.desc)}</span></div>${xeHtml}
-      ${abHtml}${gangBriefHTML(run)}${masterHtml}${reactHtml}${ordHtml}
+      ${abHtml}${commissionBriefHTML(run)}${gangBriefHTML(run)}${masterHtml}${reactHtml}${ordHtml}
       ${news ? `<ul class="news">${news}</ul>` : ''}
       ${m <= 1 ? `<h3>${n === 1 ? '白天聽到的情報' : '今天聽到的情報'}</h3>
       ${intel || '<p class="lead">什麼都沒聽到……今晚只能見機行事。</p>'}` : (known.length ? `<details class="old"><summary>之前聽到的情報 ${known.length} 則</summary><ul class="intel">${li(known)}</ul></details>` : '')}
@@ -11435,11 +11493,11 @@ const UI = {
 function newRun() {
   return {
     money: 0, cans: 0,
-    upg: { mouth: 0, gentle: 0, paws: 0, owl: 0, cute: 0, jump: 0, orange: 0, lucky: 0, catwalk: 0, nightvis: 0, sniff: 0, bribe: 0, call: 0, tunnel: 0 },
+    upg: { mouth: 0, gentle: 0, paws: 0, owl: 0, cute: 0, jump: 0, orange: 0, lucky: 0, catwalk: 0, nightvis: 0, sniff: 0, bribe: 0, call: 0, tunnel: 0, tilt: 0, dead: 0, roofway: 0 },
     store: { lights: 0, fridge: 0, neon: 0, scooter: 0, decor: 0 },
     intel: {}, immune: {}, flags: {},
     stats: { caught: 0, cuteWin: 0, cuteFail: 0, petals: 0, stolen: 0 },
-    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} }, bond: {}, storyCh: {},
+    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} }, bond: {}, storyCh: {}, regulars: {}, comm: null,
     month: 1, debt: 0, graceUsed: false, heat: {}, familiar: {}, nightIdx: 0, plan: {}, rentPaid: [],
     lastNight: null, rosePending: false, roseDone: false, night: 0,
     stock: [], orders: {}, regrow: {}, react: {},
@@ -11521,13 +11579,14 @@ const Flow = {
     });
     const left = Object.assign({}, used), stock = [], orderSold = [];
     for (const f of dep) { if (left[f.t] > 0) { left[f.t]--; orderSold.push(f); } else stock.push({ t: f.t, fresh: f.fresh, owner: f.owner }); }
-    // 夜市花攤：天亮前把一部分的花帶去夜市賣掉
+    // 大型委託：先把要的花留下來；夜市花攤：再把一部分的花帶去夜市賣掉
+    const commRes = commissionTake(run, stock);
     const nmRes = nmSell(run, stock);
     const ordersBonus = oRes.reduce((s, r) => s + r.bonus, 0);
     const orderSales = orderSold.reduce((s, f) => s + flowerValue(run, f.t, f.fresh), 0);
     const stockValue = stock.reduce((s, f) => s + flowerValue(run, f.t, f.fresh), 0);
     const orange = ORANGE_INCOME[run.upg.orange] * LUCKY_MULT[run.upg.lucky];
-    const now = Math.round(ordersBonus + orderSales + orange + (nmRes ? nmRes.v : 0));
+    const now = Math.round(ordersBonus + orderSales + orange + (nmRes ? nmRes.v : 0) + (commRes ? commRes.paid : 0));
     // 頂樓花園：收成直接進店裡；粉絲在門口放的花；順便叼回的插枝
     const cuts = collectCuttings(run, dep);
     const hv = gardenTick(run), gifts = fanGifts(run);
@@ -11544,7 +11603,7 @@ const Flow = {
     for (const f of dep) if (f.idx !== undefined) run.regrow[f.idx] = run.nightIdx || n;
     const heat = settleNight(run, dep, res);
     const newReact = heat.changes.filter(c => c.to >= 2 && c.from < 2 && REACTIONS[c.o]).map(c => c.o);
-    run.lastNight = { n, deposited: dep, stock: stock.slice(), stockValue, oRes, ordersBonus, orderSales, orange, now, total, cans, lucky: LUCKY_MULT[run.upg.lucky], lights: LIGHTS_MULT[st.lights || 0], decor: DECOR_MULT[st.decor || 0], lost: res.lost, tanhua: res.tanhua, rosePetals: res.rosePetals, newReact, heat, cuteCans: (res.stats && res.stats.cuteCans) || 0, garden: hv, gifts, gardenValue, cuts, gang: gangRes.report, nm: nmRes };
+    run.lastNight = { n, deposited: dep, stock: stock.slice(), stockValue, oRes, ordersBonus, orderSales, orange, now, total, cans, lucky: LUCKY_MULT[run.upg.lucky], lights: LIGHTS_MULT[st.lights || 0], decor: DECOR_MULT[st.decor || 0], lost: res.lost, tanhua: res.tanhua, rosePetals: res.rosePetals, newReact, heat, cuteCans: (res.stats && res.stats.cuteCans) || 0, garden: hv, gifts, gardenValue, cuts, gang: gangRes.report, nm: nmRes, comm: commRes };
     if (stock.some(f => f.t === 'rose' && f.owner === 'wang') && !run.roseDone) run.rosePending = true;
     setTimeout(() => UI.fade(() => setScene(new DayScene(n + 1))), res.timeUp ? 900 : 200);
     if (res.timeUp) UI.toast(res.lost ? '天亮了！嘴裡的花來不及帶回家……' : '天快亮了，回家睡覺', 2400);
@@ -12992,7 +13051,7 @@ const GANG_TARGETS = ['public', 'empty', 'lin', 'wang', 'bo', 'mansion'];
 function gangOf(run) { return run.gang || (run.gang = {}); }
 function gangMembers(run) { const g = gangOf(run); return GANG.filter(m => g[m.id]); }
 function gangOpen(run) { return !!(run.flags && run.flags.gangIntro); }
-function gangTargetOk(run, o) { return o !== 'mansion' || !!run.upg.jump; }
+function gangTargetOk(run, o) { return o === 'shop' ? catCornerLv(run) >= 1 : (o !== 'mansion' || !!run.upg.jump); }
 function gangDefaultTarget(run) {
   const ok = GANG_TARGETS.filter(o => gangTargetOk(run, o));
   return ok.sort((a, b) => (heatOf(run, a) || 0) - (heatOf(run, b) || 0))[0];
@@ -13005,7 +13064,7 @@ function recruitGang(run, id) {
 }
 function cycleGangTarget(run, id) {
   const st = gangOf(run)[id]; if (!st || st.caught) return;
-  const ok = GANG_TARGETS.filter(o => gangTargetOk(run, o));
+  const ok = GANG_TARGETS.concat(['shop']).filter(o => gangTargetOk(run, o));
   st.target = ok[(ok.indexOf(st.target) + 1) % ok.length];
 }
 // 天亮：各自帶花回來（回傳 { flowers, report }）
@@ -13016,6 +13075,7 @@ function gangNight(run, n) {
     const st = gangOf(run)[m.id];
     if (st.caught) continue;
     const o = st.target || gangDefaultTarget(run);
+    if (o === 'shop') continue;   // 在店裡上班
     const types = NIGHT_POTS.filter(p => p.owner === o && p.t !== 'lily').map(p => p.t);
     if (!types.length) continue;
     // 戒備森嚴的人家可能被抓（小黑不會）
@@ -13092,7 +13152,7 @@ function gangDay3D(sc, F) {
   const ms = gangMembers(sc.run); if (!ms.length) return;
   const t = sc.cat.t || 0;
   ms.forEach((m, i) => {
-    const st = gangOf(sc.run)[m.id]; if (st.caught) return;
+    const st = gangOf(sc.run)[m.id]; if (st.caught || (st.target === 'shop' && catCornerLv(sc.run))) return;
     const [x, z] = GANG_SPOTS[i], ph = Math.floor((t + i * 1.7) / 2.6) % 5;
     const act = ['none', 'blink', 'none', 'ear', 'yawn'][ph];
     pushSprite(F.sprites, gangLoaf(m, 1, act), x * TS, z * TS, { minLight: [0.6, 0.56, 0.55] });
@@ -13127,7 +13187,9 @@ function gangBriefHTML(run) {
   const rows = ms.map(m => {
     const st = gangOf(run)[m.id];
     if (st.caught) return `<li class="gang-row"><b>${m.name}</b><span class="gang-t off">被${OWNERS[st.caught].person}抓走了，明天會帶回來</span></li>`;
-    const o = st.target, stars = starsOf(run, o);
+    const o = st.target;
+    if (o === 'shop') return `<li class="gang-row"><b>${m.name}</b><button type="button" class="gang-t" data-gangt="${m.id}">店裡上班</button><em class="ok">招客人</em></li>`;
+    const stars = starsOf(run, o);
     return `<li class="gang-row"><b>${m.name}</b><button type="button" class="gang-t" data-gangt="${m.id}">${OWNERS[o].name} <span class="stars">${starStr(stars)}</span></button>${stars >= 2 && m.perk !== 'stealth' ? '<em>有被抓的危險</em>' : ''}</li>`;
   }).join('');
   return `<h3>花喵幫今晚去哪？<small>點一下換地方</small></h3><ul class="gang-list">${rows}</ul>`;
@@ -13372,6 +13434,293 @@ function storyProgress(run) {
   return Object.keys(STORY_CHAPTERS).map(o => ({ o, person: OWNERS[o].person, done: D[o] || 0, bond: B[o] || 0, next: BOND_NEED[D[o] || 0], titles: STORY_CHAPTERS[o].map(c => c.title) }));
 }
 
+// ================= 屋頂走廊（老貓攤「屋頂走廊」）=================
+// 屋頂之間搭木板（第二級多一條電線），花喵在屋頂上就能從一家走到另一家，不用下地面。
+// 但屋頂上有鴿子：跑太快會把牠們嚇飛，翅膀拍得很大聲（附近的人會過來看）。
+const ROOF_BRIDGES = [
+  { id: 'shop-lin', a: [12.5, 4.55], b: [12.5, 8.45], lv: 1, kind: 'plank' },
+  { id: 'wang-empty', a: [4.6, 21.55], b: [4.6, 28.45], lv: 1, kind: 'plank' },
+  { id: 'empty-bo', a: [5.55, 30.0], b: [9.45, 30.0], lv: 1, kind: 'plank' },
+  { id: 'lin-wang', a: [9.45, 11.2], b: [5.55, 20.8], lv: 2, kind: 'wire' },
+  { id: 'shop-wang', a: [2.5, 4.55], b: [2.5, 18.45], lv: 2, kind: 'wire' },
+];
+const PIGEON_SPOTS = [[4.5, 2.4], [10.5, 9.6], [2.5, 19.6], [4.6, 29.4], [11.6, 30.4], [8.6, 2.0]];
+function roofLv(run) { return run.upg.roofway || 0; }
+NightScene.prototype.initRoofway = function () {
+  const lv = roofLv(this.run);
+  this.bridges = ROOF_BRIDGES.filter(b => b.lv <= lv);
+  this.pigeons = lv ? PIGEON_SPOTS.filter(() => Math.random() < 0.75).map(([x, y]) => ({ x: x * TS, y: y * TS, state: 'sit', t: Math.random() * 3, fly: 0, vx: 0, vy: 0 })) : [];
+};
+// 在屋頂上、靠近橋頭：可以「過」
+NightScene.prototype.bridgeTarget = function (cx, cy) {
+  const c = this.cat; if (!c.top || c.jump || !this.bridges || !this.bridges.length) return null;
+  for (const b of this.bridges) for (const end of ['a', 'b']) {
+    const [x, y] = b[end];
+    const d = dist(cx, cy, x * TS, y * TS);
+    if (d < 15) { const o = end === 'a' ? b.b : b.a; return { kind: 'bridge', d, b, to: o, ref: { x: x * TS, y: y * TS - 2, h: this.topH(x * TS, y * TS) } }; }
+  }
+  return null;
+};
+NightScene.prototype.crossBridge = function (tg) {
+  const c = this.cat, [x, y] = tg.to, X = x * TS, Y = y * TS + 2;
+  const len = Math.hypot(X - c.x, Y - c.y) / TS, wire = tg.b.kind === 'wire';
+  const fast = roofLv(this.run) >= 2;
+  c.box = null;
+  c.jump = { x0: c.x, y0: c.y, x1: X, y1: Y, t: 0, dur: (wire ? 0.18 + len * 0.045 : 0.22 + len * 0.07) * (fast ? 0.8 : 1), h0: c.h, h1: this.topH(X, Y - 2) || c.h, top: true, hopPx: wire ? 3 : 5 };
+  c.dir = Math.abs(X - c.x) > Math.abs(Y - c.y) ? (X > c.x ? 'right' : 'left') : (Y > c.y ? 'down' : 'up');
+  SFX.play(wire ? 'jump' : 'step'); if (!wire) setTimeout(() => SFX.play('step'), 120);
+  this.fx.text(c.x, c.y - 14, wire ? '咻——' : '躂躂躂', '#ffe2ea');
+  this.stats.bridges = (this.stats.bridges || 0) + 1;
+  if (!this.tips.bridge) { this.tips.bridge = 1; UI.toast('從屋頂直接過去了！屋頂上地面的人看不到你，但小心別嚇到鴿子', 3400); }
+};
+// 鴿子：跑步靠近就飛走、發出聲音
+NightScene.prototype.updatePigeons = function (dt) {
+  if (!this.pigeons) return;
+  const c = this.cat;
+  for (const p of this.pigeons) {
+    p.t += dt;
+    if (p.state === 'sit') {
+      const d = dist(c.x, c.y, p.x, p.y);
+      if (c.top && d < (c.running ? 2.6 : 1.1) * TS) {
+        p.state = 'fly'; p.fly = 0; const a = Math.atan2(p.y - c.y, p.x - c.x); p.vx = Math.cos(a) * 40; p.vy = Math.sin(a) * 24;
+        SFX.play('knock');
+        this.noise(p.x, p.y, (c.running ? 6 : 4) * TS, 'obj');
+        this.fx.text(p.x, p.y - 14, '啪啪啪！', '#e8e8f0');
+        if (!this.tips.pigeon) { this.tips.pigeon = 1; UI.toast('鴿子被嚇飛了！屋頂上用走的就不會驚動牠們', 3000); }
+      }
+    } else if (p.state === 'fly') {
+      p.fly += dt; p.x += p.vx * dt; p.y += p.vy * dt;
+      if (p.fly > 2.2) p.state = 'gone';
+    }
+  }
+};
+// ---------- 圖 ----------
+function drawPigeon(f) {
+  const flap = f % 2;
+  O.eo(0, -5, 5.2, 3.6, '#9aa0b0');
+  O.eo(4.6, -8, 2.6, 2.4, '#8a90a2');
+  O.e(5.6, -8.4, 0.6, 0.6, '#ffb84a'); O.e(5.8, -8.5, 0.3, 0.3, CM.ink);
+  O.p([[7, -8], [8.6, -7.6], [7, -7.2]], '#e8a040');
+  O.e(3.6, -6.4, 1.6, 1, '#6aa08a');
+  if (flap) { O.blobO([[-2, -6], [-8, -14], [-1, -9]], '#b8bec8'); O.blobO([[0, -6], [5, -15], [2, -8]], '#c8cdd6'); }
+  else O.blobO([[-4, -5], [2, -7], [1, -3]], '#7a8092');
+  O.limb(-1, -1.6, -1, 0, 0.8, '#e8a040', { noOutline: true }); O.limb(1.4, -1.6, 1.4, 0, 0.8, '#e8a040', { noOutline: true });
+}
+function toonPigeon(f) { return toonFrameInfo(toonFrame('pigeon-' + f, 22, 18, () => drawPigeon(f)), false, 0.5, 0.75); }
+function roofwayRender3D(sc, F, st) {
+  const lv = roofLv(sc.run);
+  if ((st.roofwayLv || 0) !== lv) {
+    st.roofwayLv = lv; st.roofway = [];
+    if (lv) {
+      const m = new MeshBuilder(), W = TEX.wood, Wr = TEX.pole || TEX.wood;
+      const hAt = (x, z) => { const t = sc.topAt(Math.floor(x), Math.floor(z)); return (t ? t.h : 2.3) + 0.02; };
+      for (const b of ROOF_BRIDGES.filter(q => q.lv <= lv)) {
+        const [x0, z0] = b.a, [x1, z1] = b.b, h0 = hAt(x0, z0 - 0.05), h1 = hAt(x1, z1 + 0.05);
+        const dx = x1 - x0, dz = z1 - z0, l = Math.hypot(dx, dz), nx = -dz / l, nz = dx / l, w = b.kind === 'wire' ? 0.04 : 0.24;
+        const img = b.kind === 'wire' ? Wr : W;
+        m.quad(img, [x0 - nx * w, h0, z0 - nz * w], [x1 - nx * w, h1, z1 - nz * w], [x1 + nx * w, h1, z1 + nz * w], [x0 + nx * w, h0, z0 + nz * w], [0, 1, 0]);
+        if (b.kind === 'plank') m.quad(img, [x0 + nx * w, h0, z0 + nz * w], [x1 + nx * w, h1, z1 + nz * w], [x1 + nx * w, h1 - 0.06, z1 + nz * w], [x0 + nx * w, h0 - 0.06, z0 + nz * w], [0, 0, 1]);
+      }
+      st.roofway = m.build();
+    }
+  }
+  for (const p of st.roofway || []) F.lit.push({ mesh: p.mesh, img: p.img, o: { alphaTest: 0.3 } });
+  const cp = Math.cos(R3.pitch);
+  for (const p of sc.pigeons || []) {
+    if (p.state === 'gone') continue;
+    const h = sc.topH(p.x, p.y - 2) + (p.state === 'fly' ? p.fly * 1.4 : 0);
+    const f = p.state === 'fly' ? Math.floor(p.fly * 10) % 2 : (Math.floor(p.t * 0.7) % 7 === 0 ? 1 : 0);
+    pushSprite(F.sprites, ART.fix(toonPigeon(f)), p.x, p.y, { lift: h * cp, flip: p.vx < 0, minLight: [0.45, 0.45, 0.5] });
+    if (p.state === 'sit') shadowAt(F, p.x, p.y, 0.35, 0.14, 1, h);
+  }
+}
+
+// ================= 熟客與大型委託（第二個月起）=================
+// 熟客：有名字、有固定想買的花。店裡剛好有，他們會多給一點，來越多次越熟；熟到 VIP 會說出自己的故事、給好處。
+// 大型委託：每個月月初接一張大單（婚禮、開幕、告別式、畢業典禮），要在月底前湊齊好幾種花，獎金很高。
+const REGULARS = [
+  { id: 'chen', name: '陳爺爺', key: 'shopD', want: 'rose', n: 1, ask: '一枝紅玫瑰。給我太太的。', thanks: '她會喜歡的。', vip: ['我太太走了三年了。', '她以前最愛紅玫瑰，每個禮拜我都買一枝放在她照片旁邊。', '謝謝妳一直留著最漂亮的那枝。這個給花喵。'], perk: run => { run.cans += 20; return '陳爺爺塞了 20 個罐罐給花喵'; } },
+  { id: 'amy', name: '婚顧 Amy', key: 'shopA', want: 'lisianthus', n: 2, ask: '桔梗兩枝，我拿去給新娘看樣。', thanks: '顏色剛好！', vip: ['妳的花是我合作過最穩的。', '以後我接的婚禮，捧花都找妳做。', '先付妳一筆訂金，下個月的委託獎金也會多一點。'], perk: run => { run.money += 3000; run.flags.amyVip = 1; return '收到 NT$ 3,000 訂金；之後的大型委託獎金 ×1.3'; } },
+  { id: 'an', name: '高中生小安', key: 'cust1', want: 'sunflower', n: 1, ask: '向日葵一朵……明天段考，我想要一點勇氣。', thanks: '我會加油的！', vip: ['老闆！我考了全班第一！', '同學都問我是不是有什麼秘密……我就說是這家的向日葵。', '她們說以後都要來這裡買花！'], perk: run => { run.flags.anVip = 1; return '小安的同學們變成常客：上門的客人變多'; } },
+  { id: 'cafe', name: '咖啡店老闆娘', key: 'shopE', want: 'jasmine', n: 2, ask: '茉莉兩枝，放在店裡吧台。', thanks: '整間店都香了。', vip: ['客人都問我茉莉哪裡買的，我都說巷子裡的美玲。', '要不要放一些妳的小卡在我店裡？', '以後我每天都跟妳訂一小束。'], perk: run => { run.flags.cafeVip = 1; return '咖啡店每天跟妳訂一小束：每天傍晚多 NT$ 600'; } },
+];
+const VIP_AT = 3;
+function regOf(run) { return run.regulars || (run.regulars = {}); }
+function* regularScript(S, n) {
+  const run = S.run;
+  const forced = run.flags && run.flags.forceReg; if (forced) delete run.flags.forceReg;   // 測試用
+  if ((run.month || 1) < 2 || (!forced && Math.random() > 0.55)) return false;
+  const R = regOf(run), pool = REGULARS.filter(r => (R[r.id] || 0) < VIP_AT + 1);
+  if (!pool.length) return false;
+  const r = pool[(n + (run.month || 1)) % pool.length];
+  const h = S.customer(r.key);
+  yield S.walkIn(h, COUNTER_SPOT2);
+  yield* S.talk(h, r.name, [[r.ask]]);
+  const have = S.stock.filter(f => f.t === r.want && S.canSell(f)).slice(0, r.n);
+  if (have.length >= r.n) {
+    let v = 0; for (const f of have) { S.stock.splice(S.stock.indexOf(f), 1); v += flowerValue(run, f.t, f.fresh); }
+    v = Math.round(v * 1.5); S.sell(v);
+    R[r.id] = (R[r.id] || 0) + 1;
+    yield* S.talk(h, r.name, [[r.thanks]]);
+    if (R[r.id] === VIP_AT) {
+      yield* S.talk(h, r.name, r.vip.map(x => [x]));
+      UI.toast(`${r.name}變成 VIP！${r.perk(run)}`, 4000); SFX.play('chime');
+      R[r.id] = VIP_AT + 1;
+    } else UI.toast(`${r.name}多給了一點（熟客 ${Math.min(R[r.id], VIP_AT)}/${VIP_AT}）`, 2400);
+  } else {
+    yield* S.talk(h, r.name, [[`今天沒有${FLOWERS[r.want].name}啊……那下次吧。`]]);
+    UI.toast(`下次幫${r.name}留${FLOWERS[r.want].name}`, 2400);
+  }
+  yield S.walkOut(h);
+  return true;
+}
+function regularDaily(run) { return run.flags && run.flags.cafeVip ? 600 : 0; }
+
+// ---------- 大型委託 ----------
+const COMMISSIONS = [
+  { who: '婚禮', client: '新人小美和阿哲', need: { rose: 4, babys: 3, lisianthus: 2 }, reward: 9000 },
+  { who: '咖啡廳開幕', client: '轉角新開的咖啡廳', need: { sunflower: 3, carnation: 3, periwinkle: 3 }, reward: 6000 },
+  { who: '告別式', client: '隔壁里的李家', need: { jasmine: 3, magnolia: 2, lisianthus: 2 }, reward: 7000 },
+  { who: '畢業典禮', client: '巷口國小', need: { sunflower: 4, carnation: 4 }, reward: 5500 },
+  { who: '百貨公司櫥窗', client: '站前百貨', need: { hydrangea: 3, peony: 1, rose: 3 }, reward: 12000 },
+  { who: '飯店大廳', client: '巷口的老飯店', need: { orchid: 2, osmanthus: 3, hydrangea: 2 }, reward: 15000 },
+];
+function commissionOffer(run) {
+  const m = run.month || 1;
+  const pool = COMMISSIONS.filter(c => !(c.need.orchid && !run.upg.jump) && !(c.need.peony && !run.upg.jump));
+  const c = pool[(m * 7 + (run.stats.stolen || 0)) % pool.length];
+  const k = 1 + (m - 2) * 0.15;
+  return { who: c.who, client: c.client, need: Object.assign({}, c.need), got: {}, reward: Math.round(c.reward * k * (run.flags.amyVip ? 1.3 : 1) / 100) * 100, month: m, done: false };
+}
+function* commissionScript(S, n) {
+  const run = S.run, m = run.month || 1;
+  if (m < 2 || n !== 2 || (run.comm && run.comm.month === m)) return false;
+  const c = commissionOffer(run);
+  const h = S.customer('shopB');
+  yield S.walkIn(h, COUNTER_SPOT2);
+  const list = Object.keys(c.need).map(t => FLOWERS[t].name + ' ×' + c.need[t]).join('、');
+  yield* S.talk(h, c.client, [[`您好，我們是${c.client}。想請妳幫我們準備${c.who}的花。`], [`需要：${list}。這個月底前湊齊就好。`], [`酬勞 ${money(c.reward)}，可以嗎？`]]);
+  let ok = false;
+  yield S.modal(done => UI.confirm('接下委託？', `${c.who}：${list}\n這個月底（第四晚結束）前湊齊，酬勞 ${money(c.reward)}。湊不齊會丟面子。`, '接', '先不要', v => { ok = v; done(); }));
+  if (ok) { run.comm = c; UI.toast(`接下「${c.who}」委託！晚上偷到的花會先留給委託`, 3200); SFX.play('buy'); yield* S.talk(h, c.client, [['太好了，拜託妳了！']]); }
+  else { run.comm = { month: m, declined: true }; yield* S.talk(h, c.client, [['好吧……那我們再找找看。']]); }
+  yield S.walkOut(h);
+  return true;
+}
+// 天亮前：偷到的花先留給委託（從庫存拿走）
+function commissionTake(run, stock) {
+  const c = run.comm; if (!c || c.done || c.declined || c.month !== (run.month || 1)) return null;
+  const took = {};
+  for (const t in c.need) {
+    let want = c.need[t] - (c.got[t] || 0);
+    for (let i = stock.length - 1; i >= 0 && want > 0; i--) if (stock[i].t === t) { stock.splice(i, 1); c.got[t] = (c.got[t] || 0) + 1; took[t] = (took[t] || 0) + 1; want--; }
+  }
+  const complete = Object.keys(c.need).every(t => (c.got[t] || 0) >= c.need[t]);
+  let paid = 0;
+  if (complete) { c.done = true; paid = c.reward; run.stats.comms = (run.stats.comms || 0) + 1; }
+  return { took, complete, paid, c };
+}
+// 月底：沒湊齊
+function commissionFail(run) {
+  const c = run.comm; if (!c || c.done || c.declined || c.failed) return null;
+  c.failed = true; return c;
+}
+function commissionBriefHTML(run) {
+  const c = run.comm; if (!c || c.declined || c.month !== (run.month || 1)) return '';
+  if (c.done) return `<div class="newab commbox"><span class="tagnew">委託</span><b>${esc(c.who)}：完成了！</b></div>`;
+  return `<div class="newab commbox"><span class="tagnew">委託・月底前</span><b>${esc(c.who)}</b><span class="px comm-r">+${money(c.reward)}</span>
+    <div class="comm-need">${Object.keys(c.need).map(t => { const g = Math.min(c.got[t] || 0, c.need[t]); return `<span class="${g >= c.need[t] ? 'ok' : ''}"><img src="${G.icons[t]}" alt="">${FLOWERS[t].name} <b class="px">${g}/${c.need[t]}</b></span>`; }).join('')}</div></div>`;
+}
+function commissionTallyHTML(R) {
+  const r = R.comm; if (!r || !Object.keys(r.took).length && !r.complete) return '';
+  return `<div class="newab commbox"><span class="tagnew">委託</span><p>留給「${esc(r.c.who)}」：${Object.keys(r.took).map(t => FLOWERS[t].name + ' ×' + r.took[t]).join('、') || '—'}</p>${r.complete ? `<p><b>委託完成！酬勞 +${money(r.paid)}</b></p>` : ''}</div>`;
+}
+
+// ================= 櫥窗佈置＋貓咪店長區（第二、三個月起）=================
+// 櫥窗：傍晚選一個主題（換一次要材料費），主題花賣得比較貴；櫥窗白天晚上都看得到主題的樣子。
+// 貓咪店長區：花喵幫的小弟可以留在店裡「上班」，窩在貓跳台上招客人；每天傍晚有招牌貓的收入。
+const WINDOW_THEMES = [
+  { id: 'red', name: '紅色浪漫', flowers: ['rose', 'carnation', 'bougain'], col: '#e8394d', col2: '#ff9fb8', light: [1.1, 0.35, 0.4] },
+  { id: 'sun', name: '夏日陽光', flowers: ['sunflower', 'periwinkle', 'osmanthus'], col: '#ffc61a', col2: '#fff0a0', light: [1.1, 0.85, 0.3] },
+  { id: 'white', name: '白色優雅', flowers: ['jasmine', 'babys', 'magnolia', 'tanhua'], col: '#f4f4f0', col2: '#d8e8f0', light: [0.9, 0.95, 1.1] },
+  { id: 'purple', name: '紫色夢幻', flowers: ['lisianthus', 'hydrangea', 'orchid'], col: '#9a6ad0', col2: '#c8b0f0', light: [0.75, 0.5, 1.1] },
+  { id: 'peony', name: '富貴牡丹', flowers: ['peony', 'orchid', 'rose'], col: '#ff7aa8', col2: '#ffd84d', light: [1.1, 0.6, 0.6], mon: 4 },
+];
+const WINDOW_COST = 800, WINDOW_MULT = 1.3;
+function winTheme(run) { const id = run.win && run.win.theme; return WINDOW_THEMES.find(w => w.id === id) || null; }
+function winMult(run, t) { const w = winTheme(run); return w && w.flowers.includes(t) ? WINDOW_MULT : 1; }
+function winOpen(run) { return (run.month || 1) >= 2; }
+function setWindow(run, id) {
+  const w = WINDOW_THEMES.find(x => x.id === id); if (!w || (w.mon && (run.month || 1) < w.mon)) return false;
+  if ((run.win && run.win.theme) === id || run.money < WINDOW_COST) return false;
+  run.money -= WINDOW_COST; run.win = { theme: id }; return true;
+}
+function windowHTML(run) {
+  if (!winOpen(run)) return '';
+  const cur = winTheme(run);
+  return `<h3>櫥窗主題<small>換一次材料費 ${money(WINDOW_COST)}・主題花 ×${WINDOW_MULT}</small></h3><div class="win-themes">${WINDOW_THEMES.map(w => {
+    const locked = w.mon && (run.month || 1) < w.mon, on = cur && cur.id === w.id;
+    return `<button type="button" class="win-t ${on ? 'on' : ''}" data-win="${w.id}" ${locked || on || run.money < WINDOW_COST ? 'disabled' : ''} style="--wc:${w.col};--wc2:${w.col2}"><b>${w.name}</b><span>${locked ? `第${cn(w.mon)}個月` : w.flowers.map(t => FLOWERS[t].name).join('・')}</span>${on ? '<i>現在的櫥窗</i>' : ''}</button>`;
+  }).join('')}</div>`;
+}
+// ---------- 圖：櫥窗的彩旗、主題花 ----------
+function drawBunting(id) {
+  const w = WINDOW_THEMES.find(x => x.id === id);
+  O.curve([[-30, -18], [-15, -14], [0, -12.6], [15, -14], [30, -18]], '#6a5a4a', 0.9);
+  for (let i = 0; i < 9; i++) {
+    const x = -27 + i * 6.75, y = -18 + 5.4 * Math.sin((i + 0.5) / 9 * Math.PI) * 1.0;
+    O.blobO([[x - 2.6, y], [x + 2.6, y], [x, y + 5]], i % 2 ? w.col : w.col2);
+  }
+}
+function toonBunting(id) { return toonFrameInfo(toonFrame('bunting-' + id, 64, 22, () => drawBunting(id)), false, 0.5, 1.4); }
+function winDay3D(sc, F) {
+  const w = winTheme(sc.run); if (!w) return;
+  const cpd = Math.cos(R3.pitch);
+  for (const x of [4.6, 10.4]) pushSprite(F.sprites, ART.fix(toonBunting(w.id)), x * TS, 16.2 * TS, { lift: 1.7 * cpd, minLight: [0.7, 0.66, 0.62] });
+  w.flowers.slice(0, 3).forEach((t, i) => pushSprite(F.sprites, toonSillPot(t), [4.4, 7.6, 10.6][i] * TS, 16.12 * TS, { lift: 0.43 * cpd }));
+}
+function winNight3D(sc, F, L) {
+  const w = winTheme(sc.run); if (!w) return;
+  for (const x of [3.2, 11.8]) L.push({ x, y: 1.0, z: 5.3, r: 2.6, c: w.light });
+  for (const x of [4.0, 11.0]) pushSprite(F.sprites, ART.fix(toonBunting(w.id)), x * TS, 5.05 * TS, { lift: 1.3, minLight: [0.6, 0.55, 0.6] });
+}
+
+// ---------- 貓咪店長區 ----------
+function catCornerLv(run) { return storeOf(run).catcorner || 0; }
+function shopCats(run) { return gangMembers(run).filter(m => { const st = gangOf(run)[m.id]; return st.target === 'shop' && !st.caught; }); }
+function catCornerIncome(run) { const lv = catCornerLv(run); return lv ? shopCats(run).length * 400 * lv : 0; }
+function drawCatTree(lv) {
+  const wood = '#c49a6c', rope = '#e8d8b0', pad = lv >= 2 ? '#f29ab4' : '#9ad0c8';
+  O.blobO([[-14, 0], [14, 0], [14, -4], [-14, -4]], wood);
+  O.blobO([[-3, -4], [3, -4], [3, -30], [-3, -30]], rope);
+  for (let y = -8; y > -30; y -= 3) O.curve([[-3, y], [3, y - 1]], '#c8b088', 0.6);
+  O.blobO([[-12, -14], [4, -14], [4, -17], [-12, -17]], pad);
+  O.blobO([[-4, -30], [12, -30], [12, -33], [-4, -33]], pad);
+  if (lv >= 2) { // 吊床、逗貓棒
+    O.curve([[6, -14], [10, -9], [14, -14]], '#8a6a4a', 0.8);
+    O.blobO([[5, -14], [15, -14], [12, -10], [8, -10]], '#fff0f4');
+    O.curve([[12, -33], [16, -38], [19, -36]], '#6a4a2a', 0.8); O.e(19.4, -35, 1.6, 1.6, '#ff6d9a');
+  }
+  if (lv >= 3) { // 貓咪小屋
+    O.blobO([[-14, -4], [-4, -4], [-4, -12], [-14, -12]], '#e8c48a');
+    O.blobO([[-15, -12], [-3, -12], [-9, -18]], '#d9534f');
+    O.e(-9, -7.4, 2.6, 3, '#3a2a20');
+    O.blobO([[-12, -20], [-6, -20], [-6, -24], [-12, -24]], '#fff6e8'); O.e(-9, -22, 1.2, 1, '#ff8fae');
+  }
+}
+function toonCatTree(lv) { return toonFrameInfo(toonFrame('cattree-' + lv, 42, 44, () => drawCatTree(lv)), false, 0.5, 1.5); }
+const CAT_TREE = [13.0, 6.3];
+const TREE_SEATS = [[-0.35, 1.18], [0.25, 2.18], [0.65, 0.95], [-0.6, 0.35], [0.55, 0.35]];
+function catCornerDay3D(sc, F) {
+  const lv = catCornerLv(sc.run); if (!lv) return;
+  const cpd = Math.cos(R3.pitch), [tx, tz] = CAT_TREE, t = sc.cat.t || 0;
+  pushSprite(F.sprites, ART.fix(toonCatTree(lv)), tx * TS, tz * TS, { minLight: [0.62, 0.58, 0.55] }); shadowAt(F, tx * TS, tz * TS, 1.2, 0.36);
+  shopCats(sc.run).slice(0, 5).forEach((m, i) => {
+    const [dx, h] = TREE_SEATS[i], act = ['none', 'blink', 'none', 'yawn', 'ear'][(Math.floor((t + i * 1.3) / 2.4)) % 5];
+    pushSprite(F.sprites, gangLoaf(m, 1, act), (tx + dx) * TS, (tz + 0.05) * TS, { lift: h * cpd, minLight: [0.62, 0.58, 0.55] });
+  });
+}
+
 // ================= 漫畫風的疊加圖層：表情符號、懷疑條、狀聲詞、賣萌特寫 =================
 const CM = {
   ink: '#1d1526',
@@ -13606,7 +13955,9 @@ class CuteGame {
     this.assist = !!opt.assist; this.assistUsed = false; this.retry = false; this.assistMeow = false;
     // 從這一招的五種裡抽一種，最近兩次玩過的不抽；force 是測試用
     const recent = CUTE_LAST[move] || [];
-    const pool = CUTE_KINDS[move].filter(k => !recent.includes(k));
+    let pool = CUTE_KINDS[move].filter(k => !recent.includes(k));
+    if (!pool.length) pool = CUTE_KINDS[move].filter(k => k !== recent[0]);
+    if (!pool.length) pool = CUTE_KINDS[move];
     this.kind = CuteGame.force && CUTE_KINDS[move].includes(CuteGame.force) ? CuteGame.force : pick(pool);
     CUTE_LAST[move] = [this.kind].concat(recent).slice(0, 2);
     let v = Math.floor(Math.random() * 3);
@@ -13745,7 +14096,8 @@ class CuteGame {
   }
   drawArt(pen, k) {
     const st = this.artState();
-    return this.move === 'meow' ? drawMeowArt2(st, pen, k) : this.move === 'belly' ? drawBellyArt2(st, pen, k) : drawRubArt2(st, this.who, pen, k);
+    const am = cuteArtMove(this.move);
+    return am === 'meow' ? drawMeowArt2(st, pen, k) : am === 'belly' ? drawBellyArt2(st, pen, k) : drawRubArt2(st, this.who, pen, k);
   }
 }
 
@@ -14945,6 +15297,288 @@ CuteGame.prototype.render = function (ctx) {
   ctx.restore();
 };
 
+// ================= 更多賣萌招式 =================
+// 歪頭殺（老貓攤學）、招財手（招財貓升級就會）、裝死（老貓攤學）、獻花（嘴裡有花就能用，花會還給人家）
+// 每位鄰居吃的招不一樣：阿伯、里長吃招財手，王太太吃歪頭殺，林先生和管家反而會被裝死嚇到。
+const CUTE_MOVES_EXTRA = [
+  { id: 'tilt', name: '歪頭殺', key: '4', how: '時機・水汪汪', cond: sc => !!sc.run.upg.tilt },
+  { id: 'maneki', name: '招財手', key: '5', how: '節奏・接金幣', cond: sc => (sc.run.upg.lucky || 0) >= 1 },
+  { id: 'dead', name: '裝死', key: '6', how: '憋住・偷呼吸', cond: sc => !!sc.run.upg.dead },
+  { id: 'gift', name: '獻花', key: '7', how: '把花還給人家', cond: sc => sc.cat.carry.length > 0 && (sc.run.month || 1) >= 2 },
+];
+const CUTE_HOW = { meow: '節奏・聲音・眼神', belly: '時機・連打・撲光點', rub: '貼貼・討摸・毛線球' };
+function cuteMovesFor(sc) { return CUTE_MOVES.concat(CUTE_MOVES_EXTRA.filter(m => m.cond(sc))); }
+const CUTE_BASE_EXTRA = {
+  tilt: { wang: 0.78, lin: 0.42, bo: 0.6, patrol: 0.66, butler: 0.5, temple: 0.72, party: 0.78 },
+  maneki: { wang: 0.55, lin: 0.3, bo: 0.9, patrol: 0.84, butler: 0.45, temple: 0.86, party: 0.72 },
+  dead: { wang: 0.38, lin: 0.68, bo: 0.5, patrol: 0.45, butler: 0.64, temple: 0.5, party: 0.55 },
+  gift: {},
+};
+function cuteBase(info, key, move) {
+  if (info.base[move] !== undefined) return info.base[move];
+  if (move === 'gift') return 0.88;
+  const B = CUTE_BASE_EXTRA[move]; return (B && B[key] !== undefined) ? B[key] : 0.5;
+}
+Object.assign(CUTE_KINDS, { tilt: ['gaze', 'sparkle'], maneki: ['wave', 'coin'], dead: ['still', 'sneak'] });
+Object.assign(CUTE_TITLE, { gaze: '對上眼就歪頭', sparkle: '水汪汪大眼', wave: '招財招手', coin: '接金幣', still: '憋住不動', sneak: '偷偷呼吸' });
+Object.assign(CUTE_HELP, {
+  gaze: '視線掃到中間時點，歪頭！', sparkle: '按住變水汪汪，他看你時放開',
+  wave: '金幣亮起來時點，招一下手', coin: '左右拖，用肉球接住掉下來的金幣',
+  still: '按住憋氣，「真的死了？」才放開', sneak: '他轉頭時點一下，偷呼吸',
+});
+Object.assign(CUTE_KEYS, { gaze: '鍵盤：空白鍵', sparkle: '鍵盤：按住空白鍵', wave: '鍵盤：空白鍵', coin: '鍵盤：← →', still: '鍵盤：按住空白鍵', sneak: '鍵盤：空白鍵' });
+Object.assign(CUTE_GAG, { awkward: '歪錯時機，好尷尬……', dry: '眼睛乾掉了……', offbeat: '招手招亂了……', drop: '金幣都掉了……', twitch: '忍不住動了一下……', gasp: '憋不住，大口喘氣……' });
+Object.assign(CUTE_BG, {
+  tilt: [['#ffe0ee', '#ffc2dc'], ['#e8e4ff', '#cfc6ff'], ['#fff0d8', '#ffd9a0']],
+  maneki: [['#fff1c4', '#ffd86a'], ['#ffe2c8', '#ffbf8a'], ['#fff6d8', '#ffe39a']],
+  dead: [['#e2e6f2', '#c6cce2'], ['#e8e2f0', '#cfc2e2'], ['#e0ecf0', '#bcd4dc']],
+  gift: [['#ffe6f0', '#ffc6dc'], ['#ffe6f0', '#ffc6dc'], ['#ffe6f0', '#ffc6dc']],
+});
+// 這些招用哪一張特寫
+function cuteArtMove(move) { return move === 'dead' ? 'belly' : move === 'tilt' || move === 'maneki' || move === 'gift' ? 'meow' : move; }
+
+// ---------------------------------------------------------------
+// 歪頭殺 1：視線來回掃，掃到中間時點（歪頭）
+Object.assign(CUTE_KIND, {
+  gaze: {
+    init(g, p) { g.gx = -1; g.gdir = 1; g.gsp = lerp(1.9, 1.3, p); g.gzone = lerp(0.18, 0.3, p); g.ghit = 0; g.gmiss = 0; g.gneed = 3; g.tiltT = 0; g.limit = 6.5; },
+    input(g, type) {
+      if (type !== 'down') return;
+      g.tiltT = 0.5;
+      if (Math.abs(g.gx) <= g.gzone) {
+        g.ghit++; const pf = Math.abs(g.gx) < g.gzone * 0.4;
+        g.judge(pf ? 'perfect' : 'good', pf ? '歪頭殺！' : '歪～'); g.purr(); g.burst(2);
+        g.gdir = Math.random() < 0.5 ? 1 : -1; g.gx = g.gdir > 0 ? -1 : 1; g.gsp *= 1.08;
+        if (g.ghit >= g.gneed) g.finish(true, g.gmiss === 0, null);
+      } else { g.gmiss++; g.judge('miss', '他沒在看……'); if (g.gmiss >= 2) g.finish(false, false, 'awkward'); }
+    },
+    update(g, dt) {
+      g.tiltT = Math.max(0, g.tiltT - dt);
+      g.gx += g.gdir * g.gsp * dt;
+      if (g.gx > 1) { g.gx = 1; g.gdir = -1; } else if (g.gx < -1) { g.gx = -1; g.gdir = 1; }
+      if (g.pt > g.limit) g.finish(false, false, 'awkward');
+    },
+    progress: g => g.ghit / g.gneed,
+    art(g, mood) { return { v: 2, tilt: g.tiltT > 0 || mood === 'happy' ? 0.42 : 0.05, open: mood === 'happy' ? 0.3 : 0 }; },
+    ui(g, c, ux, B, pw) {
+      const w = pw * 0.8, x0 = ux - w / 2, y = B + 50;
+      c.fillStyle = 'rgba(255,255,255,0.12)'; CM.rr(c, x0, y - 14, w, 28, 14); c.fill();
+      c.fillStyle = 'rgba(255,134,168,0.4)'; CM.rr(c, ux - g.gzone * w / 2, y - 14, g.gzone * w, 28, 10); c.fill();
+      // 視線：一隻眼睛
+      const ex = ux + g.gx * w / 2;
+      c.fillStyle = '#fff'; c.strokeStyle = CM.ink; c.lineWidth = 3; c.beginPath(); c.ellipse(ex, y, 15, 10, 0, 0, TAU); c.fill(); c.stroke();
+      c.fillStyle = '#2a1d16'; c.beginPath(); c.arc(ex + g.gdir * 3, y, 5, 0, TAU); c.fill();
+      CM.text(c, ux, y + 34, '視線到粉紅區時點！', '#b8b3d8', 13, 0.9, { weight: 700 });
+      for (let i = 0; i < g.gneed; i++) { c.fillStyle = i < g.ghit ? '#ff86a8' : 'rgba(255,255,255,0.25)'; c.strokeStyle = CM.ink; c.lineWidth = 2.5; c.beginPath(); c.arc(ux - 22 + i * 22, y + 60, 7, 0, TAU); c.fill(); c.stroke(); }
+      for (const q of g.pops) if (q.where === 'ui') CM.text(c, ux + 70, y - 26 - q.t * 18, q.text, q.col, 18, 1 - q.t / 0.9);
+    },
+  },
+  // 歪頭殺 2：按住讓眼睛水汪汪，他看過來時放開
+  sparkle: {
+    init(g, p) {
+      g.sp = 0; g.holding = false; g.sOK = 0; g.sNeed = 2; g.look = false; g.lookT = rnd(0.6, 1.2); g.sMiss = 0; g.sRate = lerp(0.75, 1.05, p); g.limit = 7;
+    },
+    input(g, type) {
+      if (type === 'down') g.holding = true;
+      else if (type === 'up' && g.holding) {
+        g.holding = false;
+        if (g.sp >= 0.75 && g.look) { g.sOK++; g.judge(g.sp >= 0.92 ? 'perfect' : 'good', '水汪汪～'); g.purr(); g.burst(3); g.sp = 0; if (g.sOK >= g.sNeed) g.finish(true, g.sMiss === 0, null); }
+        else if (!g.look) { g.sMiss++; g.judge('miss', '他沒在看'); g.sp *= 0.3; if (g.sMiss >= 3) g.finish(false, false, 'dry'); }
+        else { g.judge('miss', '還不夠水汪汪'); g.sp *= 0.5; }
+      }
+    },
+    update(g, dt) {
+      if (g.holding) { g.sp = Math.min(1.15, g.sp + g.sRate * dt); if (g.sp >= 1.15) { g.finish(false, false, 'dry'); return; } }
+      else g.sp = Math.max(0, g.sp - dt * 0.5);
+      g.lookT -= dt; if (g.lookT <= 0) { g.look = !g.look; g.lookT = g.look ? rnd(0.7, 1.1) : rnd(0.8, 1.6); }
+      if (g.pt > g.limit) g.finish(false, false, 'dry');
+    },
+    progress: g => (g.sOK + Math.min(1, g.sp) * 0.6) / g.sNeed,
+    art(g, mood) { return { v: 2, tilt: 0.2 + Math.min(1, g.sp) * 0.25, open: 0, blink: false }; },
+    ui(g, c, ux, B, pw) {
+      const fc = toonFace(g.faceKey, g.look ? 'smile' : 'neutral', 0), fs = 70 / (fc.height / TK), fw = fc.width / TK * fs, fh = fc.height / TK * fs;
+      const fx = ux - pw * 0.28;
+      c.save(); if (!g.look) { c.translate(fx, 0); c.scale(-1, 1); c.translate(-fx, 0); c.globalAlpha = 0.55; }
+      c.drawImage(fc, fx - fw / 2, B + 6, fw, fh); c.restore();
+      CM.text(c, fx, B + fh + 18, g.look ? '在看你！' : '沒在看', g.look ? '#ff86a8' : '#b8b3d8', 14, 1, { weight: 700 });
+      const bx = ux + pw * 0.08, bw = pw * 0.32, by = B + 18, bh = 22;
+      c.fillStyle = 'rgba(255,255,255,0.15)'; CM.rr(c, bx, by, bw, bh, 11); c.fill();
+      c.fillStyle = 'rgba(255,214,90,0.35)'; c.fillRect(bx + bw * 0.75 / 1.15, by, bw * (1 - 0.75 / 1.15) - 6, bh);
+      c.fillStyle = g.sp >= 0.75 ? '#7ad3ff' : '#cfe8ff'; CM.rr(c, bx + 2, by + 2, Math.max(0, (bw - 4) * Math.min(1, g.sp / 1.15)), bh - 4, 9); c.fill();
+      CM.text(c, bx + bw / 2, by + bh + 18, '水汪汪度', '#b8b3d8', 12, 0.9);
+      for (let i = 0; i < g.sNeed; i++) { c.fillStyle = i < g.sOK ? '#7ad3ff' : 'rgba(255,255,255,0.25)'; c.strokeStyle = CM.ink; c.lineWidth = 2.5; c.beginPath(); c.arc(bx + bw / 2 - 11 + i * 22, by + bh + 42, 7, 0, TAU); c.fill(); c.stroke(); }
+      for (const q of g.pops) if (q.where === 'ui') CM.text(c, ux + 40, B + 100 - q.t * 12, q.text, q.col, 18, 1 - q.t / 0.9);
+    },
+  },
+  // 招財手 1：金幣亮起來時點（招手）
+  wave: {
+    init(g, p) {
+      const n = 6; let t = 0.6; g.wb = [];
+      for (let i = 0; i < n; i++) { g.wb.push({ t, j: null }); t += rnd(0.42, 0.62); }
+      g.win = lerp(0.07, 0.15, p); g.limit = t + 0.4; g.waveT = 0;
+    },
+    input(g, type) {
+      if (type !== 'down') return;
+      g.waveT = 0.25; SFX.tone(1180, 0.05, { vol: 0.06, type: 'triangle' });
+      let best = null, bd = 9;
+      for (const b of g.wb) if (!b.j) { const d = Math.abs(g.pt - b.t); if (d < bd) { bd = d; best = b; } }
+      if (best && bd <= 0.3) { best.j = bd <= g.win * 0.5 ? 'perfect' : bd <= g.win ? 'good' : 'miss'; g.judge(best.j, best.j === 'miss' ? '招早了' : best.j === 'perfect' ? '招財進寶！' : '招～'); if (best.j !== 'miss') SFX.play('coin'); }
+    },
+    update(g, dt) {
+      g.waveT = Math.max(0, g.waveT - dt);
+      for (const b of g.wb) if (!b.j && g.pt > b.t + g.win) { b.j = 'miss'; g.judge('miss', '慢了'); }
+      if (g.wb.every(b => b.j)) { const s = g.wb.reduce((a, b) => a + (b.j === 'perfect' ? 1 : b.j === 'good' ? 0.75 : 0), 0) / g.wb.length; g.finish(s >= 0.62, g.wb.every(b => b.j === 'perfect'), 'offbeat'); }
+    },
+    progress: g => g.wb.reduce((a, b) => a + (b.j === 'perfect' ? 1 : b.j === 'good' ? 0.75 : 0), 0) / g.wb.length,
+    art(g, mood) { return { v: 1, wave: mood === 'play' ? (g.waveT > 0 ? 1 : -0.6) : undefined, open: mood === 'happy' ? 0.4 : 0 }; },
+    ui(g, c, ux, B, pw) {
+      const y = B + 50;
+      g.wb.forEach((b, i) => {
+        const x = ux - (g.wb.length - 1) * 24 + i * 48, dtb = b.t - g.pt;
+        const lit = !b.j && Math.abs(dtb) <= g.win * 1.2, near = !b.j && dtb > 0 && dtb < 0.5;
+        c.fillStyle = b.j === 'perfect' || b.j === 'good' ? '#ffd84d' : b.j === 'miss' ? '#5a5478' : lit ? '#fff3a0' : near ? '#e8c060' : '#8a7a50';
+        c.strokeStyle = CM.ink; c.lineWidth = 3; c.beginPath(); c.arc(x, y, lit ? 17 : 14, 0, TAU); c.fill(); c.stroke();
+        CM.text(c, x, y + 1, '福', b.j === 'miss' ? '#9a96b8' : '#a8761a', lit ? 15 : 13, 1, { weight: 800 });
+        if (near && !lit) { c.strokeStyle = 'rgba(255,214,90,0.8)'; c.lineWidth = 3; c.beginPath(); c.arc(x, y, 14 + dtb * 40, 0, TAU); c.stroke(); }
+      });
+      CM.text(c, ux, y + 44, '金幣亮起來的瞬間點！', '#b8b3d8', 13, 0.9, { weight: 700 });
+      for (const q of g.pops) if (q.where === 'ui') CM.text(c, ux, y - 32 - q.t * 18, q.text, q.col, 18, 1 - q.t / 0.9);
+    },
+  },
+  // 招財手 2：接金幣（三條路，左右拖）
+  coin: {
+    init(g, p) {
+      const n = 7; g.cl = 1; g.cn = n; g.cGot = 0; g.cDone = 0; g.fall = lerp(1.15, 1.45, p); g.coins = []; let t = 0.4;
+      for (let i = 0; i < n; i++) { g.coins.push({ t: t + g.fall, ln: Math.floor(Math.random() * 3), j: null }); t += rnd(0.4, 0.6); }
+      g.limit = t + g.fall + 0.4;
+    },
+    input(g, type, a) {
+      if (type === 'arrow') { if (a === 'left') g.cl = Math.max(0, g.cl - 1); else if (a === 'right') g.cl = Math.min(2, g.cl + 1); return; }
+      if ((type === 'down' || type === 'move') && a && !a.key && g.laneRect) {
+        if (type === 'move' && !g.dragging) return;
+        g.dragging = true; const q = g.pos(a); g.cl = clamp(Math.floor((q.x - g.laneRect.x) / g.laneRect.w * 3), 0, 2);
+      }
+      if (type === 'up') g.dragging = false;
+    },
+    update(g) {
+      for (const k of g.coins) if (!k.j && g.pt >= k.t) {
+        g.cDone++;
+        if (k.ln === g.cl) { k.j = 'hit'; g.cGot++; SFX.play('coin'); g.judge('good', '接到！'); g.purr(); }
+        else { k.j = 'miss'; g.judge('miss', '掉了'); }
+      }
+      if (g.cDone >= g.cn) g.finish(g.cGot / g.cn >= 0.7, g.cGot === g.cn, 'drop');
+    },
+    progress: g => g.cGot / g.cn,
+    art(g, mood) { return { v: 1, wave: mood === 'play' ? [-0.5, 0.2, 0.9][g.cl] : undefined, open: mood === 'happy' ? 0.4 : 0 }; },
+    ui(g, c, ux, B, pw) {
+      const w = pw * 0.78, h = 118, x0 = ux - w / 2, y0 = B, lw = w / 3;
+      g.laneRect = { x: x0, y: y0, w, h };
+      for (let i = 0; i < 3; i++) { c.fillStyle = i === g.cl ? 'rgba(255,214,90,0.2)' : 'rgba(255,246,232,0.06)'; CM.rr(c, x0 + i * lw + 2, y0, lw - 4, h, 10); c.fill(); }
+      for (const k of g.coins) {
+        const d = k.t - g.pt; if (d > g.fall || d < -0.3 || k.j === 'hit') continue;
+        const x = x0 + (k.ln + 0.5) * lw, y = y0 + (1 - d / g.fall) * (h - 26);
+        c.fillStyle = k.j === 'miss' ? '#7a6a40' : '#ffd84d'; c.strokeStyle = CM.ink; c.lineWidth = 2.5; c.beginPath(); c.arc(x, y, 11, 0, TAU); c.fill(); c.stroke();
+        CM.text(c, x, y + 1, '$', '#a8761a', 12, 1, { weight: 800 });
+      }
+      cutePaw(c, x0 + (g.cl + 0.5) * lw, y0 + h - 12, 15);
+      CM.text(c, ux, y0 + h + 16, `${g.cGot} / ${g.cn}`, '#ffe27a', 15, 1, { weight: 800 });
+    },
+  },
+  // 裝死 1：一直按住，聽到「真的死了？」才放開（「咦？」是假的）
+  still: {
+    init(g, p) {
+      g.held = false; g.started = false; g.calls = []; let t = rnd(1.4, 2.0);
+      const fakes = p >= 0.55 ? 1 : 2;
+      for (let i = 0; i < fakes; i++) { g.calls.push({ t, fake: true }); t += rnd(0.7, 1.1); }
+      g.calls.push({ t, fake: false }); g.endT = t; g.win = lerp(0.5, 0.8, p); g.limit = t + g.win + 0.6; g.poke = 0;
+    },
+    input(g, type) {
+      if (type === 'down') { if (!g.started) { g.started = true; g.held = true; } else if (!g.held) { g.held = true; } return; }
+      if (type === 'up' && g.held) {
+        g.held = false;
+        if (!g.started) return;
+        const cur = g.calls.slice().reverse().find(k => g.pt >= k.t);
+        if (cur && !cur.fake && g.pt <= cur.t + g.win) g.finish(true, g.pt <= cur.t + g.win * 0.5, null);
+        else g.finish(false, false, cur && cur.fake ? 'twitch' : 'twitch');
+      }
+    },
+    update(g, dt) {
+      g.poke = Math.max(0, g.poke - dt);
+      if (g.started && g.held) for (const k of g.calls) if (!k.said && g.pt >= k.t) { k.said = true; g.poke = 0.4; g.pops.push({ text: k.fake ? pick(['咦？', '……動了嗎？', '戳戳']) : '真的死了？', col: k.fake ? '#ffffff' : '#ff86a8', t: 0, where: 'ui' }); SFX.play(k.fake ? 'q' : 'ex'); }
+      if (!g.started && g.pt > 1.2) g.finish(false, false, 'idle');
+      const last = g.calls[g.calls.length - 1];
+      if (g.held && g.pt > last.t + g.win) g.finish(false, false, 'gasp');
+    },
+    progress: g => (g.started ? Math.min(1, g.pt / (g.endT + 0.3)) : 0),
+    art(g, mood) { return { p: 1, dead: mood === 'play' && g.held, open: mood === 'happy' ? 0.3 : 0, wigAmp: g.poke > 0 ? 0.6 : 0 }; },
+    ui(g, c, ux, B, pw) {
+      const y = B + 44;
+      cuteFinger(c, ux, y, g.held ? 1 : 0, 1);
+      CM.text(c, ux, y + 46, g.held ? '憋住……' : g.started ? '' : '按住開始裝死！', g.held ? '#b8b3d8' : '#ffe27a', 15, 1, { weight: 700 });
+      for (const q of g.pops) if (q.where === 'ui') CM.text(c, ux + pw * 0.22, y - 20 - q.t * 14, q.text, q.col, 20, 1 - q.t / 0.9);
+    },
+  },
+  // 裝死 2：他轉頭時點一下偷呼吸，看你時不能動
+  sneak: {
+    init(g, p) { g.air = 1; g.look = true; g.lookT = rnd(0.7, 1.1); g.breaths = 0; g.drain = lerp(0.42, 0.3, p); g.survive = 5; g.limit = g.survive + 0.3; g.puff = 0; },
+    input(g, type) {
+      if (type !== 'down') return;
+      if (g.look) g.finish(false, false, 'twitch');
+      else { g.air = Math.min(1, g.air + 0.45); g.breaths++; g.puff = 0.35; SFX.tone(420, 0.1, { to: 520, vol: 0.06, type: 'sine' }); g.judge('good', '呼～'); }
+    },
+    update(g, dt) {
+      g.puff = Math.max(0, g.puff - dt);
+      g.air -= g.drain * dt; if (g.air <= 0) { g.finish(false, false, 'gasp'); return; }
+      g.lookT -= dt; if (g.lookT <= 0) { g.look = !g.look; g.lookT = g.look ? rnd(0.7, 1.3) : rnd(0.45, 0.8); if (g.look) SFX.tone(700, 0.05, { vol: 0.05 }); }
+      if (g.pt >= g.survive) g.finish(true, g.air > 0.4, null);
+    },
+    progress: g => Math.min(1, g.pt / g.survive),
+    art(g, mood) { return { p: 1, dead: mood === 'play' && g.puff <= 0, open: g.puff > 0 ? 0.4 : 0 }; },
+    ui(g, c, ux, B, pw) {
+      const fc = toonFace(g.faceKey, g.look ? 'neutral' : 'neutral', 0), fs = 66 / (fc.height / TK), fw = fc.width / TK * fs, fh = fc.height / TK * fs, fx = ux - pw * 0.26;
+      c.save(); if (!g.look) { c.translate(fx, 0); c.scale(-1, 1); c.translate(-fx, 0); c.globalAlpha = 0.55; }
+      c.drawImage(fc, fx - fw / 2, B + 6, fw, fh); c.restore();
+      CM.text(c, fx, B + fh + 18, g.look ? '在看！別動' : '轉頭了！', g.look ? '#ff86a8' : '#7ad37a', 14, 1, { weight: 700 });
+      const bx = ux + pw * 0.06, bw = pw * 0.34, by = B + 20, bh = 20;
+      c.fillStyle = 'rgba(255,255,255,0.15)'; CM.rr(c, bx, by, bw, bh, 10); c.fill();
+      c.fillStyle = g.air < 0.3 ? '#ff7a7a' : '#9ad0e8'; CM.rr(c, bx + 2, by + 2, Math.max(0, (bw - 4) * g.air), bh - 4, 8); c.fill();
+      CM.text(c, bx + bw / 2, by + bh + 16, '空氣', '#b8b3d8', 12, 0.9);
+      CM.text(c, bx + bw / 2, by + bh + 40, `再撐 ${Math.max(0, g.survive - g.pt).toFixed(1)} 秒`, '#ffe27a', 14, 1, { weight: 800 });
+    },
+  },
+});
+Object.assign(CUTE_DEMO, {
+  gaze(c, x, y, t) { const gx = Math.sin(t * 2.2); c.fillStyle = 'rgba(255,134,168,0.4)'; CM.rr(c, x - 16, y - 12, 32, 24, 8); c.fill(); c.fillStyle = '#fff'; c.strokeStyle = CM.ink; c.lineWidth = 3; c.beginPath(); c.ellipse(x + gx * 60, y, 13, 9, 0, 0, TAU); c.fill(); c.stroke(); cuteFinger(c, x + 30, y + 30, Math.abs(gx) < 0.2 ? 1 : 0); CM.text(c, x, y + 56, '眼睛到中間時點', '#b8b3d8', 13, 0.9, { weight: 700 }); },
+  sparkle(c, x, y, t) { const q = (t % 2) / 2; c.fillStyle = '#cfe8ff'; CM.rr(c, x - 50, y - 8, 100 * Math.min(1, q * 1.3), 16, 8); c.fill(); cuteFinger(c, x + 60, y + 24, q < 0.8 ? 1 : 0); CM.text(c, x, y + 50, '按住→他看過來時放開', '#b8b3d8', 13, 0.9, { weight: 700 }); },
+  wave(c, x, y, t) { const q = t % 1; for (let i = 0; i < 3; i++) { const lit = i === Math.floor(t * 2) % 3; c.fillStyle = lit ? '#fff3a0' : '#8a7a50'; c.strokeStyle = CM.ink; c.lineWidth = 3; c.beginPath(); c.arc(x - 40 + i * 40, y, lit ? 15 : 12, 0, TAU); c.fill(); c.stroke(); } cuteFinger(c, x + 50, y + 26, q < 0.2 ? 1 : 0); CM.text(c, x, y + 50, '亮的那一下點', '#b8b3d8', 13, 0.9, { weight: 700 }); },
+  coin(c, x, y, t) { const ln = Math.floor(t) % 3, q = t % 1; c.fillStyle = '#ffd84d'; c.strokeStyle = CM.ink; c.lineWidth = 2.5; c.beginPath(); c.arc(x - 40 + ln * 40, y - 30 + q * 50, 10, 0, TAU); c.fill(); c.stroke(); cutePaw(c, x - 40 + ln * 40, y + 30, 13); CM.text(c, x, y + 58, '左右移動接金幣', '#b8b3d8', 13, 0.9, { weight: 700 }); },
+  still(c, x, y, t) { const q = t % 3; cuteFinger(c, x, y, q < 2.4 ? 1 : 0); CM.text(c, x + 50, y - 20, q > 1 && q < 1.6 ? '咦？' : q >= 2.2 ? '真的死了？' : '', q >= 2.2 ? '#ff86a8' : '#fff', 15, 1); CM.text(c, x, y + 50, '一直按住，聽到「真的死了？」再放開', '#b8b3d8', 12, 0.9, { weight: 700 }); },
+  sneak(c, x, y, t) { const look = Math.floor(t * 1.2) % 2 === 0; CM.text(c, x - 40, y, look ? '看你' : '轉頭', look ? '#ff86a8' : '#7ad37a', 18, 1, { weight: 800 }); cuteFinger(c, x + 40, y + 20, !look && (t % 0.8) < 0.2 ? 1 : 0); CM.text(c, x, y + 50, '他轉頭時點一下呼吸', '#b8b3d8', 13, 0.9, { weight: 700 }); },
+});
+
+// ---------- 獻花：不用玩小遊戲，把嘴裡最貴的花還給人家 ----------
+NightScene.prototype.giftCute = function (p) {
+  const cu = this.cute, c = this.cat, info = CUTE[cu.key];
+  const owner = ownerOfViewer(cu.v);
+  let i = c.carry.findIndex(f => f.pot && f.pot.owner === owner);
+  if (i < 0) { let best = 0; c.carry.forEach((f, k) => { if (FLOWERS[f.t].price > FLOWERS[c.carry[best].t].price) best = k; }); i = best; }
+  const f = c.carry.splice(i, 1)[0];
+  if (f && f.pot) f.pot.avail = true;   // 花回到盆子裡
+  cu.phase = 'game'; cu.t = 0; cu.gift = true; cu.shown = true; this.cutin = null;
+  c.pose = 'meow';
+  const ok = Math.random() < p;
+  cu.ok = ok;
+  this.fx.text(c.x, c.y - 16, '（叼著花遞過去）', '#ffe2ea');
+  if (ok) {
+    this.fx.hearts(cu.actor.x, cu.actor.y - 18, 6); SFX.play('heart'); cu.actor.setEmote('heart', 1.6);
+    UI.say(info.name, pick(['……你是把花還給我嗎？好乖。', '哎呀，送我的？好啦好啦。', '這隻貓……怎麼這麼懂事。']), { auto: 2.2 });
+    if (owner && STORY_CHAPTERS[owner]) addBond(this.run, owner, 1);
+  } else {
+    cu.actor.setEmote('anger', 1.6); SFX.play('fail');
+    UI.say(info.name, pick(['拿我的花來送我？想得美！', '這本來就是我的花吧！']), { auto: 2.2 });
+  }
+};
+
 // ================= 各場景的 3D 畫面 =================
 const WARM = [0.95, 0.68, 0.36], WARM_HI = [1.35, 0.88, 0.45];
 const NIGHT_ENV = { clear: [0.04, 0.05, 0.12], amb: [0.1, 0.12, 0.23], sky: [0.06, 0.07, 0.13], sunDir: [0.35, 0.75, 0.55], sunCol: [0.15, 0.17, 0.29], toon: 0.45 };
@@ -15046,7 +15680,9 @@ NightScene.prototype.render3D = function () {
   nightPlusLights(this, L);
   gardenRender3D(this, F, L, st);
   tunnelRender3D(this, F);
+  roofwayRender3D(this, F, st);
   expNight3D(this, F, L);
+  winNight3D(this, F, L);
   let bb = null;
   if (bbq) {
     if (!st.bbq) st.bbq = buildBBQProps();

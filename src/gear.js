@@ -12,7 +12,7 @@ let CAT_GEAR;   // undefined：照 G.run（玩家）的升級；null：什麼都
 function catGearFor(run) {
   if (!run || !run.upg) return null;
   const u = run.upg;
-  const g = { socks: u.paws || 0, mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0, horn: u.call || 0, lamp: u.tunnel || 0 };
+  const g = { socks: u.paws || 0, mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0, horn: u.call || 0, lamp: u.tunnel || 0, ahoge: u.tilt || 0, band: u.dead || 0, plank: u.roofway || 0 };
   for (const k in g) if (g[k]) return g;
   return null;
 }
@@ -98,6 +98,16 @@ function gPack(Q, x, y, lv, k = 1) {
   Q.poly([[x - 3.9 * k, y - 3.4 * k], [x + 3.9 * k, y - 3.4 * k], [x + 4.3 * k, y + 3.3 * k], [x - 4.3 * k, y + 3.3 * k]], C.c);
   Q.poly([[x - 3.7 * k, y - 3.4 * k], [x + 3.7 * k, y - 3.4 * k], [x + 3.4 * k, y + 0.3 * k], [x - 3.4 * k, y + 0.3 * k]], C.d);
   Q.ellF(x, y + 0.5 * k, 0.9 * k, 0.9 * k, '#ffd84d');
+}
+// 屋頂走廊：背上的木板（第二級換成登山繩和扣環）
+function gPlank(Q, x, y, lv, k = 1) {
+  if (lv >= 2) {
+    Q.ell(x, y - 2 * k, 3.6 * k, 2.6 * k, '#e0702a'); Q.ellF(x, y - 2 * k, 1.8 * k, 1.1 * k, '#a84a18');
+    Q.ell(x + 3.4 * k, y - 0.6 * k, 1.3 * k, 1.8 * k, '#c9ccd8');
+    return;
+  }
+  for (let i = 0; i < 3; i++) Q.poly([[x - 4.6 * k, y - (1.6 + i * 1.5) * k], [x + 4.6 * k, y - (1.2 + i * 1.5) * k], [x + 4.6 * k, y - (0.1 + i * 1.5) * k], [x - 4.6 * k, y - (0.5 + i * 1.5) * k]], ['#c99a62', '#b88a52', '#d8aa72'][i]);
+  Q.line([[x - 1, y - 5.6 * k], [x - 1, y + 0.4 * k]], '#7a4a2a', 0.8 * k);
 }
 // 金色小皇冠：x、y 是底部中間
 function gCrown(Q, x, y, k) {
@@ -208,6 +218,8 @@ function gearHeadMask(P, s, g) {
 }
 // 蝴蝶結／花冠、耳邊的花：頭的最後面
 function gearHeadTop(P, s, rot, g) {
+  if (g.ahoge) { const pts = [P(1, -14.6), P(3.4, -21.5), P(0.4, -25.4), P(-2.4, -23.6)]; PX.curve(pts, TAB.out, { w: 2.6 * s + 1.4 }); PX.curve(pts, TAB.fur, { w: 2.6 * s }); }
+  if (g.band) { for (const r of [0.6, -0.6]) { const c = P(8.6, -8.6), dx = Math.cos(r) * 4.2 * s, dy = Math.sin(r) * 4.2 * s, nx = -Math.sin(r) * 1.5 * s, ny = Math.cos(r) * 1.5 * s; gPoly([[c[0] - dx - nx, c[1] - dy - ny], [c[0] + dx - nx, c[1] + dy - ny], [c[0] + dx + nx, c[1] + dy + ny], [c[0] - dx + nx, c[1] - dy + ny]], '#f2cfa2'); } const c = P(8.6, -8.6); PX.ellipse(c[0], c[1], 1.1 * s, 1.1 * s, '#e0b080'); }
   if (g.bow >= 3) {
     for (let i = 0; i < 6; i++) { const u = -1 + (i + 0.5) / 3, [x, y] = P(u * 14, -14.6 - 1.5 * (1 - u * u)); PX.ellipse(x, y, 2.7 * s + 0.9, 1.5 * s + 0.7, TAB.out, { rot: rot + u * 0.8 }); PX.ellipse(x, y, 2.7 * s, 1.5 * s, '#5aa652', { rot: rot + u * 0.8 }); }
     for (let i = 0; i < 7; i++) { const u = -1 + i / 3, [x, y] = P(u * 14, -14.6 - 1.5 * (1 - u * u)); gFlower(GP, x, y, 3.3 * s, GEARC.crown[i]); }
@@ -248,6 +260,8 @@ function gearSideMask(P, g) {
   if (C.trim) { O.curve([P(-4, -4.6), P(2.2, -4.9), P(7.6, -3.4)], C.trim, 0.7); O.curve([P(7.8, 0.8), P(2.4, 1.3), P(-4, 0.4)], C.trim, 0.7); }
 }
 function gearSideTop(P, g) {
+  if (g.ahoge) { const pts = [P(0.4, -7.4), P(1.8, -11.6), P(-0.4, -13.8), P(-2, -12.6)]; O.curve(pts, CM.ink, 2.4); O.curve(pts, TAB.fur, 1.3); }
+  if (g.band) { const [x, y] = P(-4.6, -4.4); O.blobO([[x - 2.4, y - 0.8], [x + 2.4, y - 0.8], [x + 2.4, y + 0.8], [x - 2.4, y + 0.8]], '#f2cfa2'); }
   if (g.bow >= 3) {
     for (let i = 0; i < 5; i++) { const a = -2.8 + i * 0.44, [x, y] = P(Math.cos(a) * 7.4, Math.sin(a) * 6.9 - 0.4); O.e(x, y, 2.2, 1.2, CM.ink, { rot: a + 1.57 }); O.e(x, y, 1.6, 0.8, '#5aa652', { rot: a + 1.57 }); }
     for (let i = 0; i < 5; i++) { const a = -2.6 + i * 0.4, [x, y] = P(Math.cos(a) * 7.6, Math.sin(a) * 7.1 - 0.6); gFlower(GO, x, y, 1.75, GEARC.crown[i + 1]); }
@@ -305,6 +319,7 @@ function gearSideBody(stage, B, rx, ry, g) {
     const [x, y] = B(-2.6, -ry - 1.2); gPack(GO, x, y, g.pack, 0.9);
   }
   if (g.wings) { const [x, y] = B(4.4, -ry * 0.8); gWing(GO, x, y, -1, 1, 0.35); }
+  if (g.plank) gPlank(GO, ...B(-6.4, -ry - 0.6), g.plank, 0.9);
   if (g.bag) {
     const C = GEARC.bag[g.bag], [x, y] = B(0.6, ry * 0.95);
     gStrap([B(-4.4, -ry * 0.95), B(-2.2, ry * 0.2), [x - 2.6, y - 3.6]], C.d);
@@ -332,6 +347,7 @@ function gearBackBody(stage, bob, g) {
     else if (g.bow) { const C = GEARC.bow[g.bow], k = C.s * 0.5, cx = 5, cy = hy - 7; for (const sd of [-1, 1]) O.eo(cx + sd * 2.6 * k, cy - 0.4 * k, 2.6 * k, 1.8 * k, C.c, { rot: sd * 0.35 }); O.eo(cx, cy, 1.1 * k, 1.1 * k, C.c); }
     if (g.flower) { const C = GEARC.flower[g.flower]; gFlower(GO, -6.4, hy - 6.2, 1.9 * C.s, C.c, C.ctr); }
     if (g.lamp) O.limb(-8.2, hy - 2.6, 8.2, hy - 2.6, 1.5, '#3a3a4a');
+    if (g.ahoge) { const pts = [[0.6, hy - 7.6], [1.8, hy - 11.8], [-0.4, hy - 13.6], [-1.8, hy - 12.4]]; O.curve(pts, CM.ink, 2.4); O.curve(pts, TAB.fur, 1.3); }
     return;
   }
   if (g.wings) for (const sd of [-1, 1]) gWing(GO, sd * 2.4, -13.2 + bob, sd, 1, 0);
@@ -339,6 +355,7 @@ function gearBackBody(stage, bob, g) {
   if (g.collar) O.limb(-5.8, -13.2 + bob, 5.8, -13.2 + bob, 1.8, collarCol(g));
   if (g.bag) { gStrap([[5.4, -15 + bob], [-0.6, -10.6 + bob], [-6.4, -7.4 + bob]], GEARC.bag[g.bag].d); gBag(GO, -8.6, -2.6 + bob, g.bag, 0.74); }
   if (g.pack) gPack(GO, 0, -9.8 + bob, g.pack, 0.95);
+  if (g.plank) gPlank(GO, 0, -14.6 + bob, g.plank, 0.95);
 }
 // 母雞蹲（正面）：'back' 身體之前；'over' 身體之後、頭之前
 function gearLoafBody(stage, g) {
@@ -417,6 +434,8 @@ function gearCuteHead(c, stage, pal) {
       ell(-10, -15, 2.4 * k + 1.6, 2.4 * k + 1.6, ink); ell(-10, -15, 2.4 * k, 2.4 * k, C.c);
     }
     if (g.bow >= 4) { const pts = [[-5, 0], [5, 0], [5.6, -5.2], [2.8, -2.6], [0, -6.8], [-2.8, -2.6], [-5.6, -5.2]].map(([a, b]) => [a * 1.3, -17.6 + b * 1.3]); c.lineJoin = 'round'; c.strokeStyle = ink; c.lineWidth = 3; c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.stroke(); poly(pts, '#ffd84d'); ell(0, -20.8, 1.4, 1.4, '#e8394d'); ell(0, -26.4, 1.2, 1.2, '#ff6d9a'); }
+    if (g.ahoge) { c.lineCap = 'round'; c.strokeStyle = ink; c.lineWidth = 5; c.beginPath(); c.moveTo(1, -14.5); c.quadraticCurveTo(5, -24, -1, -27); c.stroke(); c.strokeStyle = pal ? pal.fur : TAB.fur; c.lineWidth = 2.6; c.beginPath(); c.moveTo(1, -14.5); c.quadraticCurveTo(5, -24, -1, -27); c.stroke(); }
+    if (g.band) { c.save(); c.translate(9, -8.5); for (const r of [0.6, -0.6]) { c.save(); c.rotate(r); c.fillStyle = ink; c.fillRect(-5.4, -2.4, 10.8, 4.8); c.fillStyle = '#f2cfa2'; c.fillRect(-4.4, -1.4, 8.8, 2.8); c.restore(); } c.restore(); }
     if (g.lamp) { c.strokeStyle = ink; c.lineWidth = 4.6; c.beginPath(); c.moveTo(-16, -7); c.quadraticCurveTo(0, -17, 16, -7); c.stroke(); c.strokeStyle = '#3a3a4a'; c.lineWidth = 2.6; c.beginPath(); c.moveTo(-16, -7); c.quadraticCurveTo(0, -17, 16, -7); c.stroke(); ell(0, -12.4, 4.6, 4, ink); ell(0, -12.4, 3.4, 2.9, '#3a3a4a'); ell(0, -12.4, 2.4, 2, '#fff3a0'); }
     if (g.flower) { const C = GEARC.flower[g.flower]; flower(g.bow >= 3 ? 16 : 12.4, g.bow >= 3 ? -6 : -13, 3.8 * C.s, C.c); }
   }

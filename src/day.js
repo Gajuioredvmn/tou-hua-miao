@@ -151,7 +151,7 @@ class DayScene {
       this.shopT -= dt;
       if (this.shopT <= 0) {
         const max = this.rush ? 4 : 3;
-        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * (this.run.flags && this.run.flags.famous ? 0.65 : 1) * ((st.expand || 0) >= 2 ? 0.7 : 1) * ((this.run.flags && this.run.flags.buzz || 0) > (this.run.nightIdx || 0) ? 0.7 : 1) * rnd(0.8, 1.2);
+        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * (this.run.flags && this.run.flags.famous ? 0.65 : 1) * ((st.expand || 0) >= 2 ? 0.7 : 1) * ((this.run.flags && this.run.flags.buzz || 0) > (this.run.nightIdx || 0) ? 0.7 : 1) * (this.run.flags && this.run.flags.anVip ? 0.85 : 1) * rnd(0.8, 1.2);
         else this.shopT = 1;
       }
     }
@@ -276,7 +276,7 @@ class DayScene {
   }
   // ---- 花店升級：鏡頭帶過去看 ----
   reveal(id, lv, cb) {
-    const spot = { lights: [7.5, 5.2], fridge: [12.6, 9.9], neon: [5.5, 4.4], scooter: [11.2, 17.6], decor: [[5.4, 9.6], [3.4, 6.2], [3.2, 12.4]][lv - 1], expand: [[11.6, 12.4], [11.2, 16.6], [6.5, 5.6], [7.6, 10.2]][lv - 1] }[id] || [7.5, 9];
+    const spot = { lights: [7.5, 5.2], fridge: [12.6, 9.9], neon: [5.5, 4.4], scooter: [11.2, 17.6], decor: [[5.4, 9.6], [3.4, 6.2], [3.2, 12.4]][lv - 1], catcorner: [13.0, 6.6], expand: [[11.6, 12.4], [11.2, 16.6], [6.5, 5.6], [7.6, 10.2]][lv - 1] }[id] || [7.5, 9];
     const u = STORE_UPGRADES.find(x => x.id === id);
     this.focus = { x: spot[0], z: spot[1], t: 0, dur: 3.0, cb, id, lv };
     if (id === 'decor' || id === 'expand') { this.layoutDisplays(); this.cat.unstick(this); }
@@ -993,7 +993,10 @@ function* roseScript(S) {
 }
 
 function* endingScript(S) {
-  const run = S.run, due = rentDue(run), ok = run.money >= due;
+  const run = S.run;
+  const cf = commissionFail(run);
+  if (cf) { yield S.say(`「${cf.who}」的花沒湊齊……${cf.client}很失望，說下次不會再找我們了。`); UI.hideDialog(); }
+  const due = rentDue(run), ok = run.money >= due;
   yield S.say('今天要繳房租了……我來算算這個月賺了多少。');
   yield S.say('總共是…… ' + money(run.money) + '！');
   if (ok) {
@@ -1064,6 +1067,7 @@ function* monthDayScript(S, n) {
   if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
+  yield* commissionScript(S, n);
   const k = 1 + (Math.random() < 0.5 ? 1 : 0);
   for (let i = 0; i < k; i++) {
     const o = genOrder(run, n), cu = S.customer(pick(['cust1', 'cust2', 'shopA', 'shopC', 'shopE', 'shopF']));
@@ -1073,13 +1077,14 @@ function* monthDayScript(S, n) {
     yield wait(0.6);
     yield S.walkOut(cu);
   }
+  yield* regularScript(S, n);
   if (n === 4) { const left = Math.max(0, rentDue(run) - run.money); yield S.say(left > 0 ? `這個月還差 ${money(left)}……還有最後一晚。` : '房租夠了！可是多存一點總是好的。'); UI.hideDialog(); }
   if (S.stock.some(f => S.canSell(f)) || S.bouquets.length || storeOf(run).neon) { let w = 0; yield { update: dt => { if (!UI.modalOpen) w += dt; return w > 10 || (!S.stock.length && !S.bouquets.length && !storeOf(run).neon && !S.shoppers.length); } }; }
   yield* S.closeShop();
   S.tint = 'evening';
   UI.banner('傍晚');
   yield wait(0.8);
-  const tuition = classIncome(run);
+  const tuition = classIncome(run) + regularDaily(run) + catCornerIncome(run);
   if (tuition) { run.money += tuition; S.daySales += tuition; UI.toast(`花藝教室的學費 +${money(tuition)}`, 2400); SFX.play('coin'); }
   yield S.say(S.daySales > 0 ? `今天賣了 ${money(S.daySales)}！花喵，賞你罐罐。` : '今天沒什麼生意……花喵，罐罐還是給你。');
   UI.hideDialog();

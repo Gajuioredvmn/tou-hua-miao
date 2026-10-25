@@ -18,7 +18,7 @@ const GANG_TARGETS = ['public', 'empty', 'lin', 'wang', 'bo', 'mansion'];
 function gangOf(run) { return run.gang || (run.gang = {}); }
 function gangMembers(run) { const g = gangOf(run); return GANG.filter(m => g[m.id]); }
 function gangOpen(run) { return !!(run.flags && run.flags.gangIntro); }
-function gangTargetOk(run, o) { return o !== 'mansion' || !!run.upg.jump; }
+function gangTargetOk(run, o) { return o === 'shop' ? catCornerLv(run) >= 1 : (o !== 'mansion' || !!run.upg.jump); }
 function gangDefaultTarget(run) {
   const ok = GANG_TARGETS.filter(o => gangTargetOk(run, o));
   return ok.sort((a, b) => (heatOf(run, a) || 0) - (heatOf(run, b) || 0))[0];
@@ -31,7 +31,7 @@ function recruitGang(run, id) {
 }
 function cycleGangTarget(run, id) {
   const st = gangOf(run)[id]; if (!st || st.caught) return;
-  const ok = GANG_TARGETS.filter(o => gangTargetOk(run, o));
+  const ok = GANG_TARGETS.concat(['shop']).filter(o => gangTargetOk(run, o));
   st.target = ok[(ok.indexOf(st.target) + 1) % ok.length];
 }
 // 天亮：各自帶花回來（回傳 { flowers, report }）
@@ -42,6 +42,7 @@ function gangNight(run, n) {
     const st = gangOf(run)[m.id];
     if (st.caught) continue;
     const o = st.target || gangDefaultTarget(run);
+    if (o === 'shop') continue;   // 在店裡上班
     const types = NIGHT_POTS.filter(p => p.owner === o && p.t !== 'lily').map(p => p.t);
     if (!types.length) continue;
     // 戒備森嚴的人家可能被抓（小黑不會）
@@ -118,7 +119,7 @@ function gangDay3D(sc, F) {
   const ms = gangMembers(sc.run); if (!ms.length) return;
   const t = sc.cat.t || 0;
   ms.forEach((m, i) => {
-    const st = gangOf(sc.run)[m.id]; if (st.caught) return;
+    const st = gangOf(sc.run)[m.id]; if (st.caught || (st.target === 'shop' && catCornerLv(sc.run))) return;
     const [x, z] = GANG_SPOTS[i], ph = Math.floor((t + i * 1.7) / 2.6) % 5;
     const act = ['none', 'blink', 'none', 'ear', 'yawn'][ph];
     pushSprite(F.sprites, gangLoaf(m, 1, act), x * TS, z * TS, { minLight: [0.6, 0.56, 0.55] });
@@ -153,7 +154,9 @@ function gangBriefHTML(run) {
   const rows = ms.map(m => {
     const st = gangOf(run)[m.id];
     if (st.caught) return `<li class="gang-row"><b>${m.name}</b><span class="gang-t off">被${OWNERS[st.caught].person}抓走了，明天會帶回來</span></li>`;
-    const o = st.target, stars = starsOf(run, o);
+    const o = st.target;
+    if (o === 'shop') return `<li class="gang-row"><b>${m.name}</b><button type="button" class="gang-t" data-gangt="${m.id}">店裡上班</button><em class="ok">招客人</em></li>`;
+    const stars = starsOf(run, o);
     return `<li class="gang-row"><b>${m.name}</b><button type="button" class="gang-t" data-gangt="${m.id}">${OWNERS[o].name} <span class="stars">${starStr(stars)}</span></button>${stars >= 2 && m.perk !== 'stealth' ? '<em>有被抓的危險</em>' : ''}</li>`;
   }).join('');
   return `<h3>花喵幫今晚去哪？<small>點一下換地方</small></h3><ul class="gang-list">${rows}</ul>`;

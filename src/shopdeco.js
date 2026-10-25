@@ -617,4 +617,6 @@ function shopDecor3D(sc, F, st, store) {
   }
   expDecor3D(sc, F);
   gangDay3D(sc, F);
+  winDay3D(sc, F);
+  catCornerDay3D(sc, F);
 }

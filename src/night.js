@@ -221,6 +221,7 @@ class NightScene {
     this.hasOrange = this.abil.has('orange') || (this.run.upg.orange || 0) > 0;
     this.oranges = this.hasOrange ? orangeEnergy(this.run) : 0;
     this.initCatSkills();
+    this.initRoofway();
     this.visMult = this.event === 'rain' || this.event === 'outage' ? 0.85 : 1;
     this.top = topGrid(this.map); this.topBlocked = new Set();
     for (const [tx, ty] of ROOF_TOWERS) this.topBlocked.add(tx + ',' + ty);
@@ -465,6 +466,7 @@ class NightScene {
     this.time += dt * MIN_PER_SEC * this.timeScale;
     this.schedules();
     if (this.time >= this.end) { this.finish(true); return; }
+    this.updatePigeons(dt);
 
     const sub = this.timeScale > 1 ? 3 : 1;
     const sdt = dt * this.timeScale / sub;
@@ -702,6 +704,7 @@ class NightScene {
       const d = dist(cx, cy, p.x, p.y - 6);
       if (d < bd) { bd = d; best = { kind: 'pot', ref: p }; }
     }
+    if (c.top) { const bt = this.bridgeTarget(cx, cy); if (bt && (!best || bt.d < 9)) best = bt; }
     if (!best && this.abil.has('climb') && !c.jump) best = c.top ? this.dropSpot() : this.climbSpot();
     if (!best && !c.top) {
       bd = 17;
@@ -723,6 +726,7 @@ class NightScene {
       else if (best.kind === 'drop') label = '跳下';
       else if (best.kind === 'home') label = '收工';
       else if (best.kind === 'tunnel') label = '鑽';
+      else if (best.kind === 'bridge') label = best.b.kind === 'wire' ? '滑' : '過';
       if (best.kind === 'climb' && !this.tips.climb) { this.tips.climb = 1; UI.toast('按「爬」從鐵窗、柵欄爬上去！屋頂上地面的人看不到你', 3200); }
       if (best.kind === 'knock' && !this.tips.knock) { this.tips.knock = 1; UI.toast('按「撥」把它弄倒，聲音能把人引過去'); }
     }
@@ -804,6 +808,8 @@ class NightScene {
     } else if (tg.kind === 'drop') {
       c.jump = { x0: c.x, y0: c.y, x1: tg.x, y1: tg.y, t: 0, dur: 0.42, h0: c.h, h1: 0, top: false, hopPx: 6 };
       SFX.play('jump');
+    } else if (tg.kind === 'bridge') {
+      this.crossBridge(tg);
     } else if (tg.kind === 'tunnel') {
       this.useTunnel(tg.i);
     } else if (tg.kind === 'home') {
