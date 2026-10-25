@@ -435,11 +435,19 @@ const UI = {
       ${this.rentBar(run)}`;
     this.modal(html, [{ label: '出門 0 元購', primary: true, onClick: done }], { cls: 'brief' });
   },
-  title(onStart) {
+  title(onStart, save, onContinue) {
     const html = `<div class="title-logo">${R3.on ? '<canvas class="title-cat" width="336" height="224" aria-hidden="true"></canvas>' : `<img src="${G.icons.catBig}" alt="">`}<h1>偷花喵</h1></div>
       <p class="tag">白天招財貓，晚上偷花喵</p>
       <p class="lead">美玲的花店撐不過這個月了。四個晚上，叼鄰居家的花回來賣，湊出月底房租 NT$ 20,000。</p>
       <ul class="howto-mini"><li>拖曳畫面移動，推到底奔跑</li><li>白天靠近客人偷聽情報</li><li>被發現就賣萌</li></ul>`;
+    if (save) {
+      const html2 = html + `<p class="save-note">上次玩到：<b>${esc(saveLabel(save))}</b>　現金 ${money(save.run.money || 0)}</p>`;
+      this.modal(html2, [
+        { label: '重新開始', onClick: () => this.confirm('重新開始？', '上次的進度會被蓋掉，從第一個月重來。', '重新開始', '算了', ok => { if (ok) { clearSave(); onStart(); } else this.title(onStart, save, onContinue); }) },
+        { label: '繼續', primary: true, onClick: onContinue },
+      ], { cls: 'title' });
+      return;
+    }
     this.modal(html, [{ label: '開始', primary: true, onClick: onStart }], { cls: 'title' });
   },
   ending(run, ok, onRestart) {
@@ -487,7 +495,32 @@ function newRun() {
     stock: [], orders: {}, regrow: {}, react: {},
   };
 }
+// ---------- 存檔：每次天亮、天黑出門時自動存在這台裝置的瀏覽器 ----------
+const SAVE_KEY = 'thm-save-v1';
+function saveGame(kind, n) {
+  if (!G.run) return;
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, kind, n, t: Date.now(), run: G.run })); } catch (e) { }
+}
+function loadSave() {
+  try {
+    const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    if (!d || d.v !== 1 || !d.run || (d.kind !== 'day' && d.kind !== 'night')) return null;
+    // 舊存檔少了新欄位時，用新遊戲的預設值補上
+    const base = newRun(), r = Object.assign(base, d.run);
+    for (const k of ['upg', 'store', 'stats']) r[k] = Object.assign(newRun()[k], d.run[k] || {});
+    d.run = r;
+    return d;
+  } catch (e) { return null; }
+}
+function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) { } }
+function saveLabel(d) {
+  const m = d.run.month || 1, n = d.n || 1;
+  if (d.kind === 'night') return `第${cn(m)}個月・第${NUM[n]}晚出門前`;
+  if (n >= 5) return `第${cn(m)}個月・月底繳房租`;
+  return `第${cn(m)}個月・第${NUM[n]}天早上`;
+}
 function setScene(sc, hudMode) {
+  if (sc.kind === 'day' || sc.kind === 'night') saveGame(sc.kind, sc.n);
   G.scene = sc; R3.cam.ready = false; R3.cam.zoom = R3.cam.tzoom = 1;
   // 換場景時把賣萌小遊戲的輸入、選招面板一起收掉（例如小遊戲中按暫停→重新開始）
   Input.game = null;
@@ -555,7 +588,12 @@ const Flow = {
     setTimeout(() => UI.fade(() => setScene(new DayScene(n + 1))), res.timeUp ? 900 : 200);
     if (res.timeUp) UI.toast(res.lost ? '天亮了！嘴裡的花來不及帶回家……' : '天快亮了，回家睡覺', 2400);
   },
+  resume(d) {
+    G.run = d.run;
+    UI.fade(() => setScene(d.kind === 'night' ? new NightScene(d.n) : new DayScene(d.n || 1)));
+  },
   ending(ok) {
+    if (!ok) clearSave();
     UI.ending(G.run, ok, () => this.restart());
   },
 };

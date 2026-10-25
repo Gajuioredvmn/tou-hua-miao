@@ -59,7 +59,8 @@ function boot(data) {
     else setScene(new DayScene(data.n || 1));
   } else {
     setScene(new TitleScene(), 'none');
-    UI.title(() => { SFX.init(); SFX.resume(); Flow.start(); });
+    const sv = loadSave();
+    UI.title(() => { SFX.init(); SFX.resume(); Flow.start(); }, sv, () => { SFX.init(); SFX.resume(); Flow.resume(sv); });
   }
   let last = performance.now();
   const loop = now => {
@@ -76,7 +77,7 @@ function boot(data) {
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
-  window.__TH = { G, Flow, UI, Input, Cam, View, R3, GL3, DayScene, NightScene, setScene, newRun, CuteGame, CharmCut, OrangeCat, ART, GEAR: { drawMeowArt2, drawBellyArt2, drawRubArt2, VXR, orangeCloseup, cuteHead, withGear, catGearFor, catRefArt, toonOrangePal: ORANGE_PAL, TAB } };
+  window.__TH = { loadSave, clearSave, G, Flow, UI, Input, Cam, View, R3, GL3, DayScene, NightScene, setScene, newRun, CuteGame, CharmCut, OrangeCat, ART, GEAR: { drawMeowArt2, drawBellyArt2, drawRubArt2, VXR, orangeCloseup, cuteHead, withGear, catGearFor, catRefArt, toonOrangePal: ORANGE_PAL, TAB } };
 }
 
 (function start() {
