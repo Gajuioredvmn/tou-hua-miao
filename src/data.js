@@ -156,7 +156,7 @@ function flowerValue(run, t, fresh) {
   const cold = s.fridge && DELICATE.includes(t) ? 1.5 : 1;
   // 佈置第 2 級起：掉了花瓣的殘花做成乾燥花，最少也有七成價
   const fr = s.fridge ? 1 : (s.decor || 0) >= 2 ? Math.max(0.7, fresh) : fresh;
-  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t) * EXP_PRICE_MULT[s.expand || 0];
+  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t) * EXP_PRICE_MULT[s.expand || 0] * (run.flags && run.flags.oldShears ? 1.1 : 1);
 }
 const ORANGE_INCOME = [0, 400, 900, 1600];
 const LUCKY_MULT = [1, 1.2, 1.45, 1.75];
