@@ -319,7 +319,7 @@ const UI = {
   },
   shop(run, done) {
     const st = storeOf(run);
-    let tab = 'store', pickIdx = -1;
+    let tab = 'store', pickIdx = -1, BD = {};
     const render = () => {
       const pips = (lv, max) => Array.from({ length: max }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('');
       let body;
@@ -360,15 +360,16 @@ const UI = {
         }).join('');
         body = `<p class="lead">「罐罐拿來，本事教你。」<br><small>學到的本事都會穿戴在花喵身上。</small></p>
           <div class="wallet"><img src="${G.icons.can}" alt=""><b class="px">${run.cans}</b><span>個罐罐</span></div>
+          ${itemsHTML(run)}
           <div class="cat-looks"><figure><canvas class="cat-look" data-who="tab"></canvas><figcaption>花喵現在的樣子</figcaption></figure>${run.upg.orange ? '<figure><canvas class="cat-look" data-who="orange"></canvas><figcaption>橘貓夥伴</figcaption></figure>' : ''}</div>
           <ul class="ups">${rows}</ul>${gangShopHTML(run)}`;
       }
       const html = `<p class="eyebrow">傍晚</p><h2>${tab === 'store' ? '美玲的花店' : tab === 'garden' ? '頂樓花園' : tab === 'nm' ? '夜市花攤' : '巷口・老貓的攤子'}</h2>
-        <div class="tabs" role="tablist">
-          <button type="button" class="tab ${tab === 'store' ? 'on' : ''}" data-tab="store" role="tab" aria-selected="${tab === 'store'}">花店升級<small>現金 ${Math.round(run.money).toLocaleString('en-US')}</small></button>
-          <button type="button" class="tab ${tab === 'garden' ? 'on' : ''}" data-tab="garden" role="tab" aria-selected="${tab === 'garden'}">頂樓花園<small>${gardenOpen(run) ? (gardenOf(run).lv ? GARDEN_LV[gardenOf(run).lv - 1].pots + ' 盆' : '還沒蓋') : '第二個月'}</small></button>
-          ${nmOpen(run) ? `<button type="button" class="tab ${tab === 'nm' ? 'on' : ''}" data-tab="nm" role="tab" aria-selected="${tab === 'nm'}">夜市<small>${nmOf(run).lv ? NM_LV[nmOf(run).lv - 1].cap + ' 朵' : '還沒擺'}</small></button>` : ''}
-          <button type="button" class="tab ${tab === 'cat' ? 'on' : ''}" data-tab="cat" role="tab" aria-selected="${tab === 'cat'}">老貓攤<small>罐罐 ${run.cans}</small></button>
+        <div class="tabs" role="tablist">${(() => { BD = shopBadges(run); return ''; })()}
+          <button type="button" class="tab ${tab === 'store' ? 'on' : ''} ${BD.store ? 'dot' : ''}" data-tab="store" role="tab" aria-selected="${tab === 'store'}">花店升級<small>現金 ${Math.round(run.money).toLocaleString('en-US')}</small></button>
+          <button type="button" class="tab ${tab === 'garden' ? 'on' : ''} ${BD.garden ? 'dot' : ''}" data-tab="garden" role="tab" aria-selected="${tab === 'garden'}">頂樓花園<small>${gardenOpen(run) ? (gardenOf(run).lv ? GARDEN_LV[gardenOf(run).lv - 1].pots + ' 盆' : '還沒蓋') : '第二個月'}</small></button>
+          ${nmOpen(run) ? `<button type="button" class="tab ${tab === 'nm' ? 'on' : ''} ${BD.nm ? 'dot' : ''}" data-tab="nm" role="tab" aria-selected="${tab === 'nm'}">夜市<small>${nmOf(run).lv ? NM_LV[nmOf(run).lv - 1].cap + ' 朵' : '還沒擺'}</small></button>` : ''}
+          <button type="button" class="tab ${tab === 'cat' ? 'on' : ''} ${BD.cat ? 'dot' : ''}" data-tab="cat" role="tab" aria-selected="${tab === 'cat'}">老貓攤<small>罐罐 ${run.cans}</small></button>
         </div>${body}`;
       this.modal(html, [{ label: '圖鑑', keep: true, onClick: () => UI.book(run, () => render(), 'bq') }, { label: '天黑了，出門', primary: true, onClick: done }], { cls: 'shop' });
       this.cardEl.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); tab = b.dataset.tab; pickIdx = -1; render(); }));
@@ -376,6 +377,10 @@ const UI = {
       const keep = () => { const sc = this.cardEl.scrollTop; render(); this.cardEl.scrollTop = sc; };
       this.cardEl.querySelectorAll('canvas.garden-art').forEach(cv => drawGardenArt(cv, run));
       drawGangFaces(this.cardEl);
+      this.cardEl.querySelectorAll('[data-item]').forEach(b => b.addEventListener('click', () => {
+        const r = buyItem(run, b.dataset.item); if (!r) return;
+        SFX.play(r.none ? 'nope' : 'buy'); this.toast(r.msg, 2600); keep();
+      }));
       this.cardEl.querySelectorAll('[data-win]').forEach(b => b.addEventListener('click', () => {
         if (setWindow(run, b.dataset.win)) { SFX.play('buy'); this.toast(`櫥窗換成「${winTheme(run).name}」！主題花 ×${WINDOW_MULT}`, 2600); }
         keep();
@@ -455,7 +460,7 @@ const UI = {
     const intel = (fresh.length ? `<ul class="intel">${li(fresh)}</ul>` : '') +
       (old.length ? `<details class="old"${fresh.length ? '' : ' open'}><summary>之前聽到的 ${old.length} 則</summary><ul class="intel">${li(old)}</ul></details>` : '');
     const prices = FLOWER_ORDER.map(t => { const b = themeBoost(run, t); return `<span class="price${b > 1 ? ' boost' : ''}"><img src="${G.icons[t]}" alt=""><span>${FLOWERS[t].name}</span><b class="px">${Math.round(FLOWERS[t].price * b)}</b></span>`; }).join('');
-    const end = NIGHT_END + 45 * run.upg.owl;
+    const end = NIGHT_END + 45 * run.upg.owl + (itemsPending(run).coffee ? 30 : 0);
     const ab = m <= 1 ? ABILITY_ORDER.find(k => ({ climb: 2, box: 3, orange: 4 })[k] === n) : null;
     const ocLv = run.upg.orange || 0;
     const abHtml = (ab ? `<div class="newab"><span class="tagnew">新能力</span><b>${ABILITIES[ab].name}</b><p>${esc(ABILITIES[ab].desc)}</p></div>` : '') +
@@ -538,7 +543,7 @@ function newRun() {
     store: { lights: 0, fridge: 0, neon: 0, scooter: 0, decor: 0 },
     intel: {}, immune: {}, flags: {},
     stats: { caught: 0, cuteWin: 0, cuteFail: 0, petals: 0, stolen: 0 },
-    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} }, bond: {}, storyCh: {}, regulars: {}, comm: null,
+    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} }, bond: {}, storyCh: {}, regulars: {}, comm: null, items: {}, act: null,
     month: 1, debt: 0, graceUsed: false, heat: {}, familiar: {}, nightIdx: 0, plan: {}, rentPaid: [],
     lastNight: null, rosePending: false, roseDone: false, night: 0,
     stock: [], orders: {}, regrow: {}, react: {},
@@ -639,6 +644,7 @@ const Flow = {
   startNight(n) {
     const run = G.run;
     run.night = n; run.nightIdx = ((run.month || 1) - 1) * 4 + n;
+    itemsStartNight(run);
     UI.fade(() => {
       setScene(new NightScene(n)); UI.banner(`${monthPre(run)}第${NUM[n]}晚　22:30`);
       const tip = {

@@ -900,7 +900,7 @@ class NightScene {
   }
   cuteChance(key, move) {
     const info = CUTE[key];
-    return clamp(cuteBase(info, key, move) + 0.12 * this.run.upg.cute - 0.22 * (this.run.immune[key] || 0) + (this.event === 'bbq' ? 0.15 : 0), 0.05, 0.95);
+    return clamp(cuteBase(info, key, move) + (itemActive(this.run, 'catnip') ? 0.2 : 0) + 0.12 * this.run.upg.cute - 0.22 * (this.run.immune[key] || 0) + (this.event === 'bbq' ? 0.15 : 0), 0.05, 0.95);
   }
   // 選了招式：開始賣萌小遊戲（要操作，做得好才成功）
   resolveCute(move) {

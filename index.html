@@ -340,6 +340,17 @@ button { font-family: var(--font-ui); -webkit-tap-highlight-color: transparent; 
 .grp.garden { background: #9ad86a; color: #1f3a10; }
 .grp.gangtag { background: #f2b24a; color: #3a2408; }
 .grp.nm { background: #ff8fd0; color: #3a0f2a; }
+.tab { position: relative; }
+.tab.dot::after { content: ""; position: absolute; top: 5px; right: 6px; width: 9px; height: 9px; border-radius: 50%; background: #ff4a6a; box-shadow: 0 0 0 2px var(--panel, #1e1b3a); }
+.item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 8px; }
+.item-b { display: grid; grid-template-columns: 1fr auto; gap: 2px 6px; padding: 8px 10px; border-radius: 12px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.38); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.item-b b { font-weight: 400; font-size: 14.5px; }
+.item-b span { grid-column: 1 / -1; font-size: 12px; color: var(--ink-dim); line-height: 1.4; }
+.item-b i { grid-row: 1; grid-column: 2; font-style: normal; display: inline-flex; align-items: center; gap: 3px; font-size: 12px; color: #ffe27a; font-family: var(--font-px); }
+.item-b i img { width: 16px; height: 16px; }
+.item-b.on { border-color: #9fe8a8; }
+.item-b.on i { color: #9fe8a8; }
+.item-b:disabled:not(.on) { opacity: 0.5; cursor: default; }
 .win-themes { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 8px; }
 .win-t { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 8px 10px 8px 16px; border-radius: 12px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.38); color: var(--ink); font: inherit; text-align: left; cursor: pointer; overflow: hidden; }
 .win-t::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: linear-gradient(var(--wc), var(--wc2)); }
@@ -7295,20 +7306,20 @@ const CUTE_MOVES = [
 ];
 
 const UPGRADES = [
-  { id: 'mouth', name: '大嘴巴', group: '技能', max: 3, cost: [12, 30, 60], mon: [1, 1, 3], lv: ['一次叼 2 朵（斜背一個小花袋）', '一次叼 3 朵（換成藤編花籃）', '一次叼 4 朵（插滿花、綁著蝴蝶結的大花簍）'], base: '一次叼 1 朵' },
+  { id: 'mouth', name: '大嘴巴', group: '技能', max: 3, cost: [12, 30, 60], mon: [1, 1, 2], lv: ['一次叼 2 朵（斜背一個小花袋）', '一次叼 3 朵（換成藤編花籃）', '一次叼 4 朵（插滿花、綁著蝴蝶結的大花簍）'], base: '一次叼 1 朵' },
   { id: 'gentle', name: '輕輕叼', group: '技能', max: 2, cost: [8, 20], lv: ['奔跑掉花瓣機率減半（繫上薄荷綠小領巾）', '奔跑完全不掉花瓣（換成粉紅蕾絲領巾）'], base: '奔跑會掉花瓣' },
   { id: 'paws', name: '肉球消音', group: '技能', max: 2, cost: [10, 24], lv: ['腳步聲範圍 −40%（穿上灰色小襪子）', '腳步聲範圍 −70%（換成黑色忍者襪）'], base: '奔跑腳步聲正常' },
   { id: 'catwalk', name: '貓步', group: '技能', max: 2, cost: [10, 24], lv: ['走路時被發現的速度 −30%（戴上怪盜眼罩）', '走路被發現 −50%，走碎石也沒聲音（紫色金邊眼罩）'], base: '走路也會被看到' },
   { id: 'nightvis', name: '夜視', group: '技能', max: 2, cost: [12, 26], lv: ['隔著房子也看得到鄰居（眼睛會發光）', '暗的地方被發現的速度 −25%（眼睛更亮）'], base: '牆後面有誰看不到' },
   { id: 'sniff', name: '嗅花', group: '技能', max: 2, cost: [8, 18], lv: ['畫面邊緣指出最近的三盆花（耳朵別一朵小花）', '再標出價錢、訂單要的花（換成大朵的花）'], base: '花在哪要自己找' },
   { id: 'bribe', name: '罐罐收買', group: '技能', max: 2, cost: [10, 22], lv: ['小柴要叫的時候丟一個罐罐，安靜 18 秒（背上藍色小背包）', '安靜 30 秒，野狗也收買得到（背包掛著小魚乾）'], base: '狗看到你就叫' },
-  { id: 'owl', name: '夜貓子', group: '技能', max: 3, cost: [10, 26, 50], mon: [1, 1, 3], lv: ['每晚多 45 分鐘（尾巴綁上月亮吊飾）', '每晚多 90 分鐘（月亮旁邊多一顆星星）', '每晚多 135 分鐘（尾巴掛上會發光的小燈籠）'], base: '02:30 前回家' },
-  { id: 'cute', name: '萌力', group: '技能', max: 4, cost: [8, 18, 36, 70], mon: [1, 1, 1, 3], lv: ['賣萌成功率 +12%（頭上小蝴蝶結）', '賣萌成功率 +24%（大蝴蝶結）', '賣萌成功率 +36%（花冠）', '賣萌成功率 +48%（花冠中間多一頂金色小皇冠）'], base: '賣萌靠天分' },
+  { id: 'owl', name: '夜貓子', group: '技能', max: 3, cost: [10, 26, 50], mon: [1, 1, 2], lv: ['每晚多 45 分鐘（尾巴綁上月亮吊飾）', '每晚多 90 分鐘（月亮旁邊多一顆星星）', '每晚多 135 分鐘（尾巴掛上會發光的小燈籠）'], base: '02:30 前回家' },
+  { id: 'cute', name: '萌力', group: '技能', max: 4, cost: [8, 18, 36, 70], mon: [1, 1, 1, 2], lv: ['賣萌成功率 +12%（頭上小蝴蝶結）', '賣萌成功率 +24%（大蝴蝶結）', '賣萌成功率 +36%（花冠）', '賣萌成功率 +48%（花冠中間多一頂金色小皇冠）'], base: '賣萌靠天分' },
   { id: 'tilt', name: '歪頭殺', group: '撒嬌', max: 1, cost: [22], mon: [2], lv: ['賣萌多一招「歪頭殺」：王太太最吃這套（頭頂長出一根呆毛）'], base: '賣萌只會三招' },
-  { id: 'dead', name: '裝死', group: '撒嬌', max: 1, cost: [35], mon: [3], lv: ['賣萌多一招「裝死」：林先生和管家會被嚇到（額頭貼一個 OK 繃）'], base: '還不會裝死' },
-  { id: 'roofway', name: '屋頂走廊', group: '技能', max: 2, cost: [45, 90], mon: [3, 4], lv: ['屋頂之間搭木板：花店↔林家、王家↔空屋、空屋↔阿伯家，在屋頂上按「過」就到另一家（背上多一捆小木板）', '再拉兩條電線：林家→王家、花店→王家，按「滑」一下就到；過橋也變快（換成登山繩和扣環）'], base: '要過去別家屋頂，得先下到地面' },
-  { id: 'call', name: '喵喵廣播', group: '技能', max: 2, cost: [24, 48], mon: [3, 3], lv: ['多一個「喵！」按鈕：把叫聲丟到前方，附近的人會走過去看（每晚 3 次；脖子掛一個金色小喇叭）', '每晚 5 次、聲音傳得更遠（喇叭換成紅白大聲公）'], base: '只能撥倒東西把人引開' },
-  { id: 'tunnel', name: '貓道', group: '技能', max: 1, cost: [80], mon: [4], lv: ['花店貓門和巷底之間挖一條秘密貓道，在洞口按「鑽」一下就到另一頭（戴上礦工頭燈）'], base: '每次都要走完整條巷子' },
+  { id: 'dead', name: '裝死', group: '撒嬌', max: 1, cost: [35], mon: [2], lv: ['賣萌多一招「裝死」：林先生和管家會被嚇到（額頭貼一個 OK 繃）'], base: '還不會裝死' },
+  { id: 'roofway', name: '屋頂走廊', group: '技能', max: 2, cost: [45, 90], mon: [2, 3], lv: ['屋頂之間搭木板：花店↔林家、王家↔空屋、空屋↔阿伯家，在屋頂上按「過」就到另一家（背上多一捆小木板）', '再拉兩條電線：林家→王家、花店→王家，按「滑」一下就到；過橋也變快（換成登山繩和扣環）'], base: '要過去別家屋頂，得先下到地面' },
+  { id: 'call', name: '喵喵廣播', group: '技能', max: 2, cost: [24, 48], mon: [2, 2], lv: ['多一個「喵！」按鈕：把叫聲丟到前方，附近的人會走過去看（每晚 3 次；脖子掛一個金色小喇叭）', '每晚 5 次、聲音傳得更遠（喇叭換成紅白大聲公）'], base: '只能撥倒東西把人引開' },
+  { id: 'tunnel', name: '貓道', group: '技能', max: 1, cost: [80], mon: [3], lv: ['花店貓門和巷底之間挖一條秘密貓道，在洞口按「鑽」一下就到另一頭（戴上礦工頭燈）'], base: '每次都要走完整條巷子' },
   { id: 'jump', name: '跳高高', group: '技能', max: 1, cost: [20], lv: ['翻過大宅圍牆，偷溫室蝴蝶蘭（背上長出小翅膀）'], base: '大宅圍牆太高' },
   { id: 'orange', name: '橘貓夥伴', group: '夥伴', max: 3, cost: [15, 32, 60], lv: ['每晚跟你出門（體力 3），還自己帶回 NT$ 400（藍色領巾）', '體力 4，自己帶回 NT$ 900（加一個小背包）', '體力 5，自己帶回 NT$ 1,600（披上紅披風）'], base: '還沒有夥伴', need: 'orangeCat' },
   { id: 'lucky', name: '招財貓', group: '花店', max: 3, cost: [12, 28, 55], lv: ['花的賣價 ×1.2，賣萌多一招「招財手」（紅項圈小金鈴，櫃台多一隻招財貓）', '花的賣價 ×1.45（鈴鐺變大、招財貓抱金幣）', '花的賣價 ×1.75（金項圈，招財貓變金色）'], base: '賣價 ×1' },
@@ -7323,7 +7334,7 @@ const STORE_UPGRADES = [
   { id: 'expand', name: '花店擴建', max: 4, cost: [30000, 60000, 100000, 180000], mon: [2, 2, 3, 4],
     lv: ['咖啡角：店裡擺兩張小咖啡桌、櫃台多一台咖啡機；每位客人多買一杯咖啡 NT$ 80', '騎樓座位：門口擺上條紋陽傘和桌椅（晚上也看得到）；上門的客人變多', '花藝教室：後門搭起花拱門、開插花課；每天傍晚收學費', '旗艦店：水晶吊燈、門口紅地毯、金色燈；所有花的賣價 ×1.25'],
     base: '小小一間，只賣花', reveal: ['咖啡機到了！花香配咖啡香，好像在國外的小店。', '陽傘撐起來了！路過的人都會想坐一下。', '花拱門好美……花藝教室，開課囉！', '水晶燈亮起來了……這是我們的店嗎？'] },
-  { id: 'catcorner', name: '貓咪店長區', max: 3, cost: [20000, 45000, 80000], mon: [3, 3, 4],
+  { id: 'catcorner', name: '貓咪店長區', max: 3, cost: [20000, 45000, 80000], mon: [2, 3, 4],
     lv: ['角落擺一座貓跳台：花喵幫的小弟可以留在店裡上班（出門前選「店裡上班」），每隻每天招來 NT$ 400', '加上貓吊床和逗貓棒：每隻每天 NT$ 800', '蓋一間貓咪小屋：每隻每天 NT$ 1,200，客人專程來看貓'],
     base: '貓咪們沒地方待', reveal: ['貓跳台組好了！小弟們一定會搶著上去。', '吊床晃呀晃……客人都在拍照。', '貓咪小屋！這間店快變成貓咖啡了。'] },
 ];
@@ -7338,7 +7349,7 @@ function flowerValue(run, t, fresh) {
   const cold = s.fridge && DELICATE.includes(t) ? 1.5 : 1;
   // 佈置第 2 級起：掉了花瓣的殘花做成乾燥花，最少也有七成價
   const fr = s.fridge ? 1 : (s.decor || 0) >= 2 ? Math.max(0.7, fresh) : fresh;
-  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t) * EXP_PRICE_MULT[s.expand || 0] * (run.flags && run.flags.oldShears ? 1.1 : 1) * winMult(run, t);
+  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t) * EXP_PRICE_MULT[s.expand || 0] * (run.flags && run.flags.oldShears ? 1.1 : 1) * winMult(run, t) * (itemActive(run, 'bell') ? 1.2 : 1);
 }
 const ORANGE_INCOME = [0, 400, 900, 1600];
 const LUCKY_MULT = [1, 1.2, 1.45, 1.75];
@@ -8576,7 +8587,7 @@ class NightScene {
   }
   cuteChance(key, move) {
     const info = CUTE[key];
-    return clamp(cuteBase(info, key, move) + 0.12 * this.run.upg.cute - 0.22 * (this.run.immune[key] || 0) + (this.event === 'bbq' ? 0.15 : 0), 0.05, 0.95);
+    return clamp(cuteBase(info, key, move) + (itemActive(this.run, 'catnip') ? 0.2 : 0) + 0.12 * this.run.upg.cute - 0.22 * (this.run.immune[key] || 0) + (this.event === 'bbq' ? 0.15 : 0), 0.05, 0.95);
   }
   // 選了招式：開始賣萌小遊戲（要操作，做得好才成功）
   resolveCute(move) {
@@ -9467,7 +9478,7 @@ function nightEventFor(run, n) {
 // ---------- 開始 ----------
 function initNightPlus(sc) {
   const run = sc.run, up = run.upg;
-  sc.lv = { catwalk: up.catwalk || 0, nightvis: up.nightvis || 0, sniff: up.sniff || 0, bribe: up.bribe || 0 };
+  sc.lv = { catwalk: up.catwalk || 0, nightvis: up.nightvis || 0, sniff: itemActive(sc.run, 'map') ? 2 : (up.sniff || 0), bribe: up.bribe || 0 };
   const ev = nightEventFor(run, sc.n);
   sc.nev = ev ? { id: ev.id, t0: ev.t0, phase: 'wait', t: 0 } : null;
   sc.lookUp = false; sc.wished = false;
@@ -11278,7 +11289,7 @@ const UI = {
   },
   shop(run, done) {
     const st = storeOf(run);
-    let tab = 'store', pickIdx = -1;
+    let tab = 'store', pickIdx = -1, BD = {};
     const render = () => {
       const pips = (lv, max) => Array.from({ length: max }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('');
       let body;
@@ -11319,15 +11330,16 @@ const UI = {
         }).join('');
         body = `<p class="lead">「罐罐拿來，本事教你。」<br><small>學到的本事都會穿戴在花喵身上。</small></p>
           <div class="wallet"><img src="${G.icons.can}" alt=""><b class="px">${run.cans}</b><span>個罐罐</span></div>
+          ${itemsHTML(run)}
           <div class="cat-looks"><figure><canvas class="cat-look" data-who="tab"></canvas><figcaption>花喵現在的樣子</figcaption></figure>${run.upg.orange ? '<figure><canvas class="cat-look" data-who="orange"></canvas><figcaption>橘貓夥伴</figcaption></figure>' : ''}</div>
           <ul class="ups">${rows}</ul>${gangShopHTML(run)}`;
       }
       const html = `<p class="eyebrow">傍晚</p><h2>${tab === 'store' ? '美玲的花店' : tab === 'garden' ? '頂樓花園' : tab === 'nm' ? '夜市花攤' : '巷口・老貓的攤子'}</h2>
-        <div class="tabs" role="tablist">
-          <button type="button" class="tab ${tab === 'store' ? 'on' : ''}" data-tab="store" role="tab" aria-selected="${tab === 'store'}">花店升級<small>現金 ${Math.round(run.money).toLocaleString('en-US')}</small></button>
-          <button type="button" class="tab ${tab === 'garden' ? 'on' : ''}" data-tab="garden" role="tab" aria-selected="${tab === 'garden'}">頂樓花園<small>${gardenOpen(run) ? (gardenOf(run).lv ? GARDEN_LV[gardenOf(run).lv - 1].pots + ' 盆' : '還沒蓋') : '第二個月'}</small></button>
-          ${nmOpen(run) ? `<button type="button" class="tab ${tab === 'nm' ? 'on' : ''}" data-tab="nm" role="tab" aria-selected="${tab === 'nm'}">夜市<small>${nmOf(run).lv ? NM_LV[nmOf(run).lv - 1].cap + ' 朵' : '還沒擺'}</small></button>` : ''}
-          <button type="button" class="tab ${tab === 'cat' ? 'on' : ''}" data-tab="cat" role="tab" aria-selected="${tab === 'cat'}">老貓攤<small>罐罐 ${run.cans}</small></button>
+        <div class="tabs" role="tablist">${(() => { BD = shopBadges(run); return ''; })()}
+          <button type="button" class="tab ${tab === 'store' ? 'on' : ''} ${BD.store ? 'dot' : ''}" data-tab="store" role="tab" aria-selected="${tab === 'store'}">花店升級<small>現金 ${Math.round(run.money).toLocaleString('en-US')}</small></button>
+          <button type="button" class="tab ${tab === 'garden' ? 'on' : ''} ${BD.garden ? 'dot' : ''}" data-tab="garden" role="tab" aria-selected="${tab === 'garden'}">頂樓花園<small>${gardenOpen(run) ? (gardenOf(run).lv ? GARDEN_LV[gardenOf(run).lv - 1].pots + ' 盆' : '還沒蓋') : '第二個月'}</small></button>
+          ${nmOpen(run) ? `<button type="button" class="tab ${tab === 'nm' ? 'on' : ''} ${BD.nm ? 'dot' : ''}" data-tab="nm" role="tab" aria-selected="${tab === 'nm'}">夜市<small>${nmOf(run).lv ? NM_LV[nmOf(run).lv - 1].cap + ' 朵' : '還沒擺'}</small></button>` : ''}
+          <button type="button" class="tab ${tab === 'cat' ? 'on' : ''} ${BD.cat ? 'dot' : ''}" data-tab="cat" role="tab" aria-selected="${tab === 'cat'}">老貓攤<small>罐罐 ${run.cans}</small></button>
         </div>${body}`;
       this.modal(html, [{ label: '圖鑑', keep: true, onClick: () => UI.book(run, () => render(), 'bq') }, { label: '天黑了，出門', primary: true, onClick: done }], { cls: 'shop' });
       this.cardEl.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); tab = b.dataset.tab; pickIdx = -1; render(); }));
@@ -11335,6 +11347,10 @@ const UI = {
       const keep = () => { const sc = this.cardEl.scrollTop; render(); this.cardEl.scrollTop = sc; };
       this.cardEl.querySelectorAll('canvas.garden-art').forEach(cv => drawGardenArt(cv, run));
       drawGangFaces(this.cardEl);
+      this.cardEl.querySelectorAll('[data-item]').forEach(b => b.addEventListener('click', () => {
+        const r = buyItem(run, b.dataset.item); if (!r) return;
+        SFX.play(r.none ? 'nope' : 'buy'); this.toast(r.msg, 2600); keep();
+      }));
       this.cardEl.querySelectorAll('[data-win]').forEach(b => b.addEventListener('click', () => {
         if (setWindow(run, b.dataset.win)) { SFX.play('buy'); this.toast(`櫥窗換成「${winTheme(run).name}」！主題花 ×${WINDOW_MULT}`, 2600); }
         keep();
@@ -11414,7 +11430,7 @@ const UI = {
     const intel = (fresh.length ? `<ul class="intel">${li(fresh)}</ul>` : '') +
       (old.length ? `<details class="old"${fresh.length ? '' : ' open'}><summary>之前聽到的 ${old.length} 則</summary><ul class="intel">${li(old)}</ul></details>` : '');
     const prices = FLOWER_ORDER.map(t => { const b = themeBoost(run, t); return `<span class="price${b > 1 ? ' boost' : ''}"><img src="${G.icons[t]}" alt=""><span>${FLOWERS[t].name}</span><b class="px">${Math.round(FLOWERS[t].price * b)}</b></span>`; }).join('');
-    const end = NIGHT_END + 45 * run.upg.owl;
+    const end = NIGHT_END + 45 * run.upg.owl + (itemsPending(run).coffee ? 30 : 0);
     const ab = m <= 1 ? ABILITY_ORDER.find(k => ({ climb: 2, box: 3, orange: 4 })[k] === n) : null;
     const ocLv = run.upg.orange || 0;
     const abHtml = (ab ? `<div class="newab"><span class="tagnew">新能力</span><b>${ABILITIES[ab].name}</b><p>${esc(ABILITIES[ab].desc)}</p></div>` : '') +
@@ -11497,7 +11513,7 @@ function newRun() {
     store: { lights: 0, fridge: 0, neon: 0, scooter: 0, decor: 0 },
     intel: {}, immune: {}, flags: {},
     stats: { caught: 0, cuteWin: 0, cuteFail: 0, petals: 0, stolen: 0 },
-    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} }, bond: {}, storyCh: {}, regulars: {}, comm: null,
+    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} }, bond: {}, storyCh: {}, regulars: {}, comm: null, items: {}, act: null,
     month: 1, debt: 0, graceUsed: false, heat: {}, familiar: {}, nightIdx: 0, plan: {}, rentPaid: [],
     lastNight: null, rosePending: false, roseDone: false, night: 0,
     stock: [], orders: {}, regrow: {}, react: {},
@@ -11598,6 +11614,7 @@ const Flow = {
   startNight(n) {
     const run = G.run;
     run.night = n; run.nightIdx = ((run.month || 1) - 1) * 4 + n;
+    itemsStartNight(run);
     UI.fade(() => {
       setScene(new NightScene(n)); UI.banner(`${monthPre(run)}第${NUM[n]}晚　22:30`);
       const tip = {
@@ -12689,6 +12706,7 @@ const TUNNEL_ENDS = [[5.5, 5.5], [7.5, 40.4]];   // 花店門口旁邊、巷底
 function callCount(run) { const lv = run.upg.call || 0; return lv >= 2 ? 5 : lv ? 3 : 0; }
 NightScene.prototype.initCatSkills = function () {
   this.calls = callCount(this.run);
+  if (itemActive(this.run, 'coffee')) this.end += 30;
 };
 NightScene.prototype.catSkillButtons = function (sk) {
   if (this.mode === 'play' && this.run.upg.call) sk.push({ id: 'call', label: '喵！', n: this.calls, off: this.calls <= 0 });
@@ -13150,7 +13168,7 @@ function gangNight(run, n) {
 // 第三個月的某天早上：流浪貓集會，花喵幫成立
 function* gangIntroScript(S) {
   const run = S.run;
-  if (gangOpen(run) || (run.month || 1) < 3) return false;
+  if (gangOpen(run) || (run.month || 1) < 2) return false;
   run.flags.gangIntro = 1;
   const wasOn = S.shopOn; S.shopOn = false;
   yield S.say('花喵……門口怎麼聚了這麼多貓？');
@@ -13251,12 +13269,12 @@ function gangTallyHTML(R) {
 // 晚上花喵出門偷花的同時，美玲的花攤在夜市開張：把店裡剩下的花帶去賣，夜市價比較高。
 // 每晚可以選一種「主打花」，主打的花再加價。攤子一級一級變大（傍晚分頁的插畫看得到）。
 const NM_LV = [
-  { name: '小推車', cost: 40000, cap: 4, mon: 4, desc: '每晚帶 4 朵花去夜市賣（夜市價 ×1.3）', look: '一台掛著燈泡的木頭小推車' },
-  { name: '帆布棚＋串燈', cost: 90000, cap: 8, mon: 4, desc: '每晚 8 朵；串燈一亮，客人都圍過來', look: '粉紅條紋帆布棚，掛滿串燈' },
-  { name: '人氣招牌攤', cost: 160000, cap: 14, mon: 5, desc: '每晚 14 朵；排隊的人潮，夜市價 ×1.5', look: '大大的霓虹招牌，攤前排了一條長長的隊伍' },
+  { name: '小推車', cost: 40000, cap: 4, mon: 3, desc: '每晚帶 4 朵花去夜市賣（夜市價 ×1.3）', look: '一台掛著燈泡的木頭小推車' },
+  { name: '帆布棚＋串燈', cost: 90000, cap: 8, mon: 3, desc: '每晚 8 朵；串燈一亮，客人都圍過來', look: '粉紅條紋帆布棚，掛滿串燈' },
+  { name: '人氣招牌攤', cost: 160000, cap: 14, mon: 4, desc: '每晚 14 朵；排隊的人潮，夜市價 ×1.5', look: '大大的霓虹招牌，攤前排了一條長長的隊伍' },
 ];
 function nmOf(run) { return run.nm || (run.nm = { lv: 0, star: null, story: {} }); }
-function nmOpen(run) { return (run.month || 1) >= 4; }
+function nmOpen(run) { return (run.month || 1) >= 3; }
 function nmMult(run) { return nmOf(run).lv >= 3 ? 1.5 : 1.3; }
 // 天亮前結算：從店裡的庫存挑花去賣（主打的先，再挑貴的）
 function nmSell(run, stock) {
@@ -13317,7 +13335,7 @@ function* nmStoryScript(S) {
 
 // ---------- 傍晚的分頁 ----------
 function nmTabHTML(run) {
-  if (!nmOpen(run)) return `<p class="lead">「夜市好熱鬧……如果我們也有一個攤位就好了。」</p><p class="hint">第四個月開放。</p>`;
+  if (!nmOpen(run)) return `<p class="lead">「夜市好熱鬧……如果我們也有一個攤位就好了。」</p><p class="hint">第三個月開放。</p>`;
   const N = nmOf(run), next = NM_LV[N.lv], early = next && (run.month || 1) < next.mon;
   const pips = NM_LV.map((_, i) => `<i class="${i < N.lv ? 'on' : ''}"></i>`).join('');
   const row = next ? `<li class="up ${early ? 'locked' : ''}"><div class="up-main"><div class="up-name"><span class="grp nm">夜市</span><b>${next.name}</b><span class="pips">${pips}</span></div>
@@ -13767,6 +13785,54 @@ function catCornerDay3D(sc, F) {
     const [dx, h] = TREE_SEATS[i], act = ['none', 'blink', 'none', 'yawn', 'ear'][(Math.floor((t + i * 1.3) / 2.4)) % 5];
     pushSprite(F.sprites, gangLoaf(m, 1, act), (tx + dx) * TS, (tz + 0.05) * TS, { lift: h * cpd, minLight: [0.62, 0.58, 0.55] });
   });
+}
+
+// ================= 老貓攤的道具（罐罐可以一直花的地方）=================
+// 每晚出門前可以買，只對今晚有效（小魚乾禮盒是馬上送出去）。一晚每種只能買一個。
+const ITEMS = [
+  { id: 'catnip', name: '貓薄荷', cost: 8, desc: '今晚賣萌成功率 +20%' },
+  { id: 'coffee', name: '夜貓咖啡', cost: 10, desc: '今晚多 30 分鐘' },
+  { id: 'bell', name: '幸運鈴鐺', cost: 15, desc: '今晚帶回的花，明天賣價 ×1.2' },
+  { id: 'fish', name: '小魚乾禮盒', cost: 12, desc: '送給最生氣的鄰居，他的警戒馬上降 25', now: true },
+  { id: 'map', name: '老貓的地圖', cost: 20, desc: '今晚畫面邊緣標出所有還沒偷的花（像嗅花第二級）' },
+];
+function itemsPending(run) { return run.items || (run.items = {}); }
+function itemActive(run, id) { const a = run.act; return !!(a && a.idx === run.nightIdx && a[id]); }
+function buyItem(run, id) {
+  const it = ITEMS.find(x => x.id === id), P = itemsPending(run);
+  if (!it || P[id] || run.cans < it.cost) return null;
+  if (it.now) {
+    const o = HEAT_OWNERS.slice().sort((a, b) => heatOf(run, b) - heatOf(run, a))[0];
+    if (!o || heatOf(run, o) <= 0) return { msg: '大家都沒在生氣，小魚乾留著吧', none: true };
+    run.cans -= it.cost; P[id] = 1; heatAdd(run, o, -25);
+    return { msg: `把小魚乾禮盒放在${OWNERS[o].person}家門口了（警戒 ${starStr(starsOf(run, o))}）` };
+  }
+  run.cans -= it.cost; P[id] = 1;
+  return { msg: `買了${it.name}：${it.desc}` };
+}
+// 出門時：買的道具變成今晚的效果
+function itemsStartNight(run) {
+  const P = itemsPending(run), a = { idx: run.nightIdx };
+  for (const k in P) a[k] = 1;
+  run.act = a; run.items = {};
+}
+function itemsHTML(run) {
+  const P = itemsPending(run);
+  return `<h3>今晚的道具<small>只對今晚有效</small></h3><div class="item-grid">${ITEMS.map(it => `<button type="button" class="item-b ${P[it.id] ? 'on' : ''}" data-item="${it.id}" ${P[it.id] || run.cans < it.cost ? 'disabled' : ''}>
+    <b>${it.name}</b><span>${esc(it.desc)}</span><i>${P[it.id] ? '已買' : `<img src="${G.icons.can}" alt="罐罐">${it.cost}`}</i></button>`).join('')}</div>`;
+}
+
+// ---------- 分頁上的紅點：有東西買得起 ----------
+function shopBadges(run) {
+  const st = storeOf(run), m = run.month || 1;
+  const storeB = STORE_UPGRADES.some(u => { const lv = st[u.id] || 0; return lv < u.max && run.money >= u.cost[lv] && !(u.mon && m < u.mon[lv]); });
+  const g = gardenOf(run), cut = run.cuttings || {};
+  const gardenB = gardenOpen(run) && ((GARDEN_LV[g.lv] && run.money >= GARDEN_LV[g.lv].cost) || (g.lv && Array.from({ length: gardenPots(run) }, (_, i) => !g.plots[i]).some(Boolean) && Object.keys(cut).some(t => cut[t] > 0 && plantable(run, t))));
+  const catB = UPGRADES.some(u => { const lv = run.upg[u.id] || 0; return lv < u.max && run.cans >= u.cost[lv] && !(u.need && !run.intel[u.need]) && !(u.mon && m < u.mon[lv]); })
+    || (gangOpen(run) && GANG.some(x => !gangOf(run)[x.id] && run.cans >= x.cost && (run.strays || 0) >= x.need));
+  const N = nmOf(run), nx = NM_LV[N.lv];
+  const nmB = nmOpen(run) && nx && run.money >= nx.cost && m >= nx.mon;
+  return { store: storeB, garden: gardenB, cat: catB, nm: nmB };
 }
 
 // ================= 漫畫風的疊加圖層：表情符號、懷疑條、狀聲詞、賣萌特寫 =================

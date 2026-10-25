@@ -2,12 +2,12 @@
 // 晚上花喵出門偷花的同時，美玲的花攤在夜市開張：把店裡剩下的花帶去賣，夜市價比較高。
 // 每晚可以選一種「主打花」，主打的花再加價。攤子一級一級變大（傍晚分頁的插畫看得到）。
 const NM_LV = [
-  { name: '小推車', cost: 40000, cap: 4, mon: 4, desc: '每晚帶 4 朵花去夜市賣（夜市價 ×1.3）', look: '一台掛著燈泡的木頭小推車' },
-  { name: '帆布棚＋串燈', cost: 90000, cap: 8, mon: 4, desc: '每晚 8 朵；串燈一亮，客人都圍過來', look: '粉紅條紋帆布棚，掛滿串燈' },
-  { name: '人氣招牌攤', cost: 160000, cap: 14, mon: 5, desc: '每晚 14 朵；排隊的人潮，夜市價 ×1.5', look: '大大的霓虹招牌，攤前排了一條長長的隊伍' },
+  { name: '小推車', cost: 40000, cap: 4, mon: 3, desc: '每晚帶 4 朵花去夜市賣（夜市價 ×1.3）', look: '一台掛著燈泡的木頭小推車' },
+  { name: '帆布棚＋串燈', cost: 90000, cap: 8, mon: 3, desc: '每晚 8 朵；串燈一亮，客人都圍過來', look: '粉紅條紋帆布棚，掛滿串燈' },
+  { name: '人氣招牌攤', cost: 160000, cap: 14, mon: 4, desc: '每晚 14 朵；排隊的人潮，夜市價 ×1.5', look: '大大的霓虹招牌，攤前排了一條長長的隊伍' },
 ];
 function nmOf(run) { return run.nm || (run.nm = { lv: 0, star: null, story: {} }); }
-function nmOpen(run) { return (run.month || 1) >= 4; }
+function nmOpen(run) { return (run.month || 1) >= 3; }
 function nmMult(run) { return nmOf(run).lv >= 3 ? 1.5 : 1.3; }
 // 天亮前結算：從店裡的庫存挑花去賣（主打的先，再挑貴的）
 function nmSell(run, stock) {
@@ -68,7 +68,7 @@ function* nmStoryScript(S) {
 
 // ---------- 傍晚的分頁 ----------
 function nmTabHTML(run) {
-  if (!nmOpen(run)) return `<p class="lead">「夜市好熱鬧……如果我們也有一個攤位就好了。」</p><p class="hint">第四個月開放。</p>`;
+  if (!nmOpen(run)) return `<p class="lead">「夜市好熱鬧……如果我們也有一個攤位就好了。」</p><p class="hint">第三個月開放。</p>`;
   const N = nmOf(run), next = NM_LV[N.lv], early = next && (run.month || 1) < next.mon;
   const pips = NM_LV.map((_, i) => `<i class="${i < N.lv ? 'on' : ''}"></i>`).join('');
   const row = next ? `<li class="up ${early ? 'locked' : ''}"><div class="up-main"><div class="up-name"><span class="grp nm">夜市</span><b>${next.name}</b><span class="pips">${pips}</span></div>

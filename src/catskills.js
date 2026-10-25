@@ -4,6 +4,7 @@ const TUNNEL_ENDS = [[5.5, 5.5], [7.5, 40.4]];   // 花店門口旁邊、巷底
 function callCount(run) { const lv = run.upg.call || 0; return lv >= 2 ? 5 : lv ? 3 : 0; }
 NightScene.prototype.initCatSkills = function () {
   this.calls = callCount(this.run);
+  if (itemActive(this.run, 'coffee')) this.end += 30;
 };
 NightScene.prototype.catSkillButtons = function (sk) {
   if (this.mode === 'play' && this.run.upg.call) sk.push({ id: 'call', label: '喵！', n: this.calls, off: this.calls <= 0 });

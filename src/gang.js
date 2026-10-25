@@ -69,7 +69,7 @@ function gangNight(run, n) {
 // 第三個月的某天早上：流浪貓集會，花喵幫成立
 function* gangIntroScript(S) {
   const run = S.run;
-  if (gangOpen(run) || (run.month || 1) < 3) return false;
+  if (gangOpen(run) || (run.month || 1) < 2) return false;
   run.flags.gangIntro = 1;
   const wasOn = S.shopOn; S.shopOn = false;
   yield S.say('花喵……門口怎麼聚了這麼多貓？');

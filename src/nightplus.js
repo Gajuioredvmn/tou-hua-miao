@@ -24,7 +24,7 @@ function nightEventFor(run, n) {
 // ---------- 開始 ----------
 function initNightPlus(sc) {
   const run = sc.run, up = run.upg;
-  sc.lv = { catwalk: up.catwalk || 0, nightvis: up.nightvis || 0, sniff: up.sniff || 0, bribe: up.bribe || 0 };
+  sc.lv = { catwalk: up.catwalk || 0, nightvis: up.nightvis || 0, sniff: itemActive(sc.run, 'map') ? 2 : (up.sniff || 0), bribe: up.bribe || 0 };
   const ev = nightEventFor(run, sc.n);
   sc.nev = ev ? { id: ev.id, t0: ev.t0, phase: 'wait', t: 0 } : null;
   sc.lookUp = false; sc.wished = false;
