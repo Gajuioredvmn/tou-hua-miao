@@ -136,7 +136,7 @@ function* evBorrow(S) {
   yield* S.talk(b, '阿伯', [['美玲啊，妳的花剪借我一下。我家的桂花長太亂了。'], ['好啊，阿伯慢慢用～', null, 'M']]);
   yield wait(0.8);
   yield* S.talk(b, '阿伯', [['還妳。剪下來的枝妳拿去插，丟掉可惜。']]);
-  heatAdd(run, 'bo', -12);
+  heatAdd(run, 'bo', -12); addBond(run, 'bo', 1);
   run.cuttings = run.cuttings || {}; run.cuttings.osmanthus = (run.cuttings.osmanthus || 0) + 2;
   UI.toast('拿到桂花插枝 ×2，阿伯的戒心也鬆了一點', 2800);
   yield S.walkOut(b);

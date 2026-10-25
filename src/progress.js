@@ -30,7 +30,8 @@ function nightRulesFor(run, n) {
     const slots = [[1405, 1445], [1470, 1510], [1530, 1570]];
     P[m] = evs.map((ev, i) => ({ event: ev, ability: null, boLight: true, patrol: slots.slice(0, clamp(Math.floor((m + i) / 2), 1, 3)), butler: i === 3 || Math.random() < 0.25 }));
   }
-  return P[m][n - 1];
+  const R = P[m][n - 1];
+  return run.flags && run.flags.patrolLess ? Object.assign({}, R, { patrol: R.patrol.slice(0, Math.max(0, R.patrol.length - 1)) }) : R;
 }
 function eventInfo(run, ev) {
   const E = EVENTS[ev];
@@ -57,6 +58,7 @@ function starsOf(run, o) { const h = heatOf(run, o); return h >= STAR_AT[2] ? 3 
 function heatAdd(run, o, v) {
   if (!HEAT_OWNERS.includes(o)) return 0;
   const H = run.heat || (run.heat = {}), s0 = starsOf(run, o);
+  if (v > 0 && o === 'wang' && run.flags && run.flags.wangSoft) v *= 0.5;
   H[o] = clamp(Math.round((H[o] || 0) + v), 0, 100);
   return starsOf(run, o) - s0;
 }
@@ -258,7 +260,7 @@ function* visitScript(S, owner) {
   M.goTo([[7.5 * TS, 4.6 * TS], [11.5 * TS, 6.6 * TS]], 40);
   if (res === 'win') {
     yield* S.talk(who, O.person, [[L.win]]);
-    heatAdd(run, owner, HEAT.visitWin);
+    heatAdd(run, owner, HEAT.visitWin); addBond(run, owner, 1);
     UI.toast(`${O.person}放心回家了（警戒 ${starStr(starsOf(run, owner))}）`, 2600);
     SFX.play('heart');
   } else {
@@ -284,6 +286,7 @@ function pickVisit(run) {
 // ---------- 白天：送花賠罪 ----------
 function apologyTargets(run) { return HEAT_OWNERS.filter(o => starsOf(run, o) >= 1); }
 function apologize(run, o) {
+  addBond(run, o, 2);
   heatAdd(run, o, -HEAT.apology);
   run.stats.apology = (run.stats.apology || 0) + 1;
   return starsOf(run, o);

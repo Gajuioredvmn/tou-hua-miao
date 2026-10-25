@@ -409,7 +409,7 @@ class NightScene {
     if (out.length) out[out.length - 1] = [x1, y1];
     return out;
   }
-  tanhuaState() { return this.time < 1440 ? 'tanhuaBud' : this.time < 1500 ? 'tanhua' : 'tanhuaDead'; }
+  tanhuaState() { if (this.run.flags && this.run.flags.tanhuaNight === this.run.nightIdx) return 'tanhua'; return this.time < 1440 ? 'tanhuaBud' : this.time < 1500 ? 'tanhua' : 'tanhuaDead'; }
   capacity() { return 1 + this.run.upg.mouth; }
   pawsMult() { return [1, 0.6, 0.3][this.run.upg.paws]; }
   sfxNear(x, y, name) { if (Cam.visible(x, y, 60)) SFX.play(name); }
@@ -433,6 +433,7 @@ class NightScene {
     else if (this.wang.state === 'tv' && dist(wx, wy, x, y) <= r + 2 * TS) this.wang.wake();
   }
   dogAlert() {
+    if (this.run.flags && this.run.flags.shibaFriend) return;
     const d = this.dog;
     if (d.cool > 0 || d.charmT > 0) return;
     if (this.lv && this.lv.bribe && this.run.cans > 0) { bribeDog(this, d); return; }
@@ -883,7 +884,7 @@ class NightScene {
     Cam.zoom = 2;
     const info = CUTE[v.cuteKey];
     const known = info.intel ? !!this.run.intel[info.intel] : true;
-    const opts = CUTE_MOVES.map(m => ({ id: m.id, name: m.name, key: m.key, p: this.cuteChance(v.cuteKey, m.id) }));
+    const opts = cuteMovesFor(this).map(m => ({ id: m.id, name: m.name, key: m.key, how: m.how || CUTE_HOW[m.id], p: this.cuteChance(v.cuteKey, m.id) }));
     UI.cuteChoice(info.name, opts, known, this.run.immune[v.cuteKey] || 0, id => this.resolveCute(id), this.cuteCombo, assist);
   }
   tempActor(key) {
@@ -893,7 +894,7 @@ class NightScene {
   }
   cuteChance(key, move) {
     const info = CUTE[key];
-    return clamp(info.base[move] + 0.12 * this.run.upg.cute - 0.22 * (this.run.immune[key] || 0) + (this.event === 'bbq' ? 0.15 : 0), 0.05, 0.95);
+    return clamp(cuteBase(info, key, move) + 0.12 * this.run.upg.cute - 0.22 * (this.run.immune[key] || 0) + (this.event === 'bbq' ? 0.15 : 0), 0.05, 0.95);
   }
   // 選了招式：開始賣萌小遊戲（要操作，做得好才成功）
   resolveCute(move) {
@@ -901,11 +902,12 @@ class NightScene {
     const p = this.cuteChance(cu.key, move);
     cu.move = move; cu.phase = 'game'; cu.t = 0; cu.ok = null;
     const c = this.cat;
+    if (move === 'gift') { this.giftCute(p); return; }
     const game = this.cutin = new CuteGame(move, cu.key, cu.actor.key || cu.key, p, { assist: cu.assist });
     Input.stick = null; Input.showStick(false);
     Input.game = (type, a) => game.input(type, a);
-    if (move === 'belly') { c.pose = 'belly'; }
-    else if (move === 'meow') { c.pose = 'meow'; }
+    if (move === 'belly' || move === 'dead') { c.pose = 'belly'; }
+    else if (move === 'meow' || move === 'tilt' || move === 'maneki') { c.pose = 'meow'; }
     else { c.pose = 'rub'; c.wiggle = 1; cu.rubFrom = [c.x, c.y]; }
   }
   updateCute(dt) {
@@ -952,7 +954,7 @@ class NightScene {
       }
     }
     if (game && game.done) this.endCute();
-    else if (!game && cu.t > 6) this.endCute();
+    else if (!game && cu.t > (cu.gift ? 2.4 : 6)) this.endCute();
   }
   endCute() {
     const cu = this.cute, c = this.cat, v = cu.v, a = cu.actor;

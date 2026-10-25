@@ -54,7 +54,9 @@ class CuteGame {
     this.assist = !!opt.assist; this.assistUsed = false; this.retry = false; this.assistMeow = false;
     // 從這一招的五種裡抽一種，最近兩次玩過的不抽；force 是測試用
     const recent = CUTE_LAST[move] || [];
-    const pool = CUTE_KINDS[move].filter(k => !recent.includes(k));
+    let pool = CUTE_KINDS[move].filter(k => !recent.includes(k));
+    if (!pool.length) pool = CUTE_KINDS[move].filter(k => k !== recent[0]);
+    if (!pool.length) pool = CUTE_KINDS[move];
     this.kind = CuteGame.force && CUTE_KINDS[move].includes(CuteGame.force) ? CuteGame.force : pick(pool);
     CUTE_LAST[move] = [this.kind].concat(recent).slice(0, 2);
     let v = Math.floor(Math.random() * 3);
@@ -193,7 +195,8 @@ class CuteGame {
   }
   drawArt(pen, k) {
     const st = this.artState();
-    return this.move === 'meow' ? drawMeowArt2(st, pen, k) : this.move === 'belly' ? drawBellyArt2(st, pen, k) : drawRubArt2(st, this.who, pen, k);
+    const am = cuteArtMove(this.move);
+    return am === 'meow' ? drawMeowArt2(st, pen, k) : am === 'belly' ? drawBellyArt2(st, pen, k) : drawRubArt2(st, this.who, pen, k);
   }
 }
 

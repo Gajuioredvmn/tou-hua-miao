@@ -65,10 +65,11 @@ function gardenForecast(run) {
 // ---------- 粉絲：花園讓鄰居變成粉絲，早上會在門口放花 ----------
 const FAN_GIFTS = { wang: ['rose', 'lisianthus'], bo: ['osmanthus', 'tanhua'], lin: ['jasmine', 'hydrangea'], chief: ['carnation', 'sunflower'] };
 const FAN_NAMES = { wang: '王太太', bo: '阿伯', lin: '林先生', chief: '里長' };
-function addFan(run, who) { run.fans = run.fans || []; if (!run.fans.includes(who)) run.fans.push(who); }
+const FAN_OWNER = { wang: 'wang', bo: 'bo', lin: 'lin', chief: 'public' };
+function addFan(run, who) { run.fans = run.fans || []; if (!run.fans.includes(who)) { run.fans.push(who); addBond(run, FAN_OWNER[who], 2); } }
 function fanGifts(run) {
   const out = [];
-  for (const who of run.fans || []) if (Math.random() < 0.45) out.push({ who, t: pick(FAN_GIFTS[who]) });
+  for (const who of run.fans || []) if (Math.random() < (who === 'wang' && run.flags && run.flags.wangGift2 ? 0.75 : 0.45)) out.push({ who, t: pick(FAN_GIFTS[who]) });
   return out;
 }
 
@@ -151,6 +152,7 @@ function* gardenMorningScript(S) {
     S.fx.hearts(S.cat.x, S.cat.y - 10, 3);
   }
   for (const gf of gifts) {
+    addBond(run, FAN_OWNER[gf.who], 1);
     yield S.say(`門口有${FAN_NAMES[gf.who]}放的${FLOWERS[gf.t].name}，還夾了一張小卡片。`);
   }
   if (hv.length || gifts.length) UI.hideDialog();

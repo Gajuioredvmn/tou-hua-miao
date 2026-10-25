@@ -198,9 +198,8 @@ const UI = {
   cuteChoice(name, opts, known, immune, cb, combo = 0, assist = false) {
     const hearts = p => p >= 0.7 ? '♥♥♥' : p >= 0.45 ? '♥♥' : '♥';
     // 每一招有三種玩法，被抓到時隨機抽一種
-    const how = { meow: '節奏・聲音・眼神', belly: '時機・連打・撲光點', rub: '貼貼・討摸・毛線球' };
     this.sheetEl.innerHTML = `<div class="sheet-head"><b>被${esc(name)}發現了！</b><span>${combo ? `萌連擊 ×${combo} 中` : '快賣萌'}</span></div>
-      <div class="cute-row">${opts.map(o => `<button type="button" class="cute-btn" data-id="${o.id}"><span class="cn">${o.name}</span><span class="ch ${known ? '' : 'unk'}">${known ? hearts(o.p) : '？'}</span><span class="how">${how[o.id] || ''}</span><kbd>${o.key}</kbd></button>`).join('')}</div>
+      <div class="cute-row">${opts.map(o => `<button type="button" class="cute-btn" data-id="${o.id}"><span class="cn">${o.name}</span><span class="ch ${known ? '' : 'unk'}">${known ? hearts(o.p) : '？'}</span><span class="how">${esc(o.how || '')}</span><kbd>${o.key}</kbd></button>`).join('')}</div>
       <p class="sheet-note">${known ? '白天偷聽過' + esc(name) + '的喜好：♥ 越多越好做' : '沒聽過' + esc(name) + '的喜好，只能用猜的'}${immune ? `。同一個人萌越多次越難（已萌 ${immune} 次）` : ''}${assist ? '<br><b class="oc-note">橘貓在旁邊：失敗時牠會救場，再玩一次</b>' : ''}</p>`;
     this.sheetEl.hidden = false;
     this.setAction(null); this.setWait(false, false); this.setSkills([]);
@@ -535,7 +534,7 @@ function newRun() {
     store: { lights: 0, fridge: 0, neon: 0, scooter: 0, decor: 0 },
     intel: {}, immune: {}, flags: {},
     stats: { caught: 0, cuteWin: 0, cuteFail: 0, petals: 0, stolen: 0 },
-    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} },
+    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} }, bond: {}, storyCh: {},
     month: 1, debt: 0, graceUsed: false, heat: {}, familiar: {}, nightIdx: 0, plan: {}, rentPaid: [],
     lastNight: null, rosePending: false, roseDone: false, night: 0,
     stock: [], orders: {}, regrow: {}, react: {},

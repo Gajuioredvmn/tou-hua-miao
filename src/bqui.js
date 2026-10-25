@@ -127,6 +127,21 @@ UI.book = function (run, back, tab = 'bq') {
         <div class="bk-goal ${run.flags.bqSig ? 'done' : ''}">收集 6 種：招牌花束（以後花束都 ×1.1）<b class="px">${Math.min(6, cnt.recipes + cnt.schemes)}/6</b></div>
         <h3>有名字的花束　${cnt.recipes}/${RECIPES.length}</h3><ul class="bk-grid">${rc}</ul>
         <h3>配色　${cnt.schemes}/${SCHEME_ORDER.length}</h3><ul class="bk-grid">${sc}</ul>`;
+    } else if (tab === 'nb') {
+      const rows = storyProgress(run).map(p => {
+        const hearts = Math.min(p.bond, 9);
+        const chs = p.titles.map((t, i) => `<li class="${i < p.done ? 'got' : ''}">${i < p.done ? esc(t) : '？？？'}</li>`).join('');
+        const hint = p.done >= 3 ? '故事都看完了' : starsOf(run, p.o) > 0 ? `${p.person}還在生氣（警戒要降到零顆星）` : `交情 ${p.bond}/${p.next}`;
+        return `<li class="nb"><div class="nb-h"><b>${esc(p.person)}</b><span class="nb-hearts">${'♥'.repeat(hearts)}<i>${'♡'.repeat(9 - hearts)}</i></span></div><ol>${chs}</ol><p>${hint}</p></li>`;
+      }).join('');
+      body = `<p class="lead">交情會因為：變成花園或花店的粉絲、收到他們送的花、送花賠罪、白天被懷疑時擋下來……慢慢變高。交情夠了，而且那家人沒在生氣，早上就會聽到下一段故事。</p><ul class="nb-list">${rows}</ul>`;
+    } else if (tab === 'ev') {
+      const seen = run.evSeen || {};
+      const ev = DAY_EVENTS.map(e => `<li class="${seen[e.id] ? 'got' : ''}"><b>${seen[e.id] ? esc(e.name) : '？？？'}</b><span class="px">${seen[e.id] ? '×' + seen[e.id] : ''}</span></li>`).join('');
+      const cats = GANG.map(m => { const st = gangOf(run)[m.id]; return `<li class="${st ? 'got' : ''}"><b>${st ? esc(m.name) : '？？？'}</b><span>${st ? `帶回 ${st.hauls || 0} 朵` : ''}</span></li>`; }).join('');
+      body = `<h3>白天的事件　${Object.keys(seen).length}/${DAY_EVENTS.length}</h3><ul class="ev-list">${ev}</ul>
+        <h3>花喵幫　${gangMembers(run).length}/${GANG.length}</h3><ul class="ev-list">${cats}</ul>
+        <p class="hint">巷子裡的流浪貓好感：${run.strays || 0}</p>`;
     } else {
       const fl = FLOWER_ORDER.map(t => {
         const n = B.flowers[t] || 0, F = FLOWERS[t];
@@ -139,6 +154,8 @@ UI.book = function (run, back, tab = 'bq') {
       <div class="tabs" role="tablist">
         <button type="button" class="tab ${tab === 'bq' ? 'on' : ''}" data-tab="bq" role="tab" aria-selected="${tab === 'bq'}">花束<small>${cnt.recipes + cnt.schemes} / ${totalBq}</small></button>
         <button type="button" class="tab ${tab === 'fl' ? 'on' : ''}" data-tab="fl" role="tab" aria-selected="${tab === 'fl'}">花<small>${cnt.flowers} / ${FLOWER_ORDER.length}</small></button>
+        <button type="button" class="tab ${tab === 'nb' ? 'on' : ''}" data-tab="nb" role="tab" aria-selected="${tab === 'nb'}">鄰居<small>${storyProgress(run).reduce((a, p) => a + p.done, 0)} / 12</small></button>
+        <button type="button" class="tab ${tab === 'ev' ? 'on' : ''}" data-tab="ev" role="tab" aria-selected="${tab === 'ev'}">事件<small>${Object.keys(run.evSeen || {}).length + gangMembers(run).length} / ${DAY_EVENTS.length + GANG.length}</small></button>
       </div>${body}`;
     UI.modal(html, [{ label: '返回', primary: true, onClick: () => back && back() }], { pause: true, cls: 'book' });
     const card = UI.cardEl;

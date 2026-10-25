@@ -340,6 +340,20 @@ button { font-family: var(--font-ui); -webkit-tap-highlight-color: transparent; 
 .grp.garden { background: #9ad86a; color: #1f3a10; }
 .grp.gangtag { background: #f2b24a; color: #3a2408; }
 .grp.nm { background: #ff8fd0; color: #3a0f2a; }
+.nb-list, .ev-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+.nb { padding: 10px 12px; border-radius: 12px; border: 2px solid var(--edge); background: var(--panel-2); }
+.nb-h { display: flex; justify-content: space-between; align-items: center; }
+.nb-h b { font-weight: 400; font-size: 17px; }
+.nb-hearts { color: #ff8fae; letter-spacing: 1px; font-size: 13px; }
+.nb-hearts i { font-style: normal; color: var(--ink-dim); }
+.nb ol { margin: 6px 0 0; padding-left: 20px; font-size: 14px; color: var(--ink-dim); }
+.nb ol li.got { color: var(--ink); }
+.nb p { margin: 6px 0 0; font-size: 12.5px; color: var(--ink-dim); }
+.ev-list { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+.ev-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.38); color: var(--ink-dim); font-size: 14px; }
+.ev-list li.got { color: var(--ink); border-color: rgba(255, 214, 90, 0.5); }
+.ev-list li b { font-weight: 400; }
+.ev-list li span { font-size: 12px; color: var(--ink-dim); }
 canvas.nm-art { display: block; width: 100%; height: auto; margin: 10px 0 2px; border-radius: 12px; border: 2px solid var(--edge); }
 .nm-stars { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; margin-top: 8px; }
 .nm-star { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; border-radius: 10px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.38); color: var(--ink-dim); font: inherit; font-size: 12px; cursor: pointer; }
@@ -8028,7 +8042,7 @@ class NightScene {
     if (out.length) out[out.length - 1] = [x1, y1];
     return out;
   }
-  tanhuaState() { return this.time < 1440 ? 'tanhuaBud' : this.time < 1500 ? 'tanhua' : 'tanhuaDead'; }
+  tanhuaState() { if (this.run.flags && this.run.flags.tanhuaNight === this.run.nightIdx) return 'tanhua'; return this.time < 1440 ? 'tanhuaBud' : this.time < 1500 ? 'tanhua' : 'tanhuaDead'; }
   capacity() { return 1 + this.run.upg.mouth; }
   pawsMult() { return [1, 0.6, 0.3][this.run.upg.paws]; }
   sfxNear(x, y, name) { if (Cam.visible(x, y, 60)) SFX.play(name); }
@@ -8052,6 +8066,7 @@ class NightScene {
     else if (this.wang.state === 'tv' && dist(wx, wy, x, y) <= r + 2 * TS) this.wang.wake();
   }
   dogAlert() {
+    if (this.run.flags && this.run.flags.shibaFriend) return;
     const d = this.dog;
     if (d.cool > 0 || d.charmT > 0) return;
     if (this.lv && this.lv.bribe && this.run.cans > 0) { bribeDog(this, d); return; }
@@ -10861,7 +10876,7 @@ function* monthDayScript(S, n) {
   yield S.say(nb.total > 0 ? pick(['門口又有花了！小精靈今天也來了耶。', '今天的花也好漂亮～花喵，你知道是誰放的嗎？', '花店小精靈又來了！']) : '今天門口沒有花……');
   UI.hideDialog();
   yield* gardenMorningScript(S);
-  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S))) yield* dayEventScript(S);
+  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
   const k = 1 + (Math.random() < 0.5 ? 1 : 0);
@@ -11424,7 +11439,7 @@ function newRun() {
     store: { lights: 0, fridge: 0, neon: 0, scooter: 0, decor: 0 },
     intel: {}, immune: {}, flags: {},
     stats: { caught: 0, cuteWin: 0, cuteFail: 0, petals: 0, stolen: 0 },
-    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} },
+    garden: { lv: 0, plots: [], story: {} }, cuttings: {}, fans: [], gang: {}, strays: 0, nm: { lv: 0, star: null, story: {} }, bond: {}, storyCh: {},
     month: 1, debt: 0, graceUsed: false, heat: {}, familiar: {}, nightIdx: 0, plan: {}, rentPaid: [],
     lastNight: null, rosePending: false, roseDone: false, night: 0,
     stock: [], orders: {}, regrow: {}, react: {},
@@ -11897,6 +11912,21 @@ UI.book = function (run, back, tab = 'bq') {
         <div class="bk-goal ${run.flags.bqSig ? 'done' : ''}">收集 6 種：招牌花束（以後花束都 ×1.1）<b class="px">${Math.min(6, cnt.recipes + cnt.schemes)}/6</b></div>
         <h3>有名字的花束　${cnt.recipes}/${RECIPES.length}</h3><ul class="bk-grid">${rc}</ul>
         <h3>配色　${cnt.schemes}/${SCHEME_ORDER.length}</h3><ul class="bk-grid">${sc}</ul>`;
+    } else if (tab === 'nb') {
+      const rows = storyProgress(run).map(p => {
+        const hearts = Math.min(p.bond, 9);
+        const chs = p.titles.map((t, i) => `<li class="${i < p.done ? 'got' : ''}">${i < p.done ? esc(t) : '？？？'}</li>`).join('');
+        const hint = p.done >= 3 ? '故事都看完了' : starsOf(run, p.o) > 0 ? `${p.person}還在生氣（警戒要降到零顆星）` : `交情 ${p.bond}/${p.next}`;
+        return `<li class="nb"><div class="nb-h"><b>${esc(p.person)}</b><span class="nb-hearts">${'♥'.repeat(hearts)}<i>${'♡'.repeat(9 - hearts)}</i></span></div><ol>${chs}</ol><p>${hint}</p></li>`;
+      }).join('');
+      body = `<p class="lead">交情會因為：變成花園或花店的粉絲、收到他們送的花、送花賠罪、白天被懷疑時擋下來……慢慢變高。交情夠了，而且那家人沒在生氣，早上就會聽到下一段故事。</p><ul class="nb-list">${rows}</ul>`;
+    } else if (tab === 'ev') {
+      const seen = run.evSeen || {};
+      const ev = DAY_EVENTS.map(e => `<li class="${seen[e.id] ? 'got' : ''}"><b>${seen[e.id] ? esc(e.name) : '？？？'}</b><span class="px">${seen[e.id] ? '×' + seen[e.id] : ''}</span></li>`).join('');
+      const cats = GANG.map(m => { const st = gangOf(run)[m.id]; return `<li class="${st ? 'got' : ''}"><b>${st ? esc(m.name) : '？？？'}</b><span>${st ? `帶回 ${st.hauls || 0} 朵` : ''}</span></li>`; }).join('');
+      body = `<h3>白天的事件　${Object.keys(seen).length}/${DAY_EVENTS.length}</h3><ul class="ev-list">${ev}</ul>
+        <h3>花喵幫　${gangMembers(run).length}/${GANG.length}</h3><ul class="ev-list">${cats}</ul>
+        <p class="hint">巷子裡的流浪貓好感：${run.strays || 0}</p>`;
     } else {
       const fl = FLOWER_ORDER.map(t => {
         const n = B.flowers[t] || 0, F = FLOWERS[t];
@@ -11909,6 +11939,8 @@ UI.book = function (run, back, tab = 'bq') {
       <div class="tabs" role="tablist">
         <button type="button" class="tab ${tab === 'bq' ? 'on' : ''}" data-tab="bq" role="tab" aria-selected="${tab === 'bq'}">花束<small>${cnt.recipes + cnt.schemes} / ${totalBq}</small></button>
         <button type="button" class="tab ${tab === 'fl' ? 'on' : ''}" data-tab="fl" role="tab" aria-selected="${tab === 'fl'}">花<small>${cnt.flowers} / ${FLOWER_ORDER.length}</small></button>
+        <button type="button" class="tab ${tab === 'nb' ? 'on' : ''}" data-tab="nb" role="tab" aria-selected="${tab === 'nb'}">鄰居<small>${storyProgress(run).reduce((a, p) => a + p.done, 0)} / 12</small></button>
+        <button type="button" class="tab ${tab === 'ev' ? 'on' : ''}" data-tab="ev" role="tab" aria-selected="${tab === 'ev'}">事件<small>${Object.keys(run.evSeen || {}).length + gangMembers(run).length} / ${DAY_EVENTS.length + GANG.length}</small></button>
       </div>${body}`;
     UI.modal(html, [{ label: '返回', primary: true, onClick: () => back && back() }], { pause: true, cls: 'book' });
     const card = UI.cardEl;
@@ -11952,7 +11984,8 @@ function nightRulesFor(run, n) {
     const slots = [[1405, 1445], [1470, 1510], [1530, 1570]];
     P[m] = evs.map((ev, i) => ({ event: ev, ability: null, boLight: true, patrol: slots.slice(0, clamp(Math.floor((m + i) / 2), 1, 3)), butler: i === 3 || Math.random() < 0.25 }));
   }
-  return P[m][n - 1];
+  const R = P[m][n - 1];
+  return run.flags && run.flags.patrolLess ? Object.assign({}, R, { patrol: R.patrol.slice(0, Math.max(0, R.patrol.length - 1)) }) : R;
 }
 function eventInfo(run, ev) {
   const E = EVENTS[ev];
@@ -11979,6 +12012,7 @@ function starsOf(run, o) { const h = heatOf(run, o); return h >= STAR_AT[2] ? 3 
 function heatAdd(run, o, v) {
   if (!HEAT_OWNERS.includes(o)) return 0;
   const H = run.heat || (run.heat = {}), s0 = starsOf(run, o);
+  if (v > 0 && o === 'wang' && run.flags && run.flags.wangSoft) v *= 0.5;
   H[o] = clamp(Math.round((H[o] || 0) + v), 0, 100);
   return starsOf(run, o) - s0;
 }
@@ -12180,7 +12214,7 @@ function* visitScript(S, owner) {
   M.goTo([[7.5 * TS, 4.6 * TS], [11.5 * TS, 6.6 * TS]], 40);
   if (res === 'win') {
     yield* S.talk(who, O.person, [[L.win]]);
-    heatAdd(run, owner, HEAT.visitWin);
+    heatAdd(run, owner, HEAT.visitWin); addBond(run, owner, 1);
     UI.toast(`${O.person}放心回家了（警戒 ${starStr(starsOf(run, owner))}）`, 2600);
     SFX.play('heart');
   } else {
@@ -12206,6 +12240,7 @@ function pickVisit(run) {
 // ---------- 白天：送花賠罪 ----------
 function apologyTargets(run) { return HEAT_OWNERS.filter(o => starsOf(run, o) >= 1); }
 function apologize(run, o) {
+  addBond(run, o, 2);
   heatAdd(run, o, -HEAT.apology);
   run.stats.apology = (run.stats.apology || 0) + 1;
   return starsOf(run, o);
@@ -12293,10 +12328,11 @@ function gardenForecast(run) {
 // ---------- 粉絲：花園讓鄰居變成粉絲，早上會在門口放花 ----------
 const FAN_GIFTS = { wang: ['rose', 'lisianthus'], bo: ['osmanthus', 'tanhua'], lin: ['jasmine', 'hydrangea'], chief: ['carnation', 'sunflower'] };
 const FAN_NAMES = { wang: '王太太', bo: '阿伯', lin: '林先生', chief: '里長' };
-function addFan(run, who) { run.fans = run.fans || []; if (!run.fans.includes(who)) run.fans.push(who); }
+const FAN_OWNER = { wang: 'wang', bo: 'bo', lin: 'lin', chief: 'public' };
+function addFan(run, who) { run.fans = run.fans || []; if (!run.fans.includes(who)) { run.fans.push(who); addBond(run, FAN_OWNER[who], 2); } }
 function fanGifts(run) {
   const out = [];
-  for (const who of run.fans || []) if (Math.random() < 0.45) out.push({ who, t: pick(FAN_GIFTS[who]) });
+  for (const who of run.fans || []) if (Math.random() < (who === 'wang' && run.flags && run.flags.wangGift2 ? 0.75 : 0.45)) out.push({ who, t: pick(FAN_GIFTS[who]) });
   return out;
 }
 
@@ -12379,6 +12415,7 @@ function* gardenMorningScript(S) {
     S.fx.hearts(S.cat.x, S.cat.y - 10, 3);
   }
   for (const gf of gifts) {
+    addBond(run, FAN_OWNER[gf.who], 1);
     yield S.say(`門口有${FAN_NAMES[gf.who]}放的${FLOWERS[gf.t].name}，還夾了一張小卡片。`);
   }
   if (hv.length || gifts.length) UI.hideDialog();
@@ -12918,7 +12955,7 @@ function* evBorrow(S) {
   yield* S.talk(b, '阿伯', [['美玲啊，妳的花剪借我一下。我家的桂花長太亂了。'], ['好啊，阿伯慢慢用～', null, 'M']]);
   yield wait(0.8);
   yield* S.talk(b, '阿伯', [['還妳。剪下來的枝妳拿去插，丟掉可惜。']]);
-  heatAdd(run, 'bo', -12);
+  heatAdd(run, 'bo', -12); addBond(run, 'bo', 1);
   run.cuttings = run.cuttings || {}; run.cuttings.osmanthus = (run.cuttings.osmanthus || 0) + 2;
   UI.toast('拿到桂花插枝 ×2，阿伯的戒心也鬆了一點', 2800);
   yield S.walkOut(b);
@@ -13217,6 +13254,122 @@ function drawNmArt(cv, run) {
 function nmTallyHTML(R) {
   const s = R.nm; if (!s || !s.n) return '';
   return `<div class="newab nmbox"><span class="tagnew">夜市花攤</span><p>賣掉 ${s.items.map(i => FLOWERS[i.t].name + ' ×' + i.n).join('、')}${s.star ? `（主打：${FLOWERS[s.star].name}）` : ''}</p><p><b class="px">+${money(s.v)}</b></p></div>`;
+}
+
+// ================= 鄰居的故事線 =================
+// 跟鄰居關係越好（變成粉絲、收到他們送的花、送花賠罪、白天被懷疑時擋下來），「交情」越高。
+// 交情夠了、那家人也沒在生氣（零顆星），早上就會解開下一段故事。每段都有獎勵，有的會永久改變晚上的狀況。
+const BOND_NEED = [2, 5, 9];
+const STORY_CHAPTERS = {
+  wang: [
+    { title: '玫瑰的由來', key: 'wang', lines: [
+      ['美玲，我跟妳說個秘密……院子裡那兩盆玫瑰，是我先生種的。'],
+      ['他走了七年了。每年玫瑰開的時候，我都覺得他還在。'],
+      ['所以花被偷的時候，我才會那麼生氣……不過現在看到妳把它們插得那麼漂亮，好像也不錯。'],
+    ], reward: run => { addCut(run, 'rose', 3); return '王太太送了紅玫瑰的插枝 ×3'; } },
+    { title: '孫女小芸', key: 'wang', lines: [
+      ['我孫女小芸這禮拜來住，她吵著要看「會偷花的貓」。'],
+      ['……我什麼都沒說喔！是她自己在里民群組看到的。'],
+      ['可以讓她摸一下花喵嗎？她說要畫一張圖送給牠。'],
+    ], cat: true, reward: run => { run.cans += 25; run.flags.wangGift2 = 1; return '小芸塞了 25 個罐罐給花喵；王太太之後更常送花來'; } },
+    { title: '重新開始', key: 'wang', lines: [
+      ['我報名了社區的園藝班，下個月要自己種一整排玫瑰。'],
+      ['花被偷……就當作是借給妳們的吧。反正妳們會好好照顧。'],
+      ['對了，這是我先生以前用的澆水壺。放在妳頂樓剛剛好。'],
+    ], reward: run => { run.flags.wangSoft = 1; run.money += 3000; return '王太太的花被偷時，她的警戒只會升一半；還收到 NT$ 3,000 的開幕紅包'; } },
+  ],
+  bo: [
+    { title: '溫室的照片', key: 'bo', lines: [
+      ['妳看這張照片。三十年前，我在鄉下有一間這麼大的溫室。'],
+      ['曇花、蘭花、桂花……整間都是香的。後來颱風一來，什麼都沒了。'],
+      ['這兩支曇花的插枝，是從那間溫室一路帶過來的。給妳。'],
+    ], reward: run => { addCut(run, 'tanhua', 2); return '阿伯送了曇花的插枝 ×2'; } },
+    { title: '阿虎', key: 'bo', lines: [
+      ['我以前養過一隻虎斑貓，叫阿虎。跟妳家這隻，連走路的樣子都一樣。'],
+      ['阿虎最愛半夜跑出去，天亮才叼一朵花回來放在我枕頭邊。'],
+      ['……原來那些花都是去偷的啊。哈哈哈。'],
+    ], cat: true, reward: run => { run.cans += 30; return '阿伯每天在門口放罐罐：罐罐 +30'; } },
+    { title: '最後一朵曇花', key: 'bo', lines: [
+      ['今晚我院子裡的曇花會全部一起開。三十年才一次。'],
+      ['妳帶花喵一起來看吧。開了之後……想剪幾朵就剪幾朵。'],
+      ['阿虎要是還在，也會想看的。'],
+    ], reward: run => { run.flags.tanhuaNight = (run.nightIdx || 0) + 1; heatAdd(run, 'bo', -100); return '今晚阿伯家的曇花整晚都開著，阿伯的警戒也歸零了'; } },
+  ],
+  lin: [
+    { title: '狗派的理由', key: 'lin', lines: [
+      ['我小時候被一隻貓抓過，留了一條疤。從那之後就怕貓。'],
+      ['可是妳家這隻……每次都只是遠遠看著小柴，從來不兇。'],
+      ['院子的茉莉剪了一些，給妳插。'],
+    ], reward: run => { addCut(run, 'jasmine', 3); return '林先生送了茉莉的插枝 ×3'; } },
+    { title: '小柴走丟了', key: 'lin', lines: [
+      ['美玲！小柴昨天晚上掙脫狗鍊跑掉了，妳有沒有看到？'],
+      ['……什麼？是花喵把牠帶回來的？牠一直跟在小柴後面，帶牠回到我家門口？'],
+      ['……謝謝。真的謝謝。以後小柴看到花喵，絕對不會再叫了。'],
+    ], cat: true, reward: run => { run.flags.shibaFriend = 1; return '小柴變成花喵的朋友：晚上再也不會對你叫'; } },
+    { title: '貓狗和平', key: 'lin', lines: [
+      ['跟妳說，我昨天……去收容所領養了一隻貓。'],
+      ['小柴好像很開心，一直舔牠。我也開始覺得貓其實滿可愛的。'],
+      ['這個月的咖啡我包了，還有這個，就當作謝禮。'],
+    ], reward: run => { run.money += 4000; heatAdd(run, 'lin', -100); return '林先生的謝禮 NT$ 4,000，他家的警戒歸零'; } },
+  ],
+  public: [
+    { title: '里長的煩惱', key: 'chief', lines: [
+      ['美玲，社區花圃的預算被砍了，明年可能要變成停車場……'],
+      ['如果花圃一直有人照顧、一直開滿花，我就有理由跟市政府爭取。'],
+      ['妳願意幫忙嗎？我讓巡守隊少巡一點，大家晚上也睡得好一點。'],
+    ], reward: run => { run.flags.patrolLess = 1; addCut(run, 'carnation', 2); return '巡守隊每晚少巡一次；里長送了康乃馨的插枝 ×2'; } },
+    { title: '社區花博', key: 'chief', lines: [
+      ['花圃保住了！市政府還說要在我們里辦一場小型花博。'],
+      ['主角當然是妳的店。攤位、海報、布置，全部交給妳！'],
+      ['這是活動的經費，先給妳。'],
+    ], reward: run => { run.money += 8000; return '社區花博的布置費 NT$ 8,000'; } },
+    { title: '模範里民', key: 'chief', lines: [
+      ['這塊匾額是全里一起送的：「巷弄之花」。'],
+      ['有人說晚上看過一隻虎斑貓叼著花跑過巷子……大家都說那是我們里的守護神。'],
+      ['美玲，謝謝妳讓這條巷子變得這麼漂亮。'],
+    ], reward: run => { for (const o of HEAT_OWNERS) heatAdd(run, o, -20); run.flags.plaque = 1; return '全里的警戒都降了；店裡掛上「巷弄之花」匾額'; } },
+  ],
+};
+function addCut(run, t, n) { run.cuttings = run.cuttings || {}; run.cuttings[t] = (run.cuttings[t] || 0) + n; }
+function bondOf(run) { return run.bond || (run.bond = {}); }
+function addBond(run, o, v) { if (!STORY_CHAPTERS[o]) return; const B = bondOf(run); B[o] = (B[o] || 0) + v; }
+function storyDone(run) { return run.storyCh || (run.storyCh = {}); }
+// 下一段可以解開的故事
+function nextChapter(run) {
+  if ((run.month || 1) < 2) return null;
+  const D = storyDone(run), B = bondOf(run);
+  let best = null;
+  for (const o in STORY_CHAPTERS) {
+    const k = D[o] || 0; if (k >= STORY_CHAPTERS[o].length) continue;
+    if ((B[o] || 0) < BOND_NEED[k] || starsOf(run, o) > 0) continue;
+    if (!best || (B[o] - BOND_NEED[k]) > best.score) best = { o, k, score: B[o] - BOND_NEED[k] };
+  }
+  return best;
+}
+function* neighborStoryScript(S) {
+  const run = S.run, nx = nextChapter(run);
+  if (!nx) return false;
+  const ch = STORY_CHAPTERS[nx.o][nx.k], O = OWNERS[nx.o];
+  storyDone(run)[nx.o] = nx.k + 1;
+  const wasOn = S.shopOn; S.shopOn = false;
+  { let w = 0; yield { update: dt => { w += dt; return w > 5 || !S.shoppers.length; } }; }
+  UI.banner(`${O.person}的故事（${nx.k + 1}/3）：${ch.title}`);
+  yield wait(1.2);
+  const who = S.customer(ch.key);
+  yield S.walkIn(who, COUNTER_SPOT2);
+  yield* S.talk(who, O.person, ch.lines);
+  if (ch.cat) { S.cat.pose = 'belly'; S.fx.hearts(S.cat.x, S.cat.y - 10, 7); SFX.play('heart'); yield wait(1.0); S.cat.pose = null; }
+  const msg = ch.reward(run);
+  UI.toast(`解開「${ch.title}」：${msg}`, 4200); SFX.play('chime');
+  yield S.walkOut(who);
+  UI.hideDialog();
+  if (wasOn) S.startShop();
+  return true;
+}
+// 圖鑑用：每位鄰居的進度
+function storyProgress(run) {
+  const D = storyDone(run), B = bondOf(run);
+  return Object.keys(STORY_CHAPTERS).map(o => ({ o, person: OWNERS[o].person, done: D[o] || 0, bond: B[o] || 0, next: BOND_NEED[D[o] || 0], titles: STORY_CHAPTERS[o].map(c => c.title) }));
 }
 
 // ================= 漫畫風的疊加圖層：表情符號、懷疑條、狀聲詞、賣萌特寫 =================

@@ -329,7 +329,7 @@ function drawMeowArt2(s, pen = PXR, k = 4) {
     const eyes = happy ? 'happy' : fail ? 'blink' : (s.blink ? 'blink' : 'open');
     if (v === 1) {
       // 招財貓：坐起來，一隻手一直招
-      const wave = fail ? -0.4 : Math.sin(t * 9) * (happy ? 1.3 : 1);
+      const wave = fail ? -0.4 : s.wave !== undefined ? s.wave : Math.sin(t * 9) * (happy ? 1.3 : 1);
       const tp = []; for (let i = 0; i < 10; i++) { const q = i / 9; tp.push([60 + q * 14 - q * q * 3, 60 - q * 14 + Math.sin(t * 3 + q * 3) * q * 2]); }
       tail(tp, 2.3);
       gearClose('sit', 'back');
@@ -346,7 +346,7 @@ function drawMeowArt2(s, pen = PXR, k = 4) {
       if (fail) sweatDrop(60, 14);
     } else {
       // v0 趴著喵；v2 歪頭、瞳孔放大
-      const tilt = v === 2 ? 0.34 + Math.sin(t * 2) * 0.04 : Math.sin(t * 2.4) * 0.07 - 0.03;
+      const tilt = s.tilt !== undefined ? s.tilt + Math.sin(t * 2) * 0.02 : v === 2 ? 0.34 + Math.sin(t * 2) * 0.04 : Math.sin(t * 2.4) * 0.07 - 0.03;
       gearClose('lie', 'back');
       furBlob(48, 57, 34, 12, 0, 0.6, 9);
       PX.ellipse(48, 50, 11, 7, TAB.cream);
@@ -391,7 +391,7 @@ function drawBellyArt2(s, pen = PXR, k = 4) {
     PX.ellipse((rx2 + 38) / 2, (ry2 + 50) / 2, 9, 3, TAB.fur, { rot: Math.atan2(ry2 - 50, rx2 - 38), part: 1 });
     paw(rx2, ry2, 4.4, 3.4, 0.2);
     const hrot = p * Math.PI * 0.92 + wig * 0.1 + over * 0.6;
-    const eyes = fail ? (over > 0 || s.dizzy ? 'dizzy' : 'blink') : happy ? 'happy' : (Math.floor(t * 2.2) % 7 === 3 ? 'blink' : 'open');
+    const eyes = fail ? (over > 0 || s.dizzy ? 'dizzy' : 'blink') : happy ? 'happy' : s.dead ? 'dizzy' : (Math.floor(t * 2.2) % 7 === 3 ? 'blink' : 'open');
     drawCatHead(lerp(30, 27, p), lerp(27, 45, p), hrot, 0.78, { open, eyes, earL: p * 0.25, earR: p * 0.15, look: -0.4, whisk: 0, blep: v === 2 && p > 0.85 && !fail, big: v === 0 && p > 0.9 && !fail && !happy }, late);
     if (fail) sweatDrop(16, 30);
     PX.outline(TAB.out);
