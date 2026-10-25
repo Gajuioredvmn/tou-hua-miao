@@ -141,6 +141,9 @@ const STORE_UPGRADES = [
   { id: 'fridge', name: '冷藏花櫃', max: 1, cost: [1000], lv: ['花況永遠 100%；曇花、茉莉、蝴蝶蘭再 ×1.5'], base: '嬌貴的花放一晚就不新鮮', reveal: ['有冰櫃了！嬌貴的花也不怕謝了。'] },
   { id: 'neon', name: '霓虹招牌', max: 1, cost: [1200], lv: ['上門的客人變兩倍，還會順手買小盆栽'], base: '招牌舊舊的，沒人注意這家店', reveal: ['招牌亮起來了！路過的人一定會注意到！'] },
   { id: 'scooter', name: '外送機車', max: 1, cost: [1800], lv: ['可以接外送：訂單獎勵 ×2'], base: '只能等客人自己上門', reveal: ['有機車就能接外送了，訂單錢加倍！'] },
+  { id: 'expand', name: '花店擴建', max: 4, cost: [30000, 60000, 100000, 180000], mon: [2, 2, 3, 4],
+    lv: ['咖啡角：店裡擺兩張小咖啡桌、櫃台多一台咖啡機；每位客人多買一杯咖啡 NT$ 80', '騎樓座位：門口擺上條紋陽傘和桌椅（晚上也看得到）；上門的客人變多', '花藝教室：後門搭起花拱門、開插花課；每天傍晚收學費', '旗艦店：水晶吊燈、門口紅地毯、金色燈；所有花的賣價 ×1.25'],
+    base: '小小一間，只賣花', reveal: ['咖啡機到了！花香配咖啡香，好像在國外的小店。', '陽傘撐起來了！路過的人都會想坐一下。', '花拱門好美……花藝教室，開課囉！', '水晶燈亮起來了……這是我們的店嗎？'] },
 ];
 const LIGHTS_MULT = [1, 1.5, 2];
 const DECOR_MULT = [1, 1.15, 1.3, 1.5];
@@ -153,7 +156,7 @@ function flowerValue(run, t, fresh) {
   const cold = s.fridge && DELICATE.includes(t) ? 1.5 : 1;
   // 佈置第 2 級起：掉了花瓣的殘花做成乾燥花，最少也有七成價
   const fr = s.fridge ? 1 : (s.decor || 0) >= 2 ? Math.max(0.7, fresh) : fresh;
-  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t);
+  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t) * EXP_PRICE_MULT[s.expand || 0];
 }
 const ORANGE_INCOME = [0, 400, 900, 1600];
 const LUCKY_MULT = [1, 1.2, 1.45, 1.75];

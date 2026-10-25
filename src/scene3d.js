@@ -99,6 +99,7 @@ NightScene.prototype.render3D = function () {
   nightPlusLights(this, L);
   gardenRender3D(this, F, L, st);
   tunnelRender3D(this, F);
+  expNight3D(this, F, L);
   let bb = null;
   if (bbq) {
     if (!st.bbq) st.bbq = buildBBQProps();

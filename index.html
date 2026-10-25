@@ -6934,6 +6934,7 @@ function shopDecor3D(sc, F, st, store) {
     pushSprite(F.sprites, ART.fix(toonWrapBouquet()), 1.7 * TS, 12.95 * TS, { lift: top });
     pushSprite(F.sprites, artAFrame(), 3.5 * TS, 17.6 * TS); shadowAt(F, 3.5 * TS, 17.6 * TS, 0.7, 0.24);
   }
+  expDecor3D(sc, F);
 }
 
 // ================= 新的花：向日葵、繡球花、桔梗、康乃馨、滿天星、桂花、玉蘭花、牡丹 =================
@@ -7243,6 +7244,9 @@ const STORE_UPGRADES = [
   { id: 'fridge', name: '冷藏花櫃', max: 1, cost: [1000], lv: ['花況永遠 100%；曇花、茉莉、蝴蝶蘭再 ×1.5'], base: '嬌貴的花放一晚就不新鮮', reveal: ['有冰櫃了！嬌貴的花也不怕謝了。'] },
   { id: 'neon', name: '霓虹招牌', max: 1, cost: [1200], lv: ['上門的客人變兩倍，還會順手買小盆栽'], base: '招牌舊舊的，沒人注意這家店', reveal: ['招牌亮起來了！路過的人一定會注意到！'] },
   { id: 'scooter', name: '外送機車', max: 1, cost: [1800], lv: ['可以接外送：訂單獎勵 ×2'], base: '只能等客人自己上門', reveal: ['有機車就能接外送了，訂單錢加倍！'] },
+  { id: 'expand', name: '花店擴建', max: 4, cost: [30000, 60000, 100000, 180000], mon: [2, 2, 3, 4],
+    lv: ['咖啡角：店裡擺兩張小咖啡桌、櫃台多一台咖啡機；每位客人多買一杯咖啡 NT$ 80', '騎樓座位：門口擺上條紋陽傘和桌椅（晚上也看得到）；上門的客人變多', '花藝教室：後門搭起花拱門、開插花課；每天傍晚收學費', '旗艦店：水晶吊燈、門口紅地毯、金色燈；所有花的賣價 ×1.25'],
+    base: '小小一間，只賣花', reveal: ['咖啡機到了！花香配咖啡香，好像在國外的小店。', '陽傘撐起來了！路過的人都會想坐一下。', '花拱門好美……花藝教室，開課囉！', '水晶燈亮起來了……這是我們的店嗎？'] },
 ];
 const LIGHTS_MULT = [1, 1.5, 2];
 const DECOR_MULT = [1, 1.15, 1.3, 1.5];
@@ -7255,7 +7259,7 @@ function flowerValue(run, t, fresh) {
   const cold = s.fridge && DELICATE.includes(t) ? 1.5 : 1;
   // 佈置第 2 級起：掉了花瓣的殘花做成乾燥花，最少也有七成價
   const fr = s.fridge ? 1 : (s.decor || 0) >= 2 ? Math.max(0.7, fresh) : fresh;
-  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t);
+  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t) * EXP_PRICE_MULT[s.expand || 0];
 }
 const ORANGE_INCOME = [0, 400, 900, 1600];
 const LUCKY_MULT = [1, 1.2, 1.45, 1.75];
@@ -9865,6 +9869,7 @@ class DayScene {
     if (decor >= 1) for (let z = 5; z <= 10; z++) add('1,' + z);
     if (decor >= 2) { add('1,4'); add('13,4'); }
     if (decor >= 3) for (const k of ['1,11', '1,12', '1,13', '2,11', '2,12', '2,13']) add(k);
+    for (const k of expBlocked(this.run)) add(k);
     this.displays = this.displaysFor(decor);
   }
   // 花桶裡的花有多滿：看店裡還剩幾朵
@@ -9924,7 +9929,7 @@ class DayScene {
       this.shopT -= dt;
       if (this.shopT <= 0) {
         const max = this.rush ? 4 : 3;
-        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * (this.run.flags && this.run.flags.famous ? 0.65 : 1) * rnd(0.8, 1.2);
+        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * (this.run.flags && this.run.flags.famous ? 0.65 : 1) * ((st.expand || 0) >= 2 ? 0.7 : 1) * ((this.run.flags && this.run.flags.buzz || 0) > (this.run.nightIdx || 0) ? 0.7 : 1) * rnd(0.8, 1.2);
         else this.shopT = 1;
       }
     }
@@ -9950,7 +9955,9 @@ class DayScene {
         let v = S.carry ? S.carry.reduce((a, f) => a + flowerValue(this.run, f.t, f.fresh), 0) : 0;
         if (S.carryB) v += S.carryB.value;
         const pot = st.neon ? SMALL_POT_PRICE : 0, wrap = (S.carry || S.carryB) && (st.decor || 0) >= 3 ? WRAP_FEE : 0;
-        this.sell(v + pot + wrap, pot, wrap);
+        const coffee = (st.expand || 0) >= 1 ? COFFEE_PRICE : 0;
+        this.sell(v + pot + wrap + coffee, pot, wrap);
+        if (coffee) this.fx.text(REGISTER[0] * TS - 16, REGISTER[1] * TS - 4, '咖啡', '#e8c49a', 1.2, 1.1);
         if (S.carryB) this.fx.text(REGISTER[0] * TS - 6, REGISTER[1] * TS - 10, S.carryB.name, '#ffb3c8', 1.4, 1.2);
         S.carry = null; S.st = 'out'; S.outB = S.carryB; S.carryB = null; this.queue.shift(); this.advanceQueue();
         h.goTo([SHOP_DOOR_IN, SHOP_DOOR_OUT], this.rush ? 64 : 46);
@@ -10047,13 +10054,13 @@ class DayScene {
   }
   // ---- 花店升級：鏡頭帶過去看 ----
   reveal(id, lv, cb) {
-    const spot = { lights: [7.5, 5.2], fridge: [12.6, 9.9], neon: [5.5, 4.4], scooter: [11.2, 17.6], decor: [[5.4, 9.6], [3.4, 6.2], [3.2, 12.4]][lv - 1] }[id] || [7.5, 9];
+    const spot = { lights: [7.5, 5.2], fridge: [12.6, 9.9], neon: [5.5, 4.4], scooter: [11.2, 17.6], decor: [[5.4, 9.6], [3.4, 6.2], [3.2, 12.4]][lv - 1], expand: [[11.6, 12.4], [11.2, 16.6], [6.5, 5.6], [7.6, 10.2]][lv - 1] }[id] || [7.5, 9];
     const u = STORE_UPGRADES.find(x => x.id === id);
     this.focus = { x: spot[0], z: spot[1], t: 0, dur: 3.0, cb, id, lv };
-    if (id === 'decor') { this.layoutDisplays(); this.cat.unstick(this); }
+    if (id === 'decor' || id === 'expand') { this.layoutDisplays(); this.cat.unstick(this); }
     this.mode = 'reveal'; Input.release(); this.cat.moving = false;
     SFX.play('heart'); setTimeout(() => SFX.play('buy'), 250);
-    const hy = { lights: 2.2, fridge: 1.2, neon: 2.2, scooter: 0.8, decor: 1.0 }[id] || 1;
+    const hy = { lights: 2.2, fridge: 1.2, neon: 2.2, scooter: 0.8, decor: 1.0, expand: lv === 4 ? 2.0 : 1.0 }[id] || 1;
     for (let i = 0; i < 26; i++) { const a = Math.random() * Math.PI * 2, r = rnd(0.2, 1.4); this.sparks.push({ x: spot[0] + Math.cos(a) * r * 0.4, y: hy + rnd(-0.3, 0.4), z: spot[1] + Math.sin(a) * r * 0.25, vx: Math.cos(a) * r, vy: rnd(0.4, 1.4), vz: Math.sin(a) * r * 0.4, t: -i * 0.02, life: rnd(0.8, 1.4) }); }
     this.fx.ring(spot[0] * TS, spot[1] * TS, 3 * TS, 'rgba(255,214,90,0.9)', 0.8);
     setTimeout(() => { if (this.focus) UI.say('美玲', (u.reveal && (u.reveal[lv - 1] || u.reveal[0])) || '好漂亮！', { auto: 2.6 }); }, 500);
@@ -10832,7 +10839,7 @@ function* monthDayScript(S, n) {
   yield S.say(nb.total > 0 ? pick(['門口又有花了！小精靈今天也來了耶。', '今天的花也好漂亮～花喵，你知道是誰放的嗎？', '花店小精靈又來了！']) : '今天門口沒有花……');
   UI.hideDialog();
   yield* gardenMorningScript(S);
-  yield* gardenStoryScript(S);
+  if (!(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S))) yield* dayEventScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
   const k = 1 + (Math.random() < 0.5 ? 1 : 0);
@@ -10850,6 +10857,8 @@ function* monthDayScript(S, n) {
   S.tint = 'evening';
   UI.banner('傍晚');
   yield wait(0.8);
+  const tuition = classIncome(run);
+  if (tuition) { run.money += tuition; S.daySales += tuition; UI.toast(`花藝教室的學費 +${money(tuition)}`, 2400); SFX.play('coin'); }
   yield S.say(S.daySales > 0 ? `今天賣了 ${money(S.daySales)}！花喵，賞你罐罐。` : '今天沒什麼生意……花喵，罐罐還是給你。');
   UI.hideDialog();
   yield wait(0.4);
@@ -11186,8 +11195,9 @@ const UI = {
         const nightsLeft = Math.max(0, 4 - (run.night || 1));
         const rows = STORE_UPGRADES.map(u => {
           const lv = st[u.id] || 0, maxed = lv >= u.max, cost = maxed ? 0 : u.cost[lv];
-          const can = !maxed && run.money >= cost;
-          const now = lv > 0 ? u.lv[lv - 1] : u.base, next = maxed ? '已經裝好了' : '買了：' + u.lv[lv];
+          const monNeed = !maxed && u.mon ? u.mon[lv] : 1, early = (run.month || 1) < monNeed;
+          const can = !maxed && !early && run.money >= cost;
+          const now = lv > 0 ? u.lv[lv - 1] : u.base, next = maxed ? '已經裝好了' : early ? `第${cn(monNeed)}個月開放：${u.lv[lv]}` : '買了：' + u.lv[lv];
           return `<li class="up ${maxed ? 'maxed' : ''}">
             <div class="up-main"><div class="up-name"><span class="grp store">花店</span><b>${u.name}</b><span class="pips">${pips(lv, u.max)}</span></div>
             <div class="up-now">${esc(now)}</div><div class="up-next">${esc(next)}</div></div>
@@ -11253,7 +11263,7 @@ const UI = {
       this.cardEl.querySelectorAll('.buy[data-id]').forEach(b => b.addEventListener('click', () => {
         if (tab === 'store') {
           const u = STORE_UPGRADES.find(x => x.id === b.dataset.id), lv = st[u.id] || 0;
-          if (lv >= u.max || run.money < u.cost[lv]) return;
+          if (lv >= u.max || run.money < u.cost[lv] || (u.mon && (run.month || 1) < u.mon[lv])) return;
           run.money -= u.cost[lv]; st[u.id] = lv + 1;
           SFX.play('buy');
           if (G.scene && G.scene.reveal) {
@@ -12312,8 +12322,9 @@ function* gardenStoryScript(S) {
       yield S.walkOut(bt);
     }
     if (wasOn) S.startShop();
-    return;   // 一天只演一段，留到明天
+    return true;   // 一天只演一段，留到明天
   }
+  return false;
 }
 // 早上：收成、粉絲送的花
 function* gardenMorningScript(S) {
@@ -12537,6 +12548,346 @@ function tunnelRender3D(sc, F) {
     groundQuad(F.decal, x, y + 0.05, 0.8, 0.42, 0, [1, 1, 1, 1], 0.014);
     groundQuad(F.flat, x, y + 0.05, 0.62, 0.3, 0, [0.06, 0.04, 0.09, 0.92], 0.016);
     pushSprite(F.sprites, ART.sign('貓道'), (x + 0.7) * TS, (y - 0.1) * TS);
+  }
+}
+
+// ================= 花店擴建（第二個月起）=================
+// 是 STORE_UPGRADES 裡的 'expand'（四級）。每一級：店裡和晚上的門口都變得更漂亮、
+// 多一種收入，隔天早上有人來看（劇情），有的人會變成粉絲。
+const COFFEE_PRICE = 80;
+const EXP_PRICE_MULT = [1, 1, 1, 1, 1.25];
+function expLv(run) { return (storeOf(run).expand) || 0; }
+function classIncome(run) { return expLv(run) >= 3 ? 1500 * (run.month || 1) : 0; }
+
+// ---------- 劇情（蓋好的隔天早上；一天只演一段，花園的劇情優先） ----------
+function* storeStoryScript(S) {
+  const run = S.run, lv = expLv(run), done = run.storeStory || (run.storeStory = {});
+  for (let k = 1; k <= lv; k++) {
+    if (done[k]) continue;
+    done[k] = 1;
+    const wasOn = S.shopOn; S.shopOn = false;
+    if (k === 1) {
+      const l = S.customer('lin');
+      yield S.walkIn(l, COUNTER_SPOT2);
+      yield* S.talk(l, '林先生', [
+        ['……聽說妳們開始賣咖啡？'],
+        ['遛小柴遛到一半，總要有個地方坐一下。'],
+        ['小柴好像很喜歡妳家那隻貓……牠們剛剛在門口對看了好久。'],
+        ['以後我每天早上都來。院子的茉莉開了，我順便帶一點過來。'],
+      ]);
+      addFan(run, 'lin'); heatAdd(run, 'lin', -30);
+      UI.toast('林先生變成常客了！他偶爾會帶茉莉來（他家的警戒也降了）', 3600); SFX.play('heart');
+      yield S.walkOut(l);
+    } else if (k === 2) {
+      const c = S.customer('chief');
+      yield S.walkIn(c, COUNTER_SPOT2);
+      yield* S.talk(c, '里長', [
+        ['美玲！騎樓擺了座位跟陽傘，整條巷子都亮起來了！'],
+        ['里民群組都在傳照片，說我們里終於有一間像樣的店。'],
+        ['社區花圃的事……之前那些花，就當作是社區送給妳的開幕禮吧。'],
+        ['以後里裡辦活動，花都跟妳訂！'],
+      ]);
+      addFan(run, 'chief'); heatAdd(run, 'public', -30);
+      UI.toast('里長也變成粉絲了！之後客人變多，偶爾還會收到里長送的花', 3600); SFX.play('heart');
+      yield S.walkOut(c);
+    } else if (k === 3) {
+      const w = S.customer('wang');
+      yield S.walkIn(w, COUNTER_SPOT2);
+      const fan = (run.fans || []).includes('wang');
+      yield* S.talk(w, '王太太', fan ? [
+        ['美玲老師～我來上第一堂插花課了！'],
+        ['我還幫妳拉了三個姊妹來，大家都說要學「玫瑰的十種插法」。'],
+        ['對了，那隻貓可以當我們的模特兒嗎？'],
+      ] : [
+        ['花藝教室……學費多少？'],
+        ['我家的玫瑰一直被偷，我想乾脆學怎麼插，至少剩下的要插得漂亮。'],
+        ['……那隻貓為什麼一直看我？'],
+      ]);
+      UI.toast(`花藝教室開課了！每天傍晚收學費 ${money(classIncome(run))}`, 3600); SFX.play('heart');
+      yield S.walkOut(w);
+    } else if (k === 4) {
+      const r = S.customer('shopC');
+      yield S.walkIn(r, COUNTER_SPOT2);
+      yield* S.talk(r, '電視台製作人', [
+        ['您好！我們是《巷弄裡的好店》節目。'],
+        ['水晶燈、紅地毯、頂樓花園……還有那隻會招財的虎斑貓。'],
+        ['下週想來拍一整集，可以嗎？'],
+        ['花喵，你要上電視了！', null, 'M'],
+      ]);
+      S.cat.pose = 'belly'; S.fx.hearts(S.cat.x, S.cat.y - 10, 8); SFX.play('heart');
+      yield wait(1.2); S.cat.pose = null;
+      run.flags.tv = 1;
+      UI.toast('旗艦店開幕：所有花的賣價 ×1.25', 3400);
+      yield S.walkOut(r);
+    }
+    if (wasOn) S.startShop();
+    return true;
+  }
+  return false;
+}
+
+// ---------- 圖 ----------
+function drawCafeTable(k) {
+  const wood = '#a8784a', woodD = '#6a4630';
+  // 椅子（後面那張）
+  O.limb(-11, -1, -11, -10, 1.4, woodD); O.limb(-7, -1, -7, -10, 1.4, woodD);
+  O.blobO([[-13, -11], [-5, -11], [-5, -9], [-13, -9]], wood);
+  O.blobO([[-12.5, -20], [-5.5, -20], [-5.5, -11], [-12.5, -11]], k ? '#e98aa0' : '#7cbf9a');
+  // 桌子
+  O.limb(2, 0, 2, -12, 1.8, '#3a3a4a');
+  O.blobO([[-4, 0], [8, 0], [6, -1.4], [-2, -1.4]], '#3a3a4a');
+  O.eo(2, -13, 9, 2.6, '#f4efe6');
+  // 咖啡杯、小花瓶
+  O.blobO([[-2.6, -14.4], [0.6, -14.4], [0.4, -17.4], [-2.4, -17.4]], '#ffffff');
+  O.curve([[0.6, -16.6], [1.8, -16], [0.5, -15]], CM.ink, 0.8);
+  O.blobO([[4, -14], [6.4, -14], [6, -18], [4.4, -18]], '#9ad0e8');
+  O.curve([[5.2, -18], [5, -22]], PC.stem, 1); flower5(5, -22.6, 1.6, k ? '#ff8fae' : '#ffd84d', '#fff4c0');
+  // 椅子（前面那張）
+  O.limb(10, -1, 10, -9, 1.4, woodD); O.limb(14, -1, 14, -9, 1.4, woodD);
+  O.blobO([[8.5, -10], [15.5, -10], [15.5, -8], [8.5, -8]], wood);
+}
+function toonCafeTable(k) { return toonFrameInfo(toonFrame('exp-table-' + k, 34, 28, () => drawCafeTable(k)), false, 0.5, 1.6); }
+function drawEspresso() {
+  O.blobO([[-8, 0], [8, 0], [8, -14], [-8, -14]], '#c9ccd8');
+  O.blobO([[-8, -14], [8, -14], [7, -17], [-7, -17]], '#3a3a4a');
+  O.blobO([[-5, -8], [5, -8], [5, -11], [-5, -11]], '#2a2a36');
+  O.e(-3, -12.6, 1, 1, '#ff6d6d'); O.e(0, -12.6, 1, 1, '#7ad37a');
+  O.blobO([[-2, -2], [2, -2], [1.8, -5], [-1.8, -5]], '#ffffff');
+  O.curve([[-1, -7], [-1.5, -9]], 'rgba(255,255,255,0.7)', 0.8); O.curve([[1, -7], [1.6, -9.5]], 'rgba(255,255,255,0.7)', 0.8);
+  for (let i = 0; i < 3; i++) O.blobO([[10 + i * 3.2, 0], [12.4 + i * 3.2, 0], [12.2 + i * 3.2, -3], [10.2 + i * 3.2, -3]], ['#ffffff', '#f2c6a0', '#9ad0e8'][i]);
+}
+function toonEspresso() { return toonFrameInfo(toonFrame('exp-espresso', 34, 22, drawEspresso), false, 0.4, 1.05); }
+function drawUmbrellaTable(k) {
+  const c1 = k ? '#ff8fae' : '#7cbf9a', c2 = '#fff6ec';
+  O.limb(0, 0, 0, -26, 1.4, '#6a6a7a');
+  // 陽傘：條紋
+  const pts = []; for (let i = 0; i <= 8; i++) { const a = Math.PI + i * Math.PI / 8; pts.push([Math.cos(a) * 16, -26 + Math.sin(a) * 6]); }
+  O.blobO([...pts, [16, -24], [-16, -24]], c1);
+  for (let i = 0; i < 4; i++) { const a0 = Math.PI + (i * 2 + 1) * Math.PI / 8, a1 = a0 + Math.PI / 8; O.blob([[0, -32], [Math.cos(a0) * 16, -26 + Math.sin(a0) * 6], [Math.cos(a0) * 16, -24], [Math.cos(a1) * 16, -24], [Math.cos(a1) * 16, -26 + Math.sin(a1) * 6]], c2); }
+  O.e(0, -32.5, 1.2, 1.2, '#ffd84d');
+  // 桌椅
+  O.eo(0, -10, 8, 2.2, '#f4efe6'); O.limb(0, 0, 0, -9, 1.6, '#3a3a4a');
+  for (const sd of [-1, 1]) { O.limb(sd * 11, 0, sd * 11, -7, 1.2, '#3a3a4a'); O.blobO([[sd * 8, -7], [sd * 14, -7], [sd * 14, -5.5], [sd * 8, -5.5]], '#3a3a4a'); O.blobO([[sd * 13, -14], [sd * 14.5, -14], [sd * 14.5, -6], [sd * 13, -6]], '#3a3a4a'); }
+  O.curve([[2, -12], [2.4, -16]], PC.stem, 1); flower5(2.4, -16.6, 1.6, '#ff6d9a', '#fff4c0');
+}
+function toonUmbrellaTable(k) { return toonFrameInfo(toonFrame('exp-umb-' + k, 36, 38, () => drawUmbrellaTable(k)), false, 0.5, 1.55); }
+function drawFlowerArch() {
+  const cols = ['#ff8fae', '#ffd84d', '#ffffff', '#e8394d', '#9a6ad0', '#ff9fcb'];
+  for (let i = 0; i <= 14; i++) {
+    const a = Math.PI + i * Math.PI / 14, x = Math.cos(a) * 15, y = -18 + Math.sin(a) * 16;
+    leafBall(x, y, 3.4, 2.8);
+  }
+  for (let i = 0; i <= 14; i++) {
+    const a = Math.PI + i * Math.PI / 14, x = Math.cos(a) * 15, y = -18 + Math.sin(a) * 16;
+    flower5(x + (i % 2 ? 1 : -1), y - 1, 1.9, cols[i % cols.length], '#fff4c0', i);
+  }
+  for (const sd of [-1, 1]) for (let y = -18; y <= 0; y += 3.5) { leafBall(sd * 15, y, 2.8, 2.4); flower5(sd * 15 + sd, y - 0.5, 1.5, cols[(y + 30) % 6 | 0], '#fff4c0'); }
+  O.blobO([[-8, -36], [8, -36], [8, -30], [-8, -30]], '#2a2a36');
+  O.blob([[-7, -35], [7, -35], [7, -31], [-7, -31]], '#ff6d9a');
+}
+function toonFlowerArch() { return toonFrameInfo(toonFrame('exp-arch', 40, 40, drawFlowerArch), false, 0.5, 1.75); }
+function drawChandelier() {
+  O.curve([[0, -30], [0, -20]], '#c9a43a', 1.2);
+  O.eo(0, -14, 9, 3, '#e8b84a');
+  for (let i = -2; i <= 2; i++) { O.curve([[i * 4, -14], [i * 4.4, -8]], '#e8b84a', 0.9); O.eo(i * 4.4, -7, 1.3, 2, '#fff6d0'); }
+  for (let i = -3; i <= 3; i++) O.e(i * 2.8, -11, 0.9, 1.6, 'rgba(220,240,255,0.9)');
+  O.eo(0, -19, 3, 2, '#e8b84a');
+}
+function toonChandelier() { return toonFrameInfo(toonFrame('exp-chand', 24, 32, drawChandelier), false, 0.5, 1.55); }
+
+// ---------- 白天：店裡、騎樓 ----------
+const CAFE_TABLES = [[10.6, 12.2, 0], [12.8, 14.0, 1]];
+const PATIO_TABLES = [[9.4, 17.55, 0], [13.2, 17.55, 1]];
+function expBlocked(run) {
+  const lv = expLv(run), out = [];
+  if (lv >= 1) for (const [x, z] of CAFE_TABLES) { out.push(Math.floor(x) + ',' + Math.floor(z)); out.push(Math.floor(x - 0.6) + ',' + Math.floor(z)); }
+  return out;
+}
+function expDecor3D(sc, F) {
+  const lv = expLv(sc.run); if (!lv) return;
+  const cpd = Math.cos(R3.pitch), t = sc.cat.t || 0;
+  for (const [x, z, k] of CAFE_TABLES) { pushSprite(F.sprites, ART.fix(toonCafeTable(k)), x * TS, z * TS); shadowAt(F, x * TS, z * TS, 1.2, 0.36); }
+  pushSprite(F.sprites, ART.fix(toonEspresso()), 10.2 * TS, 7.42 * TS, { lift: 0.95 * cpd, minLight: [0.6, 0.56, 0.55] });
+  if (lv >= 2) for (const [x, z, k] of PATIO_TABLES) { pushSprite(F.sprites, ART.fix(toonUmbrellaTable(k)), x * TS, z * TS); shadowAt(F, x * TS, z * TS, 1.4, 0.4); }
+  if (lv >= 3) { pushSprite(F.sprites, ART.fix(toonFlowerArch()), 6.5 * TS, 3.15 * TS, { minLight: [0.65, 0.6, 0.6] }); glowQuad(F.glow, 6.5, 2.05, 3.2, 0.5, [1, 0.45, 0.7, 0.25]); }
+  if (lv >= 4) {
+    for (const [x, z] of [[5.2, 8.2], [10.4, 11.6]]) {
+      pushSprite(F.sprites, ART.fix(toonChandelier()), x * TS, z * TS, { lift: 2.0 * cpd, unlit: true });
+      glowQuad(F.glow, x, 2.0, z + 0.05, 0.9, [1, 0.85, 0.55, 0.28 + 0.04 * Math.sin(t * 2 + x)]);
+    }
+    groundQuad(F.flat, 7.5, 16.95, 1.0, 0.9, 0, [0.85, 0.66, 0.25, 0.95], 0.007);
+    groundQuad(F.flat, 7.5, 16.95, 0.86, 0.82, 0, [0.5, 0.07, 0.12, 0.95], 0.008);
+  }
+}
+function expLights(sc, L) {
+  const lv = expLv(sc.run);
+  if (lv >= 4) for (const [x, z] of [[5.2, 8.2], [10.4, 11.6]]) L.push({ x, y: 2.0, z, r: 4.2, c: [1.0, 0.8, 0.5] });
+}
+// ---------- 夜晚：花店門口 ----------
+function expNight3D(sc, F, L) {
+  const lv = expLv(sc.run); if (!lv) return;
+  const t = sc.cat.t || 0;
+  if (lv >= 2) for (const [x, k] of [[4.9, 0], [10.2, 1]]) { pushSprite(F.sprites, ART.fix(toonUmbrellaTable(k)), x * TS, 5.75 * TS); shadowAt(F, x * TS, 5.75 * TS, 1.4, 0.4); }
+  if (lv >= 3) { pushSprite(F.sprites, ART.fix(toonFlowerArch()), 7.5 * TS, 5.05 * TS, { minLight: [0.6, 0.55, 0.6] }); glowQuad(F.glow, 7.5, 2.0, 5.1, 0.55, [1, 0.45, 0.7, 0.3 + 0.08 * Math.sin(t * 2.4)]); }
+  if (lv >= 4) {
+    groundQuad(F.flat, 7.5, 5.85, 0.85, 0.95, 0, [0.85, 0.66, 0.25, 0.9], 0.007);
+    groundQuad(F.flat, 7.5, 5.85, 0.72, 0.88, 0, [0.5, 0.07, 0.12, 0.92], 0.008);
+    for (const x of [5.6, 9.4]) { glowQuad(F.glow, x, 1.5, 5.15, 0.32, [1, 0.8, 0.4, 0.8]); L.push({ x, y: 1.4, z: 5.4, r: 2.4, c: [0.9, 0.65, 0.3] }); }
+  }
+}
+
+// ================= 白天的隨機事件（第二個月起）=================
+// 每天早上有一定機率發生一件事；沒看過的優先，同一件事不會連著出。
+// 有的要做選擇，有的會帶來插枝、罐罐、粉絲，或是幫「花喵幫」鋪路（流浪貓好感）。
+const DAY_EVENTS = [
+  { id: 'kids', name: '校外教學', w: 3, script: evKids },
+  { id: 'propose', name: '求婚急件', w: 3, script: evPropose },
+  { id: 'market', name: '花市阿姨', w: 2, cond: run => gardenOf(run).lv >= 1, script: evMarket },
+  { id: 'influencer', name: '網紅來打卡', w: 2, script: evInfluencer },
+  { id: 'granny', name: '神秘老奶奶', w: 2, script: evGranny },
+  { id: 'stray', name: '門口的流浪貓', w: 3, script: evStray },
+  { id: 'borrow', name: '阿伯來借剪刀', w: 2, cond: run => starsOf(run, 'bo') < 3, script: evBorrow },
+  { id: 'rainy', name: '午後雷陣雨', w: 2, script: evRainy },
+];
+function pickDayEvent(run) {
+  if (run.flags && run.flags.forceEv) { const f = DAY_EVENTS.find(x => x.id === run.flags.forceEv); delete run.flags.forceEv; if (f) return f; }   // 測試用
+  if ((run.month || 1) < 2) return null;
+  if (Math.random() > 0.65) return null;
+  const seen = run.evSeen || (run.evSeen = {});
+  const pool = DAY_EVENTS.filter(e => e.id !== run.lastEv && (!e.cond || e.cond(run)));
+  if (!pool.length) return null;
+  const wt = e => e.w * (seen[e.id] ? 1 : 3);
+  let r = Math.random() * pool.reduce((s, e) => s + wt(e), 0);
+  for (const e of pool) { r -= wt(e); if (r <= 0) return e; }
+  return pool[0];
+}
+function* dayEventScript(S) {
+  const run = S.run, e = pickDayEvent(run);
+  if (!e) return false;
+  run.lastEv = e.id; run.evSeen = run.evSeen || {}; run.evSeen[e.id] = (run.evSeen[e.id] || 0) + 1;
+  const wasOn = S.shopOn; S.shopOn = false;
+  { let w = 0; yield { update: dt => { w += dt; return w > 5 || !S.shoppers.length; } }; }
+  UI.banner('今日事件：' + e.name);
+  yield wait(1.0);
+  yield* e.script(S);
+  UI.hideDialog();
+  if (wasOn) S.startShop();
+  return true;
+}
+function askChoice(S, title, text, ok, no) {
+  let res = false;
+  return { p: S.modal(done => UI.confirm(title, text, ok, no, v => { res = v; done(); })), get v() { return res; } };
+}
+
+function* evKids(S) {
+  const t = S.customer('cust2');
+  yield S.walkIn(t, COUNTER_SPOT2);
+  yield* S.talk(t, '帶隊老師', [['不好意思，我們班在做「認識社區」的作業……'], ['小朋友可以每個人買一朵小花嗎？還有……可以摸摸那隻貓嗎？']]);
+  const cheap = S.stock.filter(f => S.canSell(f)).sort((a, b) => FLOWERS[a.t].price - FLOWERS[b.t].price).slice(0, 6);
+  let v = 0; for (const f of cheap) { S.stock.splice(S.stock.indexOf(f), 1); v += flowerValue(S.run, f.t, f.fresh); }
+  S.cat.pose = 'belly'; S.fx.hearts(S.cat.x, S.cat.y - 10, 8); SFX.play('heart');
+  yield S.say('花喵被摸得好開心……');
+  S.cat.pose = null;
+  if (v) S.sell(v);
+  S.run.cans += 8;
+  UI.toast(`小朋友買了 ${cheap.length} 朵花${v ? '（+' + money(Math.round(v)) + '）' : ''}，還塞給花喵 8 個罐罐`, 3200);
+  yield S.walkOut(t);
+}
+function* evPropose(S) {
+  const g = S.customer('shopA');
+  yield S.walkIn(g, COUNTER_SPOT2);
+  yield* S.talk(g, '緊張的年輕人', [['老闆！我、我今天晚上要求婚！'], ['有沒有紅玫瑰？三朵就好，多少錢都可以！']]);
+  const roses = S.stock.filter(f => f.t === 'rose' && S.canSell(f)).slice(0, 3);
+  if (roses.length >= 3) {
+    let v = 0; for (const f of roses) { S.stock.splice(S.stock.indexOf(f), 1); v += flowerValue(S.run, f.t, 1); }
+    v = Math.round(v * 3);
+    yield S.say('有！我幫你包得漂漂亮亮的。祝你成功！');
+    S.sell(v); S.fx.hearts(g.x, g.y - 16, 10); SFX.play('heart');
+    yield* S.talk(g, '緊張的年輕人', [['謝謝！如果她答應了，婚禮的花也找妳！']]);
+    UI.toast(`求婚玫瑰賣了 ${money(v)}（三倍價）`, 3000);
+    S.run.flags.proposeOk = (S.run.flags.proposeOk || 0) + 1;
+  } else {
+    yield S.say(roses.length ? `只剩 ${roses.length} 朵玫瑰……` : '今天沒有紅玫瑰……');
+    yield* S.talk(g, '緊張的年輕人', [['沒關係……我再去別家問問看。'], ['（垂頭喪氣地走了）']]);
+    UI.toast('下次店裡多留幾朵紅玫瑰吧', 2400);
+  }
+  yield S.walkOut(g);
+}
+function* evMarket(S) {
+  const run = S.run, a = S.customer('shopE');
+  const t = pick(['tanhua', 'peony', 'orchid', 'hydrangea', 'osmanthus']);
+  const price = Math.round(FLOWERS[t].price * 2.5 / 50) * 50;
+  yield S.walkIn(a, COUNTER_SPOT2);
+  yield* S.talk(a, '花市的阿姨', [['聽說妳在頂樓種花？我這裡有一支' + FLOWERS[t].name + '的插枝，品種很好喔。'], [`算妳 ${money(price)} 就好，要不要？`]]);
+  const c = askChoice(S, '買插枝？', `${FLOWERS[t].name}插枝 ×1，${money(price)}${GARDEN_RARE.includes(t) && gardenOf(run).lv < 5 ? '（要玻璃花房才種得活）' : ''}`, '買', '不用了');
+  yield c.p;
+  if (c.v && run.money >= price) {
+    run.money -= price; run.cuttings = run.cuttings || {}; run.cuttings[t] = (run.cuttings[t] || 0) + 1;
+    SFX.play('buy'); UI.toast(`買到${FLOWERS[t].name}的插枝！傍晚可以種到頂樓`, 2800);
+    yield* S.talk(a, '花市的阿姨', [['好好照顧它喔～']]);
+  } else {
+    yield* S.talk(a, '花市的阿姨', [[c.v ? '錢不夠啊……下次吧。' : '好啦，下次再來找妳。']]);
+  }
+  yield S.walkOut(a);
+}
+function* evInfluencer(S) {
+  const i = S.customer('shopF');
+  yield S.walkIn(i, COUNTER_SPOT2);
+  yield* S.talk(i, '網紅', [['哈囉大家好～今天我來到一間超可愛的花店！'], ['老闆，可以跟貓咪拍一張嗎？我有二十萬粉絲喔！']]);
+  S.cat.pose = 'belly'; S.fx.hearts(S.cat.x, S.cat.y - 10, 6); SFX.play('heart');
+  yield wait(1.0); S.cat.pose = null;
+  S.run.flags.buzz = (S.run.nightIdx || 0) + 2;
+  UI.toast('影片爆紅了！今天和明天上門的客人變多', 3000);
+  yield S.walkOut(i);
+}
+function* evGranny(S) {
+  const run = S.run, g = S.customer('cust1');
+  yield S.walkIn(g, COUNTER_SPOT2);
+  yield* S.talk(g, '神秘的老奶奶', [['這隻貓……長得跟我年輕時養的一模一樣。'], ['來，這個籤給你。好好收著。']]);
+  const r = Math.random();
+  if (r < 0.34) { run.cans += 20; UI.toast('上上籤：罐罐 +20', 2800); }
+  else if (r < 0.67) { const t = pick(['tanhua', 'orchid', 'peony']); run.cuttings = run.cuttings || {}; run.cuttings[t] = (run.cuttings[t] || 0) + 1; UI.toast(`上籤：籤裡包著一支${FLOWERS[t].name}的插枝！`, 3000); }
+  else { run.money += 2000; UI.toast('大吉：籤裡夾著 NT$ 2,000……老奶奶說是「給貓的零用錢」', 3200); }
+  SFX.play('chime');
+  yield* S.talk(g, '神秘的老奶奶', [['……我們還會再見面的。']]);
+  yield S.walkOut(g);
+}
+function* evStray(S) {
+  const run = S.run;
+  const who = pick(['三花貓', '黑貓', '獨眼的大橘', '小白']);
+  yield S.say(`門口有一隻${who}在探頭探腦……花喵，是你的朋友嗎？`);
+  const c = askChoice(S, '分罐罐給牠？', `給${who} 3 個罐罐（現在有 ${run.cans} 個）`, '分給牠', '算了');
+  yield c.p;
+  if (c.v && run.cans >= 3) {
+    run.cans -= 3; run.strays = (run.strays || 0) + 1;
+    run.strayNames = run.strayNames || []; if (!run.strayNames.includes(who)) run.strayNames.push(who);
+    SFX.play('meow'); S.fx.hearts(S.cat.x, S.cat.y - 10, 4);
+    yield S.say(`${who}吃得好開心，蹭了花喵一下才走。`);
+    UI.toast(`巷子裡的流浪貓對花喵的好感 +1（已經 ${run.strays}）`, 3000);
+  } else {
+    yield S.say(`${who}看了花喵一眼，轉身走了。`);
+  }
+}
+function* evBorrow(S) {
+  const run = S.run, b = S.customer('bo');
+  yield S.walkIn(b, COUNTER_SPOT2);
+  yield* S.talk(b, '阿伯', [['美玲啊，妳的花剪借我一下。我家的桂花長太亂了。'], ['好啊，阿伯慢慢用～', null, 'M']]);
+  yield wait(0.8);
+  yield* S.talk(b, '阿伯', [['還妳。剪下來的枝妳拿去插，丟掉可惜。']]);
+  heatAdd(run, 'bo', -12);
+  run.cuttings = run.cuttings || {}; run.cuttings.osmanthus = (run.cuttings.osmanthus || 0) + 2;
+  UI.toast('拿到桂花插枝 ×2，阿伯的戒心也鬆了一點', 2800);
+  yield S.walkOut(b);
+}
+function* evRainy(S) {
+  yield S.say('外面突然下大雨了……客人應該會少一點。');
+  const st = storeOf(S.run);
+  if ((st.expand || 0) >= 2) {
+    yield S.say('還好有騎樓座位，躲雨的人都進來買咖啡了！');
+    const v = 6 * COFFEE_PRICE; S.sell(v); UI.toast(`躲雨的客人買了 6 杯咖啡（+${money(v)}）`, 2600);
+  } else {
+    S.run.flags.rainDay = (S.run.nightIdx || 0) + 1;
+    yield S.say('……要是門口有遮雨的騎樓就好了。');
   }
 }
 
@@ -14214,6 +14565,7 @@ NightScene.prototype.render3D = function () {
   nightPlusLights(this, L);
   gardenRender3D(this, F, L, st);
   tunnelRender3D(this, F);
+  expNight3D(this, F, L);
   let bb = null;
   if (bbq) {
     if (!st.bbq) st.bbq = buildBBQProps();

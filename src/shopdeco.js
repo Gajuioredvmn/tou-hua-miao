@@ -615,4 +615,5 @@ function shopDecor3D(sc, F, st, store) {
     pushSprite(F.sprites, ART.fix(toonWrapBouquet()), 1.7 * TS, 12.95 * TS, { lift: top });
     pushSprite(F.sprites, artAFrame(), 3.5 * TS, 17.6 * TS); shadowAt(F, 3.5 * TS, 17.6 * TS, 0.7, 0.24);
   }
+  expDecor3D(sc, F);
 }

@@ -328,8 +328,9 @@ const UI = {
         const nightsLeft = Math.max(0, 4 - (run.night || 1));
         const rows = STORE_UPGRADES.map(u => {
           const lv = st[u.id] || 0, maxed = lv >= u.max, cost = maxed ? 0 : u.cost[lv];
-          const can = !maxed && run.money >= cost;
-          const now = lv > 0 ? u.lv[lv - 1] : u.base, next = maxed ? '已經裝好了' : '買了：' + u.lv[lv];
+          const monNeed = !maxed && u.mon ? u.mon[lv] : 1, early = (run.month || 1) < monNeed;
+          const can = !maxed && !early && run.money >= cost;
+          const now = lv > 0 ? u.lv[lv - 1] : u.base, next = maxed ? '已經裝好了' : early ? `第${cn(monNeed)}個月開放：${u.lv[lv]}` : '買了：' + u.lv[lv];
           return `<li class="up ${maxed ? 'maxed' : ''}">
             <div class="up-main"><div class="up-name"><span class="grp store">花店</span><b>${u.name}</b><span class="pips">${pips(lv, u.max)}</span></div>
             <div class="up-now">${esc(now)}</div><div class="up-next">${esc(next)}</div></div>
@@ -395,7 +396,7 @@ const UI = {
       this.cardEl.querySelectorAll('.buy[data-id]').forEach(b => b.addEventListener('click', () => {
         if (tab === 'store') {
           const u = STORE_UPGRADES.find(x => x.id === b.dataset.id), lv = st[u.id] || 0;
-          if (lv >= u.max || run.money < u.cost[lv]) return;
+          if (lv >= u.max || run.money < u.cost[lv] || (u.mon && (run.month || 1) < u.mon[lv])) return;
           run.money -= u.cost[lv]; st[u.id] = lv + 1;
           SFX.play('buy');
           if (G.scene && G.scene.reveal) {

@@ -91,6 +91,7 @@ class DayScene {
     if (decor >= 1) for (let z = 5; z <= 10; z++) add('1,' + z);
     if (decor >= 2) { add('1,4'); add('13,4'); }
     if (decor >= 3) for (const k of ['1,11', '1,12', '1,13', '2,11', '2,12', '2,13']) add(k);
+    for (const k of expBlocked(this.run)) add(k);
     this.displays = this.displaysFor(decor);
   }
   // 花桶裡的花有多滿：看店裡還剩幾朵
@@ -150,7 +151,7 @@ class DayScene {
       this.shopT -= dt;
       if (this.shopT <= 0) {
         const max = this.rush ? 4 : 3;
-        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * (this.run.flags && this.run.flags.famous ? 0.65 : 1) * rnd(0.8, 1.2);
+        if (this.shoppers.length < max && this.spawnShopper()) this.shopT = this.rush ? rnd(0.45, 0.75) : (st.neon ? 4 : 8) * (this.run.flags && this.run.flags.famous ? 0.65 : 1) * ((st.expand || 0) >= 2 ? 0.7 : 1) * ((this.run.flags && this.run.flags.buzz || 0) > (this.run.nightIdx || 0) ? 0.7 : 1) * rnd(0.8, 1.2);
         else this.shopT = 1;
       }
     }
@@ -176,7 +177,9 @@ class DayScene {
         let v = S.carry ? S.carry.reduce((a, f) => a + flowerValue(this.run, f.t, f.fresh), 0) : 0;
         if (S.carryB) v += S.carryB.value;
         const pot = st.neon ? SMALL_POT_PRICE : 0, wrap = (S.carry || S.carryB) && (st.decor || 0) >= 3 ? WRAP_FEE : 0;
-        this.sell(v + pot + wrap, pot, wrap);
+        const coffee = (st.expand || 0) >= 1 ? COFFEE_PRICE : 0;
+        this.sell(v + pot + wrap + coffee, pot, wrap);
+        if (coffee) this.fx.text(REGISTER[0] * TS - 16, REGISTER[1] * TS - 4, '咖啡', '#e8c49a', 1.2, 1.1);
         if (S.carryB) this.fx.text(REGISTER[0] * TS - 6, REGISTER[1] * TS - 10, S.carryB.name, '#ffb3c8', 1.4, 1.2);
         S.carry = null; S.st = 'out'; S.outB = S.carryB; S.carryB = null; this.queue.shift(); this.advanceQueue();
         h.goTo([SHOP_DOOR_IN, SHOP_DOOR_OUT], this.rush ? 64 : 46);
@@ -273,13 +276,13 @@ class DayScene {
   }
   // ---- 花店升級：鏡頭帶過去看 ----
   reveal(id, lv, cb) {
-    const spot = { lights: [7.5, 5.2], fridge: [12.6, 9.9], neon: [5.5, 4.4], scooter: [11.2, 17.6], decor: [[5.4, 9.6], [3.4, 6.2], [3.2, 12.4]][lv - 1] }[id] || [7.5, 9];
+    const spot = { lights: [7.5, 5.2], fridge: [12.6, 9.9], neon: [5.5, 4.4], scooter: [11.2, 17.6], decor: [[5.4, 9.6], [3.4, 6.2], [3.2, 12.4]][lv - 1], expand: [[11.6, 12.4], [11.2, 16.6], [6.5, 5.6], [7.6, 10.2]][lv - 1] }[id] || [7.5, 9];
     const u = STORE_UPGRADES.find(x => x.id === id);
     this.focus = { x: spot[0], z: spot[1], t: 0, dur: 3.0, cb, id, lv };
-    if (id === 'decor') { this.layoutDisplays(); this.cat.unstick(this); }
+    if (id === 'decor' || id === 'expand') { this.layoutDisplays(); this.cat.unstick(this); }
     this.mode = 'reveal'; Input.release(); this.cat.moving = false;
     SFX.play('heart'); setTimeout(() => SFX.play('buy'), 250);
-    const hy = { lights: 2.2, fridge: 1.2, neon: 2.2, scooter: 0.8, decor: 1.0 }[id] || 1;
+    const hy = { lights: 2.2, fridge: 1.2, neon: 2.2, scooter: 0.8, decor: 1.0, expand: lv === 4 ? 2.0 : 1.0 }[id] || 1;
     for (let i = 0; i < 26; i++) { const a = Math.random() * Math.PI * 2, r = rnd(0.2, 1.4); this.sparks.push({ x: spot[0] + Math.cos(a) * r * 0.4, y: hy + rnd(-0.3, 0.4), z: spot[1] + Math.sin(a) * r * 0.25, vx: Math.cos(a) * r, vy: rnd(0.4, 1.4), vz: Math.sin(a) * r * 0.4, t: -i * 0.02, life: rnd(0.8, 1.4) }); }
     this.fx.ring(spot[0] * TS, spot[1] * TS, 3 * TS, 'rgba(255,214,90,0.9)', 0.8);
     setTimeout(() => { if (this.focus) UI.say('美玲', (u.reveal && (u.reveal[lv - 1] || u.reveal[0])) || '好漂亮！', { auto: 2.6 }); }, 500);
@@ -1058,7 +1061,7 @@ function* monthDayScript(S, n) {
   yield S.say(nb.total > 0 ? pick(['門口又有花了！小精靈今天也來了耶。', '今天的花也好漂亮～花喵，你知道是誰放的嗎？', '花店小精靈又來了！']) : '今天門口沒有花……');
   UI.hideDialog();
   yield* gardenMorningScript(S);
-  yield* gardenStoryScript(S);
+  if (!(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S))) yield* dayEventScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
   const k = 1 + (Math.random() < 0.5 ? 1 : 0);
@@ -1076,6 +1079,8 @@ function* monthDayScript(S, n) {
   S.tint = 'evening';
   UI.banner('傍晚');
   yield wait(0.8);
+  const tuition = classIncome(run);
+  if (tuition) { run.money += tuition; S.daySales += tuition; UI.toast(`花藝教室的學費 +${money(tuition)}`, 2400); SFX.play('coin'); }
   yield S.say(S.daySales > 0 ? `今天賣了 ${money(S.daySales)}！花喵，賞你罐罐。` : '今天沒什麼生意……花喵，罐罐還是給你。');
   UI.hideDialog();
   yield wait(0.4);

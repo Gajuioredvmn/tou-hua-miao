@@ -93,7 +93,7 @@ function drawCafeTable(k) {
   O.limb(10, -1, 10, -9, 1.4, woodD); O.limb(14, -1, 14, -9, 1.4, woodD);
   O.blobO([[8.5, -10], [15.5, -10], [15.5, -8], [8.5, -8]], wood);
 }
-function toonCafeTable(k) { return toonFrameInfo(toonFrame('exp-table-' + k, 34, 28, () => drawCafeTable(k)), false, 0.5, 1); }
+function toonCafeTable(k) { return toonFrameInfo(toonFrame('exp-table-' + k, 34, 28, () => drawCafeTable(k)), false, 0.5, 1.6); }
 function drawEspresso() {
   O.blobO([[-8, 0], [8, 0], [8, -14], [-8, -14]], '#c9ccd8');
   O.blobO([[-8, -14], [8, -14], [7, -17], [-7, -17]], '#3a3a4a');
@@ -103,7 +103,7 @@ function drawEspresso() {
   O.curve([[-1, -7], [-1.5, -9]], 'rgba(255,255,255,0.7)', 0.8); O.curve([[1, -7], [1.6, -9.5]], 'rgba(255,255,255,0.7)', 0.8);
   for (let i = 0; i < 3; i++) O.blobO([[10 + i * 3.2, 0], [12.4 + i * 3.2, 0], [12.2 + i * 3.2, -3], [10.2 + i * 3.2, -3]], ['#ffffff', '#f2c6a0', '#9ad0e8'][i]);
 }
-function toonEspresso() { return toonFrameInfo(toonFrame('exp-espresso', 34, 22, drawEspresso), false, 0.4, 0.8); }
+function toonEspresso() { return toonFrameInfo(toonFrame('exp-espresso', 34, 22, drawEspresso), false, 0.4, 1.05); }
 function drawUmbrellaTable(k) {
   const c1 = k ? '#ff8fae' : '#7cbf9a', c2 = '#fff6ec';
   O.limb(0, 0, 0, -26, 1.4, '#6a6a7a');
@@ -117,7 +117,7 @@ function drawUmbrellaTable(k) {
   for (const sd of [-1, 1]) { O.limb(sd * 11, 0, sd * 11, -7, 1.2, '#3a3a4a'); O.blobO([[sd * 8, -7], [sd * 14, -7], [sd * 14, -5.5], [sd * 8, -5.5]], '#3a3a4a'); O.blobO([[sd * 13, -14], [sd * 14.5, -14], [sd * 14.5, -6], [sd * 13, -6]], '#3a3a4a'); }
   O.curve([[2, -12], [2.4, -16]], PC.stem, 1); flower5(2.4, -16.6, 1.6, '#ff6d9a', '#fff4c0');
 }
-function toonUmbrellaTable(k) { return toonFrameInfo(toonFrame('exp-umb-' + k, 36, 38, () => drawUmbrellaTable(k)), false, 0.5, 1.05); }
+function toonUmbrellaTable(k) { return toonFrameInfo(toonFrame('exp-umb-' + k, 36, 38, () => drawUmbrellaTable(k)), false, 0.5, 1.55); }
 function drawFlowerArch() {
   const cols = ['#ff8fae', '#ffd84d', '#ffffff', '#e8394d', '#9a6ad0', '#ff9fcb'];
   for (let i = 0; i <= 14; i++) {
@@ -132,7 +132,7 @@ function drawFlowerArch() {
   O.blobO([[-8, -36], [8, -36], [8, -30], [-8, -30]], '#2a2a36');
   O.blob([[-7, -35], [7, -35], [7, -31], [-7, -31]], '#ff6d9a');
 }
-function toonFlowerArch() { return toonFrameInfo(toonFrame('exp-arch', 40, 40, drawFlowerArch), false, 0.5, 1.15); }
+function toonFlowerArch() { return toonFrameInfo(toonFrame('exp-arch', 40, 40, drawFlowerArch), false, 0.5, 1.75); }
 function drawChandelier() {
   O.curve([[0, -30], [0, -20]], '#c9a43a', 1.2);
   O.eo(0, -14, 9, 3, '#e8b84a');
@@ -140,10 +140,10 @@ function drawChandelier() {
   for (let i = -3; i <= 3; i++) O.e(i * 2.8, -11, 0.9, 1.6, 'rgba(220,240,255,0.9)');
   O.eo(0, -19, 3, 2, '#e8b84a');
 }
-function toonChandelier() { return toonFrameInfo(toonFrame('exp-chand', 24, 32, drawChandelier), false, 0.5, 1); }
+function toonChandelier() { return toonFrameInfo(toonFrame('exp-chand', 24, 32, drawChandelier), false, 0.5, 1.55); }
 
 // ---------- 白天：店裡、騎樓 ----------
-const CAFE_TABLES = [[10.7, 12.4, 0], [12.7, 14.0, 1]];
+const CAFE_TABLES = [[10.6, 12.2, 0], [12.8, 14.0, 1]];
 const PATIO_TABLES = [[9.4, 17.55, 0], [13.2, 17.55, 1]];
 function expBlocked(run) {
   const lv = expLv(run), out = [];
@@ -162,7 +162,8 @@ function expDecor3D(sc, F) {
       pushSprite(F.sprites, ART.fix(toonChandelier()), x * TS, z * TS, { lift: 2.0 * cpd, unlit: true });
       glowQuad(F.glow, x, 2.0, z + 0.05, 0.9, [1, 0.85, 0.55, 0.28 + 0.04 * Math.sin(t * 2 + x)]);
     }
-    groundQuad(F.flat, 7.5, 17.2, 0.9, 1.4, 0, [0.72, 0.12, 0.18, 0.95], 0.008);
+    groundQuad(F.flat, 7.5, 16.95, 1.0, 0.9, 0, [0.85, 0.66, 0.25, 0.95], 0.007);
+    groundQuad(F.flat, 7.5, 16.95, 0.86, 0.82, 0, [0.5, 0.07, 0.12, 0.95], 0.008);
   }
 }
 function expLights(sc, L) {
@@ -173,10 +174,11 @@ function expLights(sc, L) {
 function expNight3D(sc, F, L) {
   const lv = expLv(sc.run); if (!lv) return;
   const t = sc.cat.t || 0;
-  if (lv >= 2) for (const [x, k] of [[10.4, 0], [12.9, 1]]) { pushSprite(F.sprites, ART.fix(toonUmbrellaTable(k)), x * TS, 5.75 * TS); shadowAt(F, x * TS, 5.75 * TS, 1.4, 0.4); }
+  if (lv >= 2) for (const [x, k] of [[4.9, 0], [10.2, 1]]) { pushSprite(F.sprites, ART.fix(toonUmbrellaTable(k)), x * TS, 5.75 * TS); shadowAt(F, x * TS, 5.75 * TS, 1.4, 0.4); }
   if (lv >= 3) { pushSprite(F.sprites, ART.fix(toonFlowerArch()), 7.5 * TS, 5.05 * TS, { minLight: [0.6, 0.55, 0.6] }); glowQuad(F.glow, 7.5, 2.0, 5.1, 0.55, [1, 0.45, 0.7, 0.3 + 0.08 * Math.sin(t * 2.4)]); }
   if (lv >= 4) {
-    groundQuad(F.flat, 7.5, 5.9, 0.75, 1.1, 0, [0.6, 0.1, 0.16, 0.9], 0.008);
+    groundQuad(F.flat, 7.5, 5.85, 0.85, 0.95, 0, [0.85, 0.66, 0.25, 0.9], 0.007);
+    groundQuad(F.flat, 7.5, 5.85, 0.72, 0.88, 0, [0.5, 0.07, 0.12, 0.92], 0.008);
     for (const x of [5.6, 9.4]) { glowQuad(F.glow, x, 1.5, 5.15, 0.32, [1, 0.8, 0.4, 0.8]); L.push({ x, y: 1.4, z: 5.4, r: 2.4, c: [0.9, 0.65, 0.3] }); }
   }
 }

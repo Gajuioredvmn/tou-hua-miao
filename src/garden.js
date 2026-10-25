@@ -138,8 +138,9 @@ function* gardenStoryScript(S) {
       yield S.walkOut(bt);
     }
     if (wasOn) S.startShop();
-    return;   // 一天只演一段，留到明天
+    return true;   // 一天只演一段，留到明天
   }
+  return false;
 }
 // 早上：收成、粉絲送的花
 function* gardenMorningScript(S) {
