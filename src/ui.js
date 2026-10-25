@@ -546,9 +546,57 @@ function newRun() {
 }
 // ---------- 存檔：每次天亮、天黑出門時自動存在這台裝置的瀏覽器 ----------
 const SAVE_KEY = 'thm-save-v1';
+// 在 Claude 裡打開時，同時存到這個遊戲自己的雲端資料庫（每個人私有的那一格），
+// 換裝置、重新打開都讀得到；GitHub 版沒有雲端，就只用瀏覽器的存檔。
+const Cloud = {
+  ref: null, busy: false, pending: null,
+  async doc() {
+    if (this.ref !== null) return this.ref;
+    try {
+      const C = window.claude;
+      if (!C || !C.use) return (this.ref = false);
+      const [db, user] = await Promise.all([C.use('db'), C.use('user')]);
+      const id = user ? await user.id() : null;
+      this.ref = db && id ? db.doc('data/users/' + id + '/save') : false;
+    } catch (e) { this.ref = false; }
+    return this.ref;
+  },
+  // 一次只寫一筆；寫的時候又有新存檔，就等這筆寫完再寫最新的
+  async save(payload) {
+    this.pending = payload;
+    if (this.busy) return;
+    this.busy = true;
+    try {
+      while (this.pending) {
+        const p = this.pending; this.pending = null;
+        const d = await this.doc(); if (!d) break;
+        try { await d.set({ v: 1, kind: p.kind, n: p.n, t: p.t, run: JSON.stringify(p.run) }); } catch (e) { }
+      }
+    } finally { this.busy = false; }
+  },
+  async load() {
+    try {
+      const d = await this.doc(); if (!d) return null;
+      const snap = await d.get(); if (!snap || !snap.exists) return null;
+      const x = snap.data(); if (!x || !x.run) return null;
+      return { v: x.v, kind: x.kind, n: x.n, t: x.t, run: JSON.parse(x.run) };
+    } catch (e) { return null; }
+  },
+};
 function saveGame(kind, n) {
   if (!G.run) return;
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, kind, n, t: Date.now(), run: G.run })); } catch (e) { }
+  const p = { v: 1, kind, n, t: Date.now(), run: G.run };
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(p)); } catch (e) { }
+  try { Cloud.save(JSON.parse(JSON.stringify(p))); } catch (e) { }
+}
+function normSave(d) {
+  if (!d || d.v !== 1 || !d.run || (d.kind !== 'day' && d.kind !== 'night')) return null;
+  try {
+    const base = newRun(), r = Object.assign(base, d.run);
+    for (const k of ['upg', 'store', 'stats']) r[k] = Object.assign(newRun()[k], d.run[k] || {});
+    d.run = r;
+    return d;
+  } catch (e) { return null; }
 }
 function loadSave() {
   try {
@@ -561,7 +609,7 @@ function loadSave() {
     return d;
   } catch (e) { return null; }
 }
-function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) { } }
+function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) { } Cloud.doc().then(d => { if (d) d.delete().catch(() => { }); }); }
 function saveLabel(d) {
   const m = d.run.month || 1, n = d.n || 1;
   if (d.kind === 'night') return `第${cn(m)}個月・第${NUM[n]}晚出門前`;

@@ -60,7 +60,14 @@ function boot(data) {
   } else {
     setScene(new TitleScene(), 'none');
     const sv = loadSave();
-    UI.title(() => { SFX.init(); SFX.resume(); Flow.start(); }, sv, () => { SFX.init(); SFX.resume(); Flow.resume(sv); });
+    const showTitle = s => UI.title(() => { SFX.init(); SFX.resume(); Flow.start(); }, s, () => { SFX.init(); SFX.resume(); Flow.resume(s); });
+    showTitle(sv);
+    // 雲端存檔比較新（或這台裝置沒有存檔）：標題畫面換成雲端的進度
+    Cloud.load().then(cd => {
+      const c = normSave(cd);
+      if (!c || (sv && sv.t >= c.t)) return;
+      if (G.scene && G.scene.kind === 'title' && UI.modalOpen) showTitle(c);
+    });
   }
   let last = performance.now();
   const loop = now => {
