@@ -1,0 +1,86 @@
+// ================= 啟動 =================
+const G = { S: null, maps: {}, bg: {}, run: null, scene: null, icons: {}, paused: false };
+
+function stampDecor() {
+  // 屋頂水塔、牆上的冷氣室外機
+  const g = G.bg.night.getContext('2d');
+  for (const [tx, ty] of ROOF_TOWERS) drawSpr(g, G.S.obj.tower, (tx + 0.5) * TS, (ty + 1) * TS - 1);
+  const ac = buildSprite(['IIIIIIII', 'IiiiiiiI', 'IiIIIIiI', 'IiiiiiiI', 'IIIIIIII', '.i....i.'], PAL);
+  for (const [tx, ty] of [[11, 11], [1, 21], [12, 31], [13, 11]]) {
+    if (G.maps.night.at(tx, ty) === '#') drawSpr(g, ac, (tx + 0.5) * TS, (ty + 1) * TS - 3);
+  }
+  // 花店招牌
+  const sg = g;
+  sg.fillStyle = '#4a7a5a'; sg.fillRect(4 * TS + 2, 3 * TS + 2, 2 * TS - 4, 5);
+  sg.fillStyle = '#fff3e8'; sg.fillRect(4 * TS + 3, 3 * TS + 3, 2 * TS - 6, 3);
+  sg.fillStyle = '#ff8fae'; for (let i = 0; i < 4; i++) sg.fillRect(4 * TS + 5 + i * 4, 3 * TS + 4, 2, 1);
+}
+function makeIcons() {
+  const big = (cv, k = 1) => {
+    const c = document.createElement('canvas'); c.width = cv.width * k; c.height = cv.height * k;
+    const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.drawImage(cv, 0, 0, c.width, c.height);
+    return c.toDataURL();
+  };
+  for (const k in G.S.icon) G.icons[k] = big(G.S.icon[k], 4);
+  G.icons.can = big(G.S.obj.can, 4);
+  G.icons.orange = big(buildSprite([
+    '.O......O.', '.OO....OO.', '.OOOOOOOO.', 'OOEOOOOEOO', 'OOOOPPOOOO', '.OOOOOOOO.',
+  ], PAL), 4);
+  G.icons.catBig = big(G.S.cat.down[0], 6);
+  try { Object.assign(G.icons, vectorIcons()); } catch (e) { console.error(e); }
+}
+
+function boot(data) {
+  if (R3.init($('gl'), $('screen'))) $('screen').classList.add('ov');
+  View.init($('screen'));
+  G.S = makeAllSprites();
+  G.S.tabby = makeTabbySprites();
+  G.S.bush = [makeBushSprite(1), makeBushSprite(2), makeBushSprite(3)];
+  G.S.lamp = makeLampSprite(); G.S.camPole = makeCamPole();
+  G.S.bubble = {}; for (const k in BUBBLE_ICONS) G.S.bubble[k] = makeBubbleSprite(k);
+  G.maps.night = new TileMap(NIGHT_MAP); G.maps.shop = new TileMap(SHOP_MAP);
+  G.bg.night = renderMap(G.maps.night); G.bg.shop = renderMap(G.maps.shop);
+  stampDecor(); makeIcons();
+  try { SFX.muted = localStorage.getItem('thm-mute') === '1'; } catch (e) { }
+  UI.init();
+  Input.init($('touch'), $('stick'), $('knob'));
+  Input.onAction = () => Flow.action();
+  Input.onWait = () => Flow.wait();
+  Input.onSkill = i => Flow.skill(i);
+  Input.onPause = () => UI.pause();
+  window.addEventListener('resize', () => View.resize());
+  document.addEventListener('visibilitychange', () => { if (document.hidden && G.scene && G.scene.kind === 'night' && G.scene.mode === 'play') UI.pause(); });
+
+  // 換版時保留進度（只在 claude 檢視器裡有用）
+  try { window.claude && window.claude.hot && window.claude.hot.snapshot && window.claude.hot.snapshot(() => ({ run: G.run, kind: G.scene && G.scene.kind, n: G.scene && G.scene.n })); } catch (e) { }
+  if (data && data.run && data.kind && data.kind !== 'title') {
+    G.run = data.run;
+    if (data.kind === 'night') setScene(new NightScene(data.n));
+    else setScene(new DayScene(data.n || 1));
+  } else {
+    setScene(new TitleScene(), 'none');
+    UI.title(() => { SFX.init(); SFX.resume(); Flow.start(); });
+  }
+  let last = performance.now();
+  const loop = now => {
+    const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+    try {
+      if (G.scene && !G.paused) G.scene.update(dt);
+      if (G.scene) {
+        if (R3.on && G.scene.render3D) G.scene.render3D();
+        else { G.scene.render(View.ctx); View.present(); }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+  window.__TH = { G, Flow, UI, Input, Cam, View, R3, GL3, DayScene, NightScene, setScene, newRun, CuteGame, CharmCut, OrangeCat, ART, GEAR: { drawMeowArt2, drawBellyArt2, drawRubArt2, VXR, orangeCloseup, cuteHead, withGear, catGearFor, catRefArt, toonOrangePal: ORANGE_PAL, TAB } };
+}
+
+(function start() {
+  const go = d => { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => boot(d || {})); else boot(d || {}); };
+  const hot = window.claude && window.claude.hot;
+  if (hot && hot.ready) hot.ready(go); else go(hot && hot.data ? hot.data : {});
+})();
