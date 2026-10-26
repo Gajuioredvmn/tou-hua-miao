@@ -144,7 +144,7 @@ UI.book = function (run, back, tab = 'bq') {
       body = `<h3>白天的事件　${Object.keys(seen).length}/${DAY_EVENTS.length}</h3><ul class="ev-list">${ev}</ul>
         <h3>稀有的夜晚　${Object.keys(run.rareSeen || {}).length}/${Object.keys(RARE_NIGHTS).length}</h3><ul class="ev-list">${Object.keys(RARE_NIGHTS).map(k => `<li class="${(run.rareSeen || {})[k] ? 'got' : ''}"><b>${(run.rareSeen || {})[k] ? esc(RARE_NIGHTS[k].name) : '？？？'}</b><span class="px">${(run.rareSeen || {})[k] ? '×' + run.rareSeen[k] : ''}</span></li>`).join('')}</ul>
         <h3>花喵幫　${gangMembers(run).length}/${GANG.length}</h3><ul class="ev-list">${cats}</ul>
-        <p class="hint">巷子裡的流浪貓好感：${run.strays || 0}</p>`;
+        <p class="hint">巷子裡的流浪貓好感：${run.strays || 0}</p>${zoneBookHTML(run)}`;
     } else {
       const fl = FLOWER_ORDER.map(t => {
         const n = B.flowers[t] || 0, F = FLOWERS[t];

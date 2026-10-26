@@ -12,7 +12,7 @@ let CAT_GEAR;   // undefined：照 G.run（玩家）的升級；null：什麼都
 function catGearFor(run) {
   if (!run || !run.upg) return null;
   const u = run.upg;
-  const g = { socks: u.paws || 0, mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0, horn: u.call || 0, lamp: u.tunnel || 0, ahoge: u.tilt || 0, band: u.dead || 0, plank: u.roofway || 0, cape: u.shadow ? 1 + u.shadow : 0, phones: u.ear || 0, hband: u.parkour || 0 };
+  const g = { socks: u.sewer ? 2 + u.sewer : (u.paws || 0), mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0, horn: u.call || 0, lamp: u.tunnel || 0, ahoge: u.tilt || 0, band: u.dead || 0, plank: u.roofway || 0, cape: u.shadow ? 1 + u.shadow : 0, phones: u.ear || 0, hband: u.parkour || 0 };
   Object.assign(g, outfitGear(run));
   for (const k in g) if (g[k]) return g;
   return null;
@@ -26,7 +26,7 @@ function gearKeyOf(g) { if (!g) return ''; let s = ''; for (const k in g) if (g[
 function withGear(g, fn) { const old = CAT_GEAR; CAT_GEAR = g; try { return fn(); } finally { CAT_GEAR = old; } }
 
 const GEARC = {
-  sock: [null, { c: '#9aa4b8', d: '#7d879b', toe: '#d4dae4' }, { c: '#2c2c3a', d: '#1f1f2a', toe: '#f6f6f6' }],
+  sock: [null, { c: '#9aa4b8', d: '#7d879b', toe: '#d4dae4' }, { c: '#2c2c3a', d: '#1f1f2a', toe: '#f6f6f6' }, { c: '#ffd23a', d: '#e0a820', toe: '#fff2a8' }, { c: '#e8394d', d: '#b8243a', toe: '#ffffff' }],
   scarf: [null, { c: '#86dcb6', d: '#4fb08a' }, { c: '#ffb3c8', d: '#e88aa4', lace: '#ffffff' }, { c: '#4f86d6', d: '#3a68b0', dots: '#ffffff' }],
   mask: [null, { c: '#1d1526' }, { c: '#5a2a8a', trim: '#e8bc52' }],
   bow: [null, { c: '#ff6d9a', d: '#d94a78', s: 0.82 }, { c: '#ff6d9a', d: '#d94a78', s: 1.25, dots: '#ffffff' }],

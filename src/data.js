@@ -21,6 +21,10 @@ const FLOWERS = {
   osmanthus: { name: '桂花', price: 200, color: '#ffa53a', hue: 32, fragrant: true, where: '阿伯家、王家屋頂' },
   magnolia: { name: '玉蘭花', price: 160, color: '#fff6e0', fragrant: true, white: true, where: '林家屋頂、阿伯家屋頂' },
   peony: { name: '牡丹', price: 900, color: '#ff9fc2', hue: 336, where: '大宅花園（要會跳高高）' },
+  plumeria: { name: '雞蛋花', price: 240, color: '#fff4d0', fragrant: true, white: true, where: '公園的花圃（新區域）' },
+  camellia: { name: '山茶花', price: 380, color: '#d8304a', hue: 352, where: '隔壁巷花藝老師的院子（新區域）' },
+  lotus: { name: '荷花', price: 560, color: '#ffc2d8', hue: 340, where: '公園的荷花池（要會跳高高，踩荷葉過去）' },
+  ghostorchid: { name: '幽靈蘭', price: 2200, color: '#e4fbff', white: true, where: '下水道最深的地方，黑暗裡會發光' },
 };
 // 圖鑑、行情表的順序（便宜的在前面）
 const FLOWER_ORDER = Object.keys(FLOWERS).filter(t => !FLOWERS[t].toxic).sort((a, b) => FLOWERS[a].price - FLOWERS[b].price);
@@ -136,6 +140,7 @@ const UPGRADES = [
   { id: 'parkour', name: '跑酷連跳', group: '技能', max: 1, cost: [50], mon: [2], lv: ['爬、跳、過橋一個接一個是連跳：跳得更快、腳步無聲，三連以上有罐罐（綁上紅色運動頭帶）'], base: '跳完要喘一下' },
   { id: 'call', name: '喵喵廣播', group: '技能', max: 2, cost: [24, 48], mon: [2, 2], lv: ['多一個「喵！」按鈕：把叫聲丟到前方，附近的人會走過去看（每晚 3 次；脖子掛一個金色小喇叭）', '每晚 5 次、聲音傳得更遠（喇叭換成紅白大聲公）'], base: '只能撥倒東西把人引開' },
   { id: 'tunnel', name: '貓道', group: '技能', max: 1, cost: [80], mon: [3], lv: ['花店貓門和巷底之間挖一條秘密貓道，在洞口按「鑽」一下就到另一頭（戴上礦工頭燈）'], base: '每次都要走完整條巷子' },
+  { id: 'sewer', name: '下水道探險', group: '技能', max: 2, cost: [25, 45], mon: [3, 4], lv: ['巷子裡的人孔蓋可以鑽下去：下水道連到巷子的每一頭，還通往新的地方（穿上黃色小雨鞋）', '下水道裡看得比較遠，老鼠和寶物遠遠就看得到（雨鞋換成紅色專業款）'], base: '人孔蓋太重了' },
   { id: 'jump', name: '跳高高', group: '技能', max: 1, cost: [20], lv: ['翻過大宅圍牆，偷溫室蝴蝶蘭（背上長出小翅膀）'], base: '大宅圍牆太高' },
   { id: 'orange', name: '橘貓夥伴', group: '夥伴', max: 3, cost: [15, 32, 60], lv: ['每晚跟你出門（體力 3），還自己帶回 NT$ 400（藍色領巾）', '體力 4，自己帶回 NT$ 900（加一個小背包）', '體力 5，自己帶回 NT$ 1,600（披上紅披風）'], base: '還沒有夥伴', need: 'orangeCat' },
   { id: 'lucky', name: '招財貓', group: '花店', max: 3, cost: [12, 28, 55], lv: ['花的賣價 ×1.2，賣萌多一招「招財手」（紅項圈小金鈴，櫃台多一隻招財貓）', '花的賣價 ×1.45（鈴鐺變大、招財貓抱金幣）', '花的賣價 ×1.75（金項圈，招財貓變金色）'], base: '賣價 ×1' },

@@ -72,6 +72,15 @@ const ACH = [
   { id: 'bridge30', name: '屋頂上的貓', desc: '屋頂過橋 30 次', c: r => (r.stats.bridges || 0) >= 30, cans: 20 },
   { id: 'call30', name: '腹語大師', desc: '喵喵廣播 30 次', c: r => (r.stats.calls || 0) >= 30, cans: 20 },
   { id: 'tunnel20', name: '地道戰', desc: '鑽貓道 20 次', c: r => (r.stats.tunnels || 0) >= 20, cans: 20 },
+  // 新區域
+  { id: 'sewer', name: '地底探險', desc: '第一次鑽進下水道', c: r => ((r.zones || {}).visits || {}).sewer >= 1, cans: 8 },
+  { id: 'zones4', name: '城市漫遊者', desc: '下水道、公園、隔壁巷、清晨市場都去過', c: r => ['sewer', 'park', 'nb', 'market'].every(k => ((r.zones || {}).visits || {})[k]), cans: 40, title: '城市漫遊貓' },
+  { id: 'lost6', name: '失物招領', desc: '下水道的六樣失物都找到', c: r => Object.keys(LOST_ITEMS).every(k => ((r.zones || {}).lostSeen || {})[k]), cans: 40 },
+  { id: 'return3', name: '好心的貓', desc: '把失物還給失主 3 次', c: r => (r.stats.returned || 0) >= 3, cans: 25 },
+  { id: 'king', name: '老鼠王的朋友', desc: '收服下水道的老鼠王', c: r => !!(r.zones || {}).kingFriend, cans: 20 },
+  { id: 'dogfr', name: '阿福的朋友', desc: '用一條魚收買隔壁巷的柴犬', c: r => !!(r.zones || {}).dogFriend, cans: 20 },
+  { id: 'ghost', name: '黑暗中的光', desc: '偷到幽靈蘭', c: r => !!bookOf(r).flowers.ghostorchid, cans: 25 },
+  { id: 'lotus', name: '踩著荷葉', desc: '偷到公園的荷花', c: r => !!bookOf(r).flowers.lotus, cans: 15 },
   // 扭蛋
   { id: 'wd1', name: '第一件新衣', desc: '扭蛋扭到第一件衣服', c: r => Object.keys((r.wardrobe || {}).own || {}).length >= 1, cans: 5 },
   { id: 'wdset', name: '整套穿上', desc: '穿齊一整套套裝', c: r => r.wardrobe && activeSets(r).length >= 1, cans: 20 },

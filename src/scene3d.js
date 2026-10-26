@@ -100,6 +100,7 @@ NightScene.prototype.render3D = function () {
   gardenRender3D(this, F, L, st);
   tunnelRender3D(this, F);
   rareRender3D(this, F, L);
+  manholeRender3D(this, F);
   roofwayRender3D(this, F, st);
   expNight3D(this, F, L);
   winNight3D(this, F, L);

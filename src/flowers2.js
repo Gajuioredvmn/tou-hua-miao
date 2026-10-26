@@ -131,3 +131,75 @@ Object.assign(ICONS, {
   magnolia: ['.M.M.', '.MMM.', '..M..', '..L..', '..L..'],
   peony: ['.CC..', 'CcCC.', 'CCcC.', '.CC..', '..L..'],
 });
+
+// ================= 新區域的花：山茶花（隔壁巷）、雞蛋花、荷花（公園）、幽靈蘭（下水道） =================
+Object.assign(HEAD2, {
+  camellia(x, y, s, r) {
+    for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2 + r; O.eo(x + Math.cos(a) * 2.2 * s, y + Math.sin(a) * 2 * s, 1.9 * s, 1.6 * s, i % 2 ? '#d8304a' : '#e2425a', { rot: a }); }
+    for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 + r + 0.3; O.e(x + Math.cos(a) * 1 * s, y + Math.sin(a) * 0.9 * s, 1.3 * s, 1.1 * s, '#f0566e'); }
+    for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; O.dot(x + Math.cos(a) * 0.6 * s, y + Math.sin(a) * 0.6 * s, 0.35 * s, '#ffd84d'); }
+  },
+  plumeria(x, y, s, r) {
+    for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 + r; O.eo(x + Math.cos(a) * 1.7 * s, y + Math.sin(a) * 1.6 * s, 1.9 * s, 1.15 * s, '#fffaf0', { rot: a + 0.5 }); }
+    for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 + r; O.e(x + Math.cos(a) * 0.9 * s, y + Math.sin(a) * 0.85 * s, 0.9 * s, 0.6 * s, '#ffd45a', { rot: a + 0.5 }); }
+    O.dot(x, y, 0.55 * s, '#f2a83a');
+  },
+  lotus(x, y, s, r) {
+    for (const [a, col, l] of [[-1.05, '#f08ab0', 2.2], [1.05, '#f08ab0', 2.2], [-0.55, '#f7a6c4', 2.6], [0.55, '#f7a6c4', 2.6], [0, '#ffc8dc', 2.9]]) {
+      O.eo(x + Math.sin(a) * l * 0.9 * s, y + 1.2 * s - Math.cos(a) * l * 0.9 * s, 1.25 * s, l * s * 0.85, col, { rot: a });
+    }
+    O.e(x, y - 1.6 * s, 0.8 * s, 1.4 * s, '#ffe2ec');
+    O.dot(x, y + 0.9 * s, 0.7 * s, '#ffe08a');
+  },
+  ghostorchid(x, y, s, r) {
+    O.e(x, y, 4 * s, 3.6 * s, 'rgba(160,240,255,0.25)');
+    for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + i * Math.PI * 2 / 5; O.eo(x + Math.cos(a) * 2.2 * s, y + Math.sin(a) * 2 * s, 1.9 * s, 1.3 * s, i % 2 ? '#e4fbff' : '#f4feff', { rot: a + Math.PI / 2 }); }
+    O.curve([[x - 3 * s, y + 2.6 * s], [x - 4.2 * s, y + 4.6 * s]], '#bff4ff', 0.6); O.curve([[x + 3 * s, y + 2.6 * s], [x + 4.2 * s, y + 4.6 * s]], '#bff4ff', 0.6);
+    O.e(x, y + 0.5 * s, 1 * s, 1.2 * s, '#7ad8f0'); O.dot(x, y - 0.2 * s, 0.45 * s, '#ffffff');
+  },
+});
+Object.assign(BUNCH, {
+  camellia: { stem: '#3f6a3a', leaf: true, head: HEAD2.camellia },
+  plumeria: { stem: '#8a7a5a', leaf: true, head: HEAD2.plumeria },
+  lotus: { stem: '#5a9a5a', leaf: false, tall: 1.1, head: HEAD2.lotus },
+  ghostorchid: { stem: '#7ab8c8', leaf: false, head: HEAD2.ghostorchid },
+});
+const _drawPlant2Old = drawPlant2;
+drawPlant2 = function (t) {
+  const H = HEAD2[t];
+  if (t === 'camellia') {
+    leafBall(-5, -17, 6, 5, '#2f6a3a', '#1f4a2a'); leafBall(5, -17.5, 6, 5, '#2f6a3a', '#1f4a2a'); leafBall(0, -22, 6.5, 5, '#3a7a42', '#1f4a2a');
+    H(-5, -20, 1.0, 0.2); H(5, -21, 0.95, 1.1); H(0, -26, 1.05, 0.6); H(-1, -16, 0.8, 2);
+    drawPotBase('clay', 20);
+  } else if (t === 'plumeria') {
+    for (const [x1, y1] of [[-7, -24], [0, -28], [7, -23]]) { O.curve([[0, -12], [x1 * 0.5, (y1 - 12) / 2], [x1, y1]], CM.ink, 3.6); O.curve([[0, -12], [x1 * 0.5, (y1 - 12) / 2], [x1, y1]], '#9a8a6a', 2.2); }
+    for (const [x, y] of [[-7, -24], [0, -28], [7, -23]]) for (const a of [-0.9, -0.2, 0.5, 1.2]) O.eo(x + Math.cos(a - 1.57) * 3.4, y + Math.sin(a - 1.57) * 2.4 + 1, 3.6, 1.3, '#4f9a4c', { rot: a - 1.57 });
+    H(-7, -25.5, 0.9, 0.3); H(-4.5, -24, 0.8, 1.4); H(0, -30, 0.95, 0.8); H(2.6, -28.5, 0.8, 2); H(7, -24.5, 0.9, 1.1);
+    drawPotBase('white', 20);
+  } else if (t === 'lotus') {
+    O.blobO([[-11, -9], [11, -9], [9, -1], [-9, -1]], '#6a5a7a'); O.e(0, -9, 11, 2.6, '#3a6a8a'); O.e(-3, -9.4, 5, 1.2, '#6aa8c8');
+    O.eo(-6, -11.5, 5.5, 2, '#4f9a4c'); O.curve([[-6, -11.5], [-3, -12.5]], '#2f6a3a', 0.6);
+    O.eo(6.5, -12.5, 4.5, 1.7, '#5aa652');
+    O.curve([[1, -10], [1.5, -18], [0, -24]], CM.ink, 2.4); O.curve([[1, -10], [1.5, -18], [0, -24]], '#5a9a5a', 1.2);
+    O.curve([[-2, -10], [-4, -15], [-6, -18]], CM.ink, 2); O.curve([[-2, -10], [-4, -15], [-6, -18]], '#5a9a5a', 1);
+    O.eo(-6.5, -19, 2.2, 1.6, '#8ab848'); for (const dx of [-1, 0, 1]) O.dot(-6.5 + dx * 0.9, -19.3, 0.35, '#3a5a2a');
+    H(0, -26, 1.45, 0);
+  } else if (t === 'ghostorchid') {
+    O.blobO([[-9, -11], [9, -11], [7, -1], [-7, -1]], '#5a5a6a'); O.e(-2, -10.6, 8, 2, '#3f6a4a'); for (const dx of [-5, -1, 3, 6]) O.dot(dx, -11, 1.2, '#5a8a5a');
+    O.curve([[-1, -11], [-3, -19], [2, -26], [7, -27]], CM.ink, 2.2); O.curve([[-1, -11], [-3, -19], [2, -26], [7, -27]], '#9ad8e0', 1.1);
+    O.curve([[1, -11], [5, -16], [8, -18]], CM.ink, 2); O.curve([[1, -11], [5, -16], [8, -18]], '#9ad8e0', 1);
+    H(7, -27.5, 1.0, 0); H(-2.5, -20, 0.85, 0); H(8.5, -18.5, 0.75, 0);
+  } else _drawPlant2Old(t);
+};
+Object.assign(PLANTS, {
+  camellia: ['..RrR.....', '.RRrRR.Rr.', '..RRR.RRR.', '.lLRl.lLl.', '.LlLLlLL..', '..LlLLl...', '...LLL....', '....L.....'],
+  plumeria: ['.MYM...MY.', 'MMYMM.MYMM', '.MMM...MM.', '..t..t..t.', '..tt.t.tt.', '...ttttt..', '....tt....', '....t.....'],
+  lotus: ['....NN....', '...NMMN...', '..NNMMNN..', '...NNNN...', '....LL....', '.LLL.LLLL.', 'LLlLLLlLL.', '.QQQQQQQQ.'],
+  ghostorchid: ['......MM..', '.....MmmM.', '.MM...MM..', 'MmmM..L...', '.MM..L....', '...LL.....', '..LlL.....', '...L......'],
+});
+Object.assign(ICONS, {
+  camellia: ['RrR..', 'rRRr.', '.RrR.', '..L..', '..L..'],
+  plumeria: ['M.M..', 'MYM..', '.MM..', '..t..', '..t..'],
+  lotus: ['..N..', '.NMN.', 'NNMNN', '..L..', '..L..'],
+  ghostorchid: ['.MM..', 'MmmM.', '.MM..', '..L..', '..L..'],
+});

@@ -488,7 +488,7 @@ const UI = {
     const xeHtml = XE ? `<div class="event ev-x"><b>還有：${esc(XE.name)}${XE.when ? `<small>大約 ${fmtTime(xe.t0)}</small>` : ''}</b><span>${esc(XE.desc)}</span></div>` : '';
     const html = `<p class="eyebrow">${monthPre(run)}22:30 – ${fmtTime(end)}</p><h2>第${NUM[n]}晚</h2>
       <div class="event ev-${rules.event}"><b>${esc(ev.name)}</b><span>${esc(ev.desc)}</span></div>${xeHtml}
-      ${abHtml}${commissionBriefHTML(run)}${gangBriefHTML(run)}${masterHtml}${reactHtml}${ordHtml}
+      ${abHtml}${commissionBriefHTML(run)}${gangBriefHTML(run)}${zoneBriefHTML(run)}${masterHtml}${reactHtml}${ordHtml}
       ${news ? `<ul class="news">${news}</ul>` : ''}
       ${m <= 1 ? `<h3>${n === 1 ? '白天聽到的情報' : '今天聽到的情報'}</h3>
       ${intel || '<p class="lead">什麼都沒聽到……今晚只能見機行事。</p>'}` : (known.length ? `<details class="old"><summary>之前聽到的情報 ${known.length} 則</summary><ul class="intel">${li(known)}</ul></details>` : '')}
@@ -550,7 +550,7 @@ const UI = {
 function newRun() {
   return {
     money: 0, cans: 0,
-    upg: { mouth: 0, gentle: 0, paws: 0, owl: 0, cute: 0, jump: 0, orange: 0, lucky: 0, catwalk: 0, nightvis: 0, sniff: 0, bribe: 0, call: 0, tunnel: 0, tilt: 0, dead: 0, roofway: 0, shadow: 0, ear: 0, parkour: 0 },
+    upg: { mouth: 0, gentle: 0, paws: 0, owl: 0, cute: 0, jump: 0, orange: 0, lucky: 0, catwalk: 0, nightvis: 0, sniff: 0, bribe: 0, call: 0, tunnel: 0, tilt: 0, dead: 0, roofway: 0, shadow: 0, ear: 0, parkour: 0, sewer: 0 },
     store: { lights: 0, fridge: 0, neon: 0, scooter: 0, decor: 0 },
     intel: {}, immune: {}, flags: {},
     stats: { caught: 0, cuteWin: 0, cuteFail: 0, petals: 0, stolen: 0 },

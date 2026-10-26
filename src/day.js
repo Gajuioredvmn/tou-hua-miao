@@ -1064,7 +1064,8 @@ function* monthDayScript(S, n) {
   yield S.say(nb.total > 0 ? pick(['門口又有花了！小精靈今天也來了耶。', '今天的花也好漂亮～花喵，你知道是誰放的嗎？', '花店小精靈又來了！']) : '今天門口沒有花……');
   UI.hideDialog();
   yield* gardenMorningScript(S);
-  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
+  yield* lostFoundScript(S);
+  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* zoneStoryScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
   yield* commissionScript(S, n);
