@@ -12,7 +12,8 @@ let CAT_GEAR;   // undefined：照 G.run（玩家）的升級；null：什麼都
 function catGearFor(run) {
   if (!run || !run.upg) return null;
   const u = run.upg;
-  const g = { socks: u.paws || 0, mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0, horn: u.call || 0, lamp: u.tunnel || 0, ahoge: u.tilt || 0, band: u.dead || 0, plank: u.roofway || 0 };
+  const g = { socks: u.paws || 0, mask: u.catwalk || 0, bow: u.cute || 0, scarf: u.gentle || 0, bag: u.mouth || 0, moon: u.owl || 0, wings: u.jump || 0, collar: u.lucky || 0, glow: u.nightvis || 0, flower: u.sniff || 0, pack: u.bribe || 0, horn: u.call || 0, lamp: u.tunnel || 0, ahoge: u.tilt || 0, band: u.dead || 0, plank: u.roofway || 0, cape: u.shadow ? 1 + u.shadow : 0, phones: u.ear || 0, hband: u.parkour || 0 };
+  Object.assign(g, outfitGear(run));
   for (const k in g) if (g[k]) return g;
   return null;
 }
@@ -37,6 +38,8 @@ const GEARC = {
   crown: ['#ff8fb8', '#ffd84d', '#ffffff', '#ff7a8a', '#c9b6f0', '#ffd84d', '#ff8fb8'],
 };
 const CAPE_C = '#d9363e', CAPE_D = '#a82430';
+function capeC(g) { if (g && g.capeO) { const o = outfitById(g.capeO); if (o) return o.c; } return g && g.cape >= 3 ? '#1e2a5a' : g && g.cape >= 2 ? '#3a2f5a' : CAPE_C; }
+function capeD(g) { if (g && g.capeO) { const o = outfitById(g.capeO); if (o) return o.d; } return g && g.cape >= 2 ? '#241c3c' : CAPE_D; }
 const MASK_LINE = '#efe6ff';   // 戴眼罩時閉眼的線改成淺色，才看得到
 function collarCol(g) { return g.collar >= 3 ? '#e8b84a' : '#d9363e'; }
 
@@ -218,6 +221,10 @@ function gearHeadMask(P, s, g) {
 }
 // 蝴蝶結／花冠、耳邊的花：頭的最後面
 function gearHeadTop(P, s, rot, g) {
+  if (g.glass) { const L = P(-7, -1), R = P(7, -1); glassDraw(GP, [L[0], R[0]], (L[1] + R[1]) / 2, 4.4 * s, g.glass, TAB.out); }
+  if (g.hat) { const [hx, hy] = P(0, -14.4); hatDraw(GP, hx, hy, 1.02 * s, g.hat); return; }
+  if (g.hband) { const pts = [P(-16.4, -6.2), P(-8, -9.4), P(0, -10.2), P(8, -9.4), P(16.4, -6.2)]; PX.curve(pts, TAB.out, { w: 3.2 * s + 1.4 }); PX.curve(pts, '#e8394d', { w: 3.2 * s }); PX.curve([P(-8, -8.6), P(0, -9.4), P(8, -8.6)], '#ffffff', { w: 0.7 * s }); }
+  if (g.phones) { const pts = [P(-15.6, -2), P(-14, -13), P(0, -18.2), P(14, -13), P(15.6, -2)]; PX.curve(pts, TAB.out, { w: 2 * s + 1.4 }); PX.curve(pts, '#4a4a5a', { w: 2 * s }); for (const sd of [-1, 1]) { const [x, y] = P(sd * 16.4, -1); gEll(x, y, 3.2 * s, 4 * s, '#7ad3ff'); } }
   if (g.ahoge) { const pts = [P(1, -14.6), P(3.4, -21.5), P(0.4, -25.4), P(-2.4, -23.6)]; PX.curve(pts, TAB.out, { w: 2.6 * s + 1.4 }); PX.curve(pts, TAB.fur, { w: 2.6 * s }); }
   if (g.band) { for (const r of [0.6, -0.6]) { const c = P(8.6, -8.6), dx = Math.cos(r) * 4.2 * s, dy = Math.sin(r) * 4.2 * s, nx = -Math.sin(r) * 1.5 * s, ny = Math.cos(r) * 1.5 * s; gPoly([[c[0] - dx - nx, c[1] - dy - ny], [c[0] + dx - nx, c[1] + dy - ny], [c[0] + dx + nx, c[1] + dy + ny], [c[0] - dx + nx, c[1] - dy + ny]], '#f2cfa2'); } const c = P(8.6, -8.6); PX.ellipse(c[0], c[1], 1.1 * s, 1.1 * s, '#e0b080'); }
   if (g.bow >= 3) {
@@ -260,6 +267,10 @@ function gearSideMask(P, g) {
   if (C.trim) { O.curve([P(-4, -4.6), P(2.2, -4.9), P(7.6, -3.4)], C.trim, 0.7); O.curve([P(7.8, 0.8), P(2.4, 1.3), P(-4, 0.4)], C.trim, 0.7); }
 }
 function gearSideTop(P, g) {
+  if (g.glass) { const [gx, gy] = P(4.4, -0.8); glassSide(GO, gx, gy, 2.2, g.glass, CM.ink); }
+  if (g.hat) { const [hx, hy] = P(0.6, -7.2); hatDraw(GO, hx, hy, 0.5, g.hat); return; }
+  if (g.hband) { const pts = [P(-7.6, -2.6), P(-2, -6.6), P(4, -7.2), P(7.8, -4.4)]; O.curve(pts, CM.ink, 3); O.curve(pts, '#e8394d', 1.8); }
+  if (g.phones) { const pts = [P(-3, -1), P(-1, -8), P(4, -8.6)]; O.curve(pts, CM.ink, 2.4); O.curve(pts, '#4a4a5a', 1.2); const [x, y] = P(-3.2, -0.6); O.eo(x, y, 2, 2.4, '#7ad3ff'); }
   if (g.ahoge) { const pts = [P(0.4, -7.4), P(1.8, -11.6), P(-0.4, -13.8), P(-2, -12.6)]; O.curve(pts, CM.ink, 2.4); O.curve(pts, TAB.fur, 1.3); }
   if (g.band) { const [x, y] = P(-4.6, -4.4); O.blobO([[x - 2.4, y - 0.8], [x + 2.4, y - 0.8], [x + 2.4, y + 0.8], [x - 2.4, y + 0.8]], '#f2cfa2'); }
   if (g.bow >= 3) {
@@ -309,9 +320,9 @@ function gearSideBody(stage, B, rx, ry, g) {
     if (g.wings) { const [x, y] = B(5.6, -ry * 0.74); gWing(GO, x, y - 0.4, -1, 0.82, 0.5, '#e3ecf7'); }
     return;
   }
-  if (g.cape) {
-    GO.poly([B(7, -ry * 0.8), B(-1, -ry * 1.12), B(-10.8, -ry * 0.6), B(-12.2, ry * 0.2), B(-6, ry * 0.45), B(1.5, ry * 0.08), B(5.6, -ry * 0.22)], CAPE_C);
-    O.curve([B(-2.5, -ry * 0.75), B(-8, ry * 0.25)], CAPE_D, 0.9);
+  if (g.cape || g.capeO) {
+    GO.poly([B(7, -ry * 0.8), B(-1, -ry * 1.12), B(-10.8, -ry * 0.6), B(-12.2, ry * 0.2), B(-6, ry * 0.45), B(1.5, ry * 0.08), B(5.6, -ry * 0.22)], capeC(g));
+    O.curve([B(-2.5, -ry * 0.75), B(-8, ry * 0.25)], capeD(g), 0.9);
   }
   if (g.pack) {
     const C = GEARC.pack[g.pack];
@@ -330,7 +341,7 @@ function gearSideBody(stage, B, rx, ry, g) {
 // 正面（朝鏡頭）：'back' 身體之前；'over' 身體之後、前腳之前
 function gearFrontBody(stage, bob, g) {
   if (stage === 'back') {
-    if (g.cape) GO.poly([[-8.8, -15.6 + bob], [8.8, -15.6 + bob], [11.2, -1.2], [-11.2, -1.2]], CAPE_C);
+    if (g.cape || g.capeO) GO.poly([[-8.8, -15.6 + bob], [8.8, -15.6 + bob], [11.2, -1.2], [-11.2, -1.2]], capeC(g));
     if (g.wings) for (const sd of [-1, 1]) gWing(GO, sd * 5, -12.4 + bob, sd, 0.95, 0);
     return;
   }
@@ -339,14 +350,17 @@ function gearFrontBody(stage, bob, g) {
 }
 // 背面（離開鏡頭）：'cape' 身體之後、尾巴之前；'over' 尾巴之後、頭之前；'head' 頭之後（後腦勺上的蝴蝶結、眼罩帶子）
 function gearBackBody(stage, bob, g) {
-  if (stage === 'cape') { if (g.cape) GO.poly([[-6.8, -16.4 + bob], [6.8, -16.4 + bob], [9.4, -1.4], [-9.4, -1.4]], CAPE_C); return; }
+  if (stage === 'cape') { if (g.cape || g.capeO) GO.poly([[-6.8, -16.4 + bob], [6.8, -16.4 + bob], [9.4, -1.4], [-9.4, -1.4]], capeC(g)); return; }
   const hy = -19.5 + bob;
   if (stage === 'head') {
+    if (g.hat) { hatDraw(GO, 0, hy - 6.6, 0.5, g.hat); return; }
     if (g.mask) { const C = GEARC.mask[g.mask]; O.limb(-8, hy - 0.6, 8, hy - 0.6, 1.7, C.c); GO.poly([[-7.4, hy - 1.4], [-11.6, hy - 4.2], [-11, hy + 0.2]], C.c); GO.poly([[-7.4, hy], [-10.6, hy + 3], [-8.4, hy + 3.6]], C.c); }
     if (g.bow >= 3) { for (let i = 0; i < 6; i++) { const u = -1 + i / 2.5; gFlower(GO, u * 6.8, hy - 6.4 - (1 - u * u) * 0.9, 1.7, GEARC.crown[i]); } if (g.bow >= 4) gCrown(GO, 0, hy - 7.6, 0.6); }
     else if (g.bow) { const C = GEARC.bow[g.bow], k = C.s * 0.5, cx = 5, cy = hy - 7; for (const sd of [-1, 1]) O.eo(cx + sd * 2.6 * k, cy - 0.4 * k, 2.6 * k, 1.8 * k, C.c, { rot: sd * 0.35 }); O.eo(cx, cy, 1.1 * k, 1.1 * k, C.c); }
     if (g.flower) { const C = GEARC.flower[g.flower]; gFlower(GO, -6.4, hy - 6.2, 1.9 * C.s, C.c, C.ctr); }
     if (g.lamp) O.limb(-8.2, hy - 2.6, 8.2, hy - 2.6, 1.5, '#3a3a4a');
+    if (g.hband) O.limb(-8.4, hy - 1.6, 8.4, hy - 1.6, 1.7, '#e8394d');
+    if (g.phones) { O.curve([[-8.6, hy + 1], [-7, hy - 6], [0, hy - 8.6], [7, hy - 6], [8.6, hy + 1]], CM.ink, 2.4); O.curve([[-8.6, hy + 1], [-7, hy - 6], [0, hy - 8.6], [7, hy - 6], [8.6, hy + 1]], '#4a4a5a', 1.2); }
     if (g.ahoge) { const pts = [[0.6, hy - 7.6], [1.8, hy - 11.8], [-0.4, hy - 13.6], [-1.8, hy - 12.4]]; O.curve(pts, CM.ink, 2.4); O.curve(pts, TAB.fur, 1.3); }
     return;
   }
@@ -360,7 +374,7 @@ function gearBackBody(stage, bob, g) {
 // 母雞蹲（正面）：'back' 身體之前；'over' 身體之後、頭之前
 function gearLoafBody(stage, g) {
   if (stage === 'back') {
-    if (g.cape) GO.poly([[-10.4, -12.2], [10.4, -12.2], [12.4, -0.6], [-12.4, -0.6]], CAPE_C);
+    if (g.cape || g.capeO) GO.poly([[-10.4, -12.2], [10.4, -12.2], [12.4, -0.6], [-12.4, -0.6]], capeC(g));
     if (g.wings) for (const sd of [-1, 1]) gWing(GO, sd * 7.2, -10.2, sd, 0.74, 0);
     return;
   }
@@ -382,7 +396,7 @@ function gearClose(kind, stage, o = {}) {
   const g = gearNow(); if (!g) return;
   if (kind === 'lie') {
     if (stage === 'back') {
-      if (g.cape) GP.poly([[12, 47], [84, 47], [90, 64], [6, 64]], CAPE_C);
+      if (g.cape || g.capeO) GP.poly([[12, 47], [84, 47], [90, 64], [6, 64]], capeC(g));
       if (g.pack) gPack(GP, 22, 48, g.pack, 1.3);   // 背包從背後露出一半
       if (g.bag) gBag(GP, 87, 62, g.bag, 1.15);
     } else {
@@ -391,7 +405,7 @@ function gearClose(kind, stage, o = {}) {
     }
   } else if (kind === 'sit') {
     if (stage === 'back') {
-      if (g.cape) GP.poly([[31, 34], [65, 34], [70, 63], [26, 63]], CAPE_C);
+      if (g.cape || g.capeO) GP.poly([[31, 34], [65, 34], [70, 63], [26, 63]], capeC(g));
       if (g.pack) gPack(GP, 32, 37, g.pack, 1.3);
       if (g.wings) for (const sd of [-1, 1]) gWing(GP, 48 + sd * 11, 39, sd, 1.4, 0);
       if (g.bag) gBag(GP, 84, 62, g.bag, 1.2);
@@ -399,7 +413,7 @@ function gearClose(kind, stage, o = {}) {
   } else if (kind === 'rub') {
     const x = o.x, y = o.y;
     if (stage === 'back') { if (g.wings) gWing(GP, x + 9, y - 8.5, -1, 1.25, 0.5, '#e3ecf7'); return; }
-    if (g.cape) GP.poly([[x + 15, y - 7], [x, y - 11], [x - 19, y - 6], [x - 21, y + 3], [x - 9, y + 5], [x + 4, y + 1], [x + 12, y - 2]], CAPE_C);
+    if (g.cape || g.capeO) GP.poly([[x + 15, y - 7], [x, y - 11], [x - 19, y - 6], [x - 21, y + 3], [x - 9, y + 5], [x + 4, y + 1], [x + 12, y - 2]], capeC(g));
     if (g.pack) { GP.poly(strapPts(x + 2, y - 8, x + 4, y + 6, 1.7), GEARC.pack[g.pack].d); gPack(GP, x - 4, y - 11.5, g.pack, 1.4); }
     if (g.wings) gWing(GP, x + 7, y - 8.5, -1, 1.5, 0.35);
     if (g.bag) { const bd = GEARC.bag[g.bag].d; GP.poly(strapPts(x - 6, y - 9.5, x - 2, y + 4, 1.6), bd); GP.poly(strapPts(x + 9, y - 9.5, x + 6, y + 4, 1.6), bd); gBag(GP, x + 2, y + 9.5, g.bag, 1.25); }
@@ -426,6 +440,8 @@ function gearCuteHead(c, stage, pal) {
   } else if (stage === 'mask') {
     if (g.mask) { const C = GEARC.mask[g.mask]; poly([[-16, -5], [-6, -7], [0, -5], [6, -7], [16, -5], [15.6, 3], [6, 4], [0, 2.4], [-6, 4], [-15.6, 3]], C.c); if (C.trim) { c.strokeStyle = C.trim; c.lineWidth = 1; c.beginPath(); c.moveTo(-16, -5); c.lineTo(-6, -7); c.lineTo(0, -5); c.lineTo(6, -7); c.lineTo(16, -5); c.stroke(); } }
   } else if (stage === 'top') {
+    if (g.glass) glassDraw(canvasPen(c, ink), [-6, 6], -1, 4.2, g.glass, ink);
+    if (g.hat) { hatDraw(canvasPen(c, ink), 0, -14.2, 1.0, g.hat); return; }
     if (g.bow >= 3) { for (let i = 0; i < 7; i++) { const u = -1 + i / 3; flower(u * 14, -14.4 - (1 - u * u) * 1.6, 3.4, GEARC.crown[i]); } }
     else if (g.bow) {
       const C = GEARC.bow[g.bow], k = C.s;
@@ -434,6 +450,8 @@ function gearCuteHead(c, stage, pal) {
       ell(-10, -15, 2.4 * k + 1.6, 2.4 * k + 1.6, ink); ell(-10, -15, 2.4 * k, 2.4 * k, C.c);
     }
     if (g.bow >= 4) { const pts = [[-5, 0], [5, 0], [5.6, -5.2], [2.8, -2.6], [0, -6.8], [-2.8, -2.6], [-5.6, -5.2]].map(([a, b]) => [a * 1.3, -17.6 + b * 1.3]); c.lineJoin = 'round'; c.strokeStyle = ink; c.lineWidth = 3; c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.stroke(); poly(pts, '#ffd84d'); ell(0, -20.8, 1.4, 1.4, '#e8394d'); ell(0, -26.4, 1.2, 1.2, '#ff6d9a'); }
+    if (g.hband) { c.strokeStyle = ink; c.lineWidth = 6.4; c.beginPath(); c.moveTo(-16.5, -6); c.quadraticCurveTo(0, -13, 16.5, -6); c.stroke(); c.strokeStyle = '#e8394d'; c.lineWidth = 4; c.beginPath(); c.moveTo(-16.5, -6); c.quadraticCurveTo(0, -13, 16.5, -6); c.stroke(); }
+    if (g.phones) { c.strokeStyle = ink; c.lineWidth = 4.4; c.beginPath(); c.moveTo(-16, -1); c.quadraticCurveTo(0, -30, 16, -1); c.stroke(); c.strokeStyle = '#4a4a5a'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(-16, -1); c.quadraticCurveTo(0, -30, 16, -1); c.stroke(); for (const sd of [-1, 1]) { ell(sd * 16.5, 0, 4.6, 5.6, ink); ell(sd * 16.5, 0, 3.4, 4.4, '#7ad3ff'); } }
     if (g.ahoge) { c.lineCap = 'round'; c.strokeStyle = ink; c.lineWidth = 5; c.beginPath(); c.moveTo(1, -14.5); c.quadraticCurveTo(5, -24, -1, -27); c.stroke(); c.strokeStyle = pal ? pal.fur : TAB.fur; c.lineWidth = 2.6; c.beginPath(); c.moveTo(1, -14.5); c.quadraticCurveTo(5, -24, -1, -27); c.stroke(); }
     if (g.band) { c.save(); c.translate(9, -8.5); for (const r of [0.6, -0.6]) { c.save(); c.rotate(r); c.fillStyle = ink; c.fillRect(-5.4, -2.4, 10.8, 4.8); c.fillStyle = '#f2cfa2'; c.fillRect(-4.4, -1.4, 8.8, 2.8); c.restore(); } c.restore(); }
     if (g.lamp) { c.strokeStyle = ink; c.lineWidth = 4.6; c.beginPath(); c.moveTo(-16, -7); c.quadraticCurveTo(0, -17, 16, -7); c.stroke(); c.strokeStyle = '#3a3a4a'; c.lineWidth = 2.6; c.beginPath(); c.moveTo(-16, -7); c.quadraticCurveTo(0, -17, 16, -7); c.stroke(); ell(0, -12.4, 4.6, 4, ink); ell(0, -12.4, 3.4, 2.9, '#3a3a4a'); ell(0, -12.4, 2.4, 2, '#fff3a0'); }

@@ -11,14 +11,23 @@ const NIGHT_EVENTS = {
 };
 // 這一晚的事件（第二晚起，整局不重複）；時間也先決定好，簡報上看得到
 function nightEventFor(run, n) {
-  if (n < 2) return null;
   const E = run.nightEvents || (run.nightEvents = {});
-  if (E[n]) return E[n];
-  const used = Object.values(E).map(e => e.id);
+  const key = (run.month || 1) > 1 ? (run.month + '-' + n) : n;
+  if (E[key] !== undefined) return E[key];
+  // 稀有的夜晚
+  const rare = rollRare(run, n);
+  if (rare) {
+    const id = rare === 'storm' ? 'typhoon' : rare;
+    const t0 = rare === 'meteor' ? rnd(1420, 1520) : NIGHT_START;
+    return (E[key] = { id, t0: Math.round(t0), rare });
+  }
+  if (n < 2) return (E[key] = null);
+  const used = Object.values(E).filter(Boolean).map(e => e.id);
   const pool = Object.keys(NIGHT_EVENTS).filter(k => !used.includes(k));
-  const id = pool[Math.floor(Math.random() * pool.length)] || 'meteor';
+  if (!pool.length) return (E[key] = null);
+  const id = pool[Math.floor(Math.random() * pool.length)];
   const t0 = { truck: rnd(1395, 1435), meteor: rnd(1420, 1520), temple: rnd(1385, 1425), typhoon: NIGHT_START, stray: rnd(1380, 1410) }[id];
-  return (E[n] = { id, t0: Math.round(t0) });
+  return (E[key] = { id, t0: Math.round(t0) });
 }
 
 // ---------- 開始 ----------
@@ -26,7 +35,7 @@ function initNightPlus(sc) {
   const run = sc.run, up = run.upg;
   sc.lv = { catwalk: up.catwalk || 0, nightvis: up.nightvis || 0, sniff: itemActive(sc.run, 'map') ? 2 : (up.sniff || 0), bribe: up.bribe || 0 };
   const ev = nightEventFor(run, sc.n);
-  sc.nev = ev ? { id: ev.id, t0: ev.t0, phase: 'wait', t: 0 } : null;
+  sc.nev = ev ? { id: ev.id, t0: ev.t0, phase: 'wait', t: 0, rare: ev.rare } : null;
   sc.lookUp = false; sc.wished = false;
   if (!ev) return;
   if (ev.id === 'typhoon') {
@@ -37,6 +46,7 @@ function initNightPlus(sc) {
     sc.nev.phase = 'on'; sc.nev.gustT = 4; sc.nev.gust = 0; sc.nev.leaves = [];
     setTimeout(() => { if (G.scene === sc) UI.toast('颱風前夕：風好大，好幾家把盆栽收進屋裡了', 3400); }, 4200);
   }
+  initRare(sc);
   if (ev.id === 'stray') {
     sc.stray = new Dog(7.5 * TS, 40 * TS); sc.stray.state = 'roam'; sc.stray.hidden = true; sc.stray.stray = true; sc.stray.wait = 0; sc.stray.tx = null;
   }
@@ -47,6 +57,7 @@ function updateNightPlus(sc, dt, realDt) {
   const E = sc.nev, c = sc.cat;
   if (realDt > 0 && sc.lv.sniff && !sc.tips.sniff) { sc.tips.sniff = 1; setTimeout(() => { if (G.scene === sc && sc.mode === 'play') UI.toast('嗅花：畫面邊緣的小花指著最近的盆栽', 2800); }, 1500); }
   if (!E) return;
+  updateRare(sc, dt);
   const t = sc.time;
   if (E.id === 'truck') updateTruck(sc, E, dt, realDt);
   else if (E.id === 'meteor') updateMeteor(sc, E, dt, realDt);
@@ -274,6 +285,8 @@ function detectMulPlus(sc, lit) {
   const c = sc.cat; let k = 1;
   if (c.moving && !c.running && sc.lv.catwalk) k *= [1, 0.7, 0.5][sc.lv.catwalk];
   if (!lit && sc.lv.nightvis >= 2) k *= 0.75;
+  if (c.shadow) k *= lit ? 0.4 : 0.08;
+  if (hasSet(sc.run, 'thief')) k *= 0.88;
   return k;
 }
 // 嗅花：最近的幾盆花

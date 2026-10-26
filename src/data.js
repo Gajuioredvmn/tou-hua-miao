@@ -131,6 +131,9 @@ const UPGRADES = [
   { id: 'tilt', name: '歪頭殺', group: '撒嬌', max: 1, cost: [22], mon: [2], lv: ['賣萌多一招「歪頭殺」：王太太最吃這套（頭頂長出一根呆毛）'], base: '賣萌只會三招' },
   { id: 'dead', name: '裝死', group: '撒嬌', max: 1, cost: [35], mon: [2], lv: ['賣萌多一招「裝死」：林先生和管家會被嚇到（額頭貼一個 OK 繃）'], base: '還不會裝死' },
   { id: 'roofway', name: '屋頂走廊', group: '技能', max: 2, cost: [45, 90], mon: [2, 3], lv: ['屋頂之間搭木板：花店↔林家、王家↔空屋、空屋↔阿伯家，在屋頂上按「過」就到另一家（背上多一捆小木板）', '再拉兩條電線：林家→王家、花店→王家，按「滑」一下就到；過橋也變快（換成登山繩和扣環）'], base: '要過去別家屋頂，得先下到地面' },
+  { id: 'shadow', name: '影子步', group: '技能', max: 2, cost: [40, 70], mon: [2, 3], lv: ['在暗處停住不動一下，就會融進影子裡，走過去的人幾乎看不到（披上黑紗斗篷）', '融得更快，連亮的地方也看不太到（斗篷變成夜空色）'], base: '站著不動也是一隻貓' },
+  { id: 'ear', name: '偷聽', group: '技能', max: 1, cost: [30], mon: [2], lv: ['躲在有人在的窗戶下按「聽」，聽到鄰居的情報、喜好和秘密（戴上小耳機）'], base: '晚上聽不到屋裡在說什麼' },
+  { id: 'parkour', name: '跑酷連跳', group: '技能', max: 1, cost: [50], mon: [2], lv: ['爬、跳、過橋一個接一個是連跳：跳得更快、腳步無聲，三連以上有罐罐（綁上紅色運動頭帶）'], base: '跳完要喘一下' },
   { id: 'call', name: '喵喵廣播', group: '技能', max: 2, cost: [24, 48], mon: [2, 2], lv: ['多一個「喵！」按鈕：把叫聲丟到前方，附近的人會走過去看（每晚 3 次；脖子掛一個金色小喇叭）', '每晚 5 次、聲音傳得更遠（喇叭換成紅白大聲公）'], base: '只能撥倒東西把人引開' },
   { id: 'tunnel', name: '貓道', group: '技能', max: 1, cost: [80], mon: [3], lv: ['花店貓門和巷底之間挖一條秘密貓道，在洞口按「鑽」一下就到另一頭（戴上礦工頭燈）'], base: '每次都要走完整條巷子' },
   { id: 'jump', name: '跳高高', group: '技能', max: 1, cost: [20], lv: ['翻過大宅圍牆，偷溫室蝴蝶蘭（背上長出小翅膀）'], base: '大宅圍牆太高' },
@@ -162,7 +165,7 @@ function flowerValue(run, t, fresh) {
   const cold = s.fridge && DELICATE.includes(t) ? 1.5 : 1;
   // 佈置第 2 級起：掉了花瓣的殘花做成乾燥花，最少也有七成價
   const fr = s.fridge ? 1 : (s.decor || 0) >= 2 ? Math.max(0.7, fresh) : fresh;
-  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t) * EXP_PRICE_MULT[s.expand || 0] * (run.flags && run.flags.oldShears ? 1.1 : 1) * winMult(run, t) * (itemActive(run, 'bell') ? 1.2 : 1);
+  return FLOWERS[t].price * fr * cold * LUCKY_MULT[run.upg.lucky] * LIGHTS_MULT[s.lights || 0] * DECOR_MULT[s.decor || 0] * themeBoost(run, t) * EXP_PRICE_MULT[s.expand || 0] * (run.flags && run.flags.oldShears ? 1.1 : 1) * winMult(run, t) * (itemActive(run, 'bell') ? 1.2 : 1) * (hasSet(run, 'pirate') ? 1.05 : 1);
 }
 const ORANGE_INCOME = [0, 400, 900, 1600];
 const LUCKY_MULT = [1, 1.2, 1.45, 1.75];

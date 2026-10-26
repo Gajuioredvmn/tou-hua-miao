@@ -222,6 +222,7 @@ class NightScene {
     this.oranges = this.hasOrange ? orangeEnergy(this.run) : 0;
     this.initCatSkills();
     this.initRoofway();
+    this.initNewSkills();
     this.visMult = this.event === 'rain' || this.event === 'outage' ? 0.85 : 1;
     this.top = topGrid(this.map); this.topBlocked = new Set();
     for (const [tx, ty] of ROOF_TOWERS) this.topBlocked.add(tx + ',' + ty);
@@ -410,7 +411,7 @@ class NightScene {
     if (out.length) out[out.length - 1] = [x1, y1];
     return out;
   }
-  tanhuaState() { if (this.run.flags && this.run.flags.tanhuaNight === this.run.nightIdx) return 'tanhua'; return this.time < 1440 ? 'tanhuaBud' : this.time < 1500 ? 'tanhua' : 'tanhuaDead'; }
+  tanhuaState() { if ((this.run.flags && this.run.flags.tanhuaNight === this.run.nightIdx) || (this.nev && this.nev.rare === 'fullmoon')) return 'tanhua'; return this.time < 1440 ? 'tanhuaBud' : this.time < 1500 ? 'tanhua' : 'tanhuaDead'; }
   capacity() { return 1 + this.run.upg.mouth; }
   pawsMult() { return [1, 0.6, 0.3][this.run.upg.paws]; }
   sfxNear(x, y, name) { if (Cam.visible(x, y, 60)) SFX.play(name); }
@@ -467,6 +468,7 @@ class NightScene {
     this.schedules();
     if (this.time >= this.end) { this.finish(true); return; }
     this.updatePigeons(dt);
+    this.updateNewSkills(dt);
 
     const sub = this.timeScale > 1 ? 3 : 1;
     const sdt = dt * this.timeScale / sub;
@@ -614,7 +616,7 @@ class NightScene {
         if (c.gravelT <= 0) { c.gravelT = 0.55; this.noise(c.x, c.y - 3, 2.6 * TS, 'cat'); SFX.play('step'); if (!this.tips.gravel) { this.tips.gravel = 1; UI.toast('碎石沙沙響！慢慢走也會被聽到'); this.fx.text(c.x, c.y - 14, '沙沙…', '#e8dcc0'); } }
       }
     }
-    if (c.running && !c.jump) {
+    if (c.running && !c.jump && !this.pkSilent()) {
       c.noiseT -= dt;
       if (c.noiseT <= 0) { c.noiseT = 0.45; const gv = this.gravel && !c.top && c.x > this.gravel[0] && c.x < this.gravel[2] && c.y > this.gravel[1] && c.y < this.gravel[3]; this.noise(c.x, c.y - 3, 3.4 * TS * this.pawsMult() * (gv ? 1.3 : 1), 'cat'); SFX.play('step'); }
       if (c.carry.length) {
@@ -715,6 +717,7 @@ class NightScene {
       }
     }
     if (!best) { const tt = this.tunnelTarget(cx, cy); if (tt) best = tt; }
+    if (!best) { const lt = this.listenTarget(cx, cy); if (lt) best = lt; }
     if (c.home) best = { kind: 'home' };
     this.target = best;
     let label = null;
@@ -726,6 +729,7 @@ class NightScene {
       else if (best.kind === 'drop') label = '跳下';
       else if (best.kind === 'home') label = '收工';
       else if (best.kind === 'tunnel') label = '鑽';
+      else if (best.kind === 'listen') label = this.listening ? '聽…' : '聽';
       else if (best.kind === 'bridge') label = best.b.kind === 'wire' ? '滑' : '過';
       if (best.kind === 'climb' && !this.tips.climb) { this.tips.climb = 1; UI.toast('按「爬」從鐵窗、柵欄爬上去！屋頂上地面的人看不到你', 3200); }
       if (best.kind === 'knock' && !this.tips.knock) { this.tips.knock = 1; UI.toast('按「撥」把它弄倒，聲音能把人引過去'); }
@@ -808,6 +812,8 @@ class NightScene {
     } else if (tg.kind === 'drop') {
       c.jump = { x0: c.x, y0: c.y, x1: tg.x, y1: tg.y, t: 0, dur: 0.42, h0: c.h, h1: 0, top: false, hopPx: 6 };
       SFX.play('jump');
+    } else if (tg.kind === 'listen') {
+      if (!this.listening) this.startListen(tg.w);
     } else if (tg.kind === 'bridge') {
       this.crossBridge(tg);
     } else if (tg.kind === 'tunnel') {
@@ -900,7 +906,7 @@ class NightScene {
   }
   cuteChance(key, move) {
     const info = CUTE[key];
-    return clamp(cuteBase(info, key, move) + (itemActive(this.run, 'catnip') ? 0.2 : 0) + 0.12 * this.run.upg.cute - 0.22 * (this.run.immune[key] || 0) + (this.event === 'bbq' ? 0.15 : 0), 0.05, 0.95);
+    return clamp(cuteBase(info, key, move) + (itemActive(this.run, 'catnip') ? 0.2 : 0) + (hasSet(this.run, 'wizard') ? 0.06 : 0) + 0.12 * this.run.upg.cute - 0.22 * (this.run.immune[key] || 0) + (this.event === 'bbq' ? 0.15 : 0), 0.05, 0.95);
   }
   // 選了招式：開始賣萌小遊戲（要操作，做得好才成功）
   resolveCute(move) {
@@ -946,7 +952,7 @@ class NightScene {
       const info = CUTE[cu.key];
       if (cu.ok) {
         // 萌連擊：鄰居塞罐罐，連擊越高送越多；完美再 +1
-        this.cuteCombo++;
+        this.cuteCombo++; this.stats.maxCombo = Math.max(this.stats.maxCombo || 0, this.cuteCombo);
         const cans = Math.min(4, this.cuteCombo) + (game.perfect ? 1 : 0);
         this.run.cans += cans; this.stats.cuteCans += cans;
         game.reward = { combo: this.cuteCombo, cans, perfect: game.perfect };

@@ -135,11 +135,14 @@ UI.book = function (run, back, tab = 'bq') {
         return `<li class="nb"><div class="nb-h"><b>${esc(p.person)}</b><span class="nb-hearts">${'♥'.repeat(hearts)}<i>${'♡'.repeat(9 - hearts)}</i></span></div><ol>${chs}</ol><p>${hint}</p></li>`;
       }).join('');
       body = `<p class="lead">交情會因為：變成花園或花店的粉絲、收到他們送的花、送花賠罪、白天被懷疑時擋下來……慢慢變高。交情夠了，而且那家人沒在生氣，早上就會聽到下一段故事。</p><ul class="nb-list">${rows}</ul>`;
+    } else if (tab === 'ach') {
+      body = achBookHTML(run);
     } else if (tab === 'ev') {
       const seen = run.evSeen || {};
       const ev = DAY_EVENTS.map(e => `<li class="${seen[e.id] ? 'got' : ''}"><b>${seen[e.id] ? esc(e.name) : '？？？'}</b><span class="px">${seen[e.id] ? '×' + seen[e.id] : ''}</span></li>`).join('');
       const cats = GANG.map(m => { const st = gangOf(run)[m.id]; return `<li class="${st ? 'got' : ''}"><b>${st ? esc(m.name) : '？？？'}</b><span>${st ? `帶回 ${st.hauls || 0} 朵` : ''}</span></li>`; }).join('');
       body = `<h3>白天的事件　${Object.keys(seen).length}/${DAY_EVENTS.length}</h3><ul class="ev-list">${ev}</ul>
+        <h3>稀有的夜晚　${Object.keys(run.rareSeen || {}).length}/${Object.keys(RARE_NIGHTS).length}</h3><ul class="ev-list">${Object.keys(RARE_NIGHTS).map(k => `<li class="${(run.rareSeen || {})[k] ? 'got' : ''}"><b>${(run.rareSeen || {})[k] ? esc(RARE_NIGHTS[k].name) : '？？？'}</b><span class="px">${(run.rareSeen || {})[k] ? '×' + run.rareSeen[k] : ''}</span></li>`).join('')}</ul>
         <h3>花喵幫　${gangMembers(run).length}/${GANG.length}</h3><ul class="ev-list">${cats}</ul>
         <p class="hint">巷子裡的流浪貓好感：${run.strays || 0}</p>`;
     } else {
@@ -155,6 +158,7 @@ UI.book = function (run, back, tab = 'bq') {
         <button type="button" class="tab ${tab === 'bq' ? 'on' : ''}" data-tab="bq" role="tab" aria-selected="${tab === 'bq'}">花束<small>${cnt.recipes + cnt.schemes} / ${totalBq}</small></button>
         <button type="button" class="tab ${tab === 'fl' ? 'on' : ''}" data-tab="fl" role="tab" aria-selected="${tab === 'fl'}">花<small>${cnt.flowers} / ${FLOWER_ORDER.length}</small></button>
         <button type="button" class="tab ${tab === 'nb' ? 'on' : ''}" data-tab="nb" role="tab" aria-selected="${tab === 'nb'}">鄰居<small>${storyProgress(run).reduce((a, p) => a + p.done, 0)} / 12</small></button>
+        <button type="button" class="tab ${tab === 'ach' ? 'on' : ''}" data-tab="ach" role="tab" aria-selected="${tab === 'ach'}">成就<small>${ACH.filter(a => (run.ach || {})[a.id]).length} / ${ACH.length}</small></button>
         <button type="button" class="tab ${tab === 'ev' ? 'on' : ''}" data-tab="ev" role="tab" aria-selected="${tab === 'ev'}">事件<small>${Object.keys(run.evSeen || {}).length + gangMembers(run).length} / ${DAY_EVENTS.length + GANG.length}</small></button>
       </div>${body}`;
     UI.modal(html, [{ label: '返回', primary: true, onClick: () => back && back() }], { pause: true, cls: 'book' });

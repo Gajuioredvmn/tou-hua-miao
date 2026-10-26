@@ -12,7 +12,7 @@ function pushSprite(list, a, xpx, ypx, o = {}) {
 function catSprites(F, c, o = {}) {
   const hop = (c.hop || 0) / TS * (c.jump && c.jump.big ? 1.5 : 1);
   const w = c.wiggle ? Math.sin(c.t * 40) * 1.2 : 0;
-  const alpha = c.inv > 0 ? 0.6 + 0.3 * Math.sin(c.t * 20) : 1;
+  const alpha = c.inv > 0 ? 0.6 + 0.3 * Math.sin(c.t * 20) : c.shadow ? 0.42 : 1;
   const hw = (c.h || 0), lift0 = hw * Math.cos(R3.pitch) + (o.lift || 0);
   const a = c.box ? ART.catBox(c) : ART.cat(c);
   const b = pushSprite(F.sprites, a, c.x + w, c.y + 0.6, { lift: hop + lift0, minLight: o.minLight || [0.4, 0.37, 0.44], alpha: alpha < 1 ? alpha : undefined });
@@ -99,6 +99,7 @@ NightScene.prototype.render3D = function () {
   nightPlusLights(this, L);
   gardenRender3D(this, F, L, st);
   tunnelRender3D(this, F);
+  rareRender3D(this, F, L);
   roofwayRender3D(this, F, st);
   expNight3D(this, F, L);
   winNight3D(this, F, L);
@@ -289,6 +290,8 @@ NightScene.prototype.render3D = function () {
   R3.render(st, F, env, Object.assign({}, NIGHT_POST, POST_BY_EVENT[ev] || {}));
   // ---- 疊加層 ----
   const g = R3.ovBegin(); if (!g) return;
+  listenOverlay(this, g);
+  rareOverlay(this, g);
   const sc = (R3.ppu || 40) / 44;
   if (bbq) {
     // 中秋的大月亮
