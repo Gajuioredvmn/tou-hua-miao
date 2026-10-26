@@ -101,6 +101,8 @@ NightScene.prototype.render3D = function () {
   tunnelRender3D(this, F);
   rareRender3D(this, F, L);
   manholeRender3D(this, F);
+  rivalRender3D(this, F);
+  repNight3D(this, F, L);
   roofwayRender3D(this, F, st);
   expNight3D(this, F, L);
   winNight3D(this, F, L);

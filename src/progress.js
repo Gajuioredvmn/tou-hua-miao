@@ -6,7 +6,8 @@ const CN_D = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '�
 function cn(n) { n = Math.max(0, Math.floor(n)); if (n <= 10) return n === 10 ? '十' : CN_D[n]; if (n < 20) return '十' + CN_D[n - 10]; const t = Math.floor(n / 10), o = n % 10; return CN_D[t] + '十' + (o ? CN_D[o] : ''); }
 
 // ---------- 房租 ----------
-function rentFor(m) { return 20000 + (m - 1) * 10000 + (m - 1) * (m - 2) * 1000; }
+// 房租：前半年越漲越快，第六個月之後每個月固定再漲一萬二（後期靠新品種、花園、遠征這些收入撐住）
+function rentFor(m) { if (m > 6) return rentFor(6) + (m - 6) * 12000; return 20000 + (m - 1) * 10000 + (m - 1) * (m - 2) * 1000; }
 function rentDue(run) { return rentFor(run.month || 1) + (run.debt || 0); }
 function monthPre(run) { return (run.month || 1) > 1 ? `第${cn(run.month)}個月・` : ''; }
 
@@ -296,7 +297,7 @@ function apologize(run, o) {
 const ORDER_WHO = ['熟客', '上班族', '咖啡店老闆', '婚禮花藝師', '學生', '隔壁巷的阿姨', '飯店採購'];
 function genOrder(run, n) {
   const th = themeOf(run), m = run.month || 1;
-  const pool = FLOWER_ORDER.filter(t => t !== 'lily' && !(t === 'orchid' && !run.upg.jump));
+  const pool = FLOWER_ORDER.filter(t => t !== 'lily' && !(t === 'orchid' && !run.upg.jump) && zoneFlowerOk(run, t));
   const boosted = th ? Object.keys(th.boost).filter(t => pool.includes(t)) : [];
   const t = boosted.length && Math.random() < 0.6 ? pick(boosted) : pick(pool);
   const each = Math.random() < 0.35 || FLOWERS[t].price >= 800;

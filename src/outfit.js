@@ -27,7 +27,7 @@ function rollOne(run, floorSR) {
   if (W.pity >= 50) rar = 'SSR';   // 50 抽保底傳說
   if (floorSR && (rar === 'N' || rar === 'R')) rar = 'SR';
   if (rar === 'SSR') W.pity = 0;
-  const it = pick(OUTFITS.filter(o => o.r === rar));
+  const it = pick(OUTFITS.filter(o => o.r === rar && !o.limited));
   const dup = !!W.own[it.id];
   if (dup) W.shards += RARITY[rar].shard; else W.own[it.id] = 1;
   W.pulls++;
@@ -103,7 +103,7 @@ function gachaHTML(run) {
   const slotName = { hat: '帽子', glass: '眼鏡', cape: '披風' };
   const grid = ['hat', 'glass', 'cape'].map(slot => `<h4>${slotName[slot]}</h4><div class="wd-grid">${OUTFITS.filter(o => o.slot === slot).map(o => {
     const has = W.own[o.id], on = W.eq[slot] === o.id, R = RARITY[o.r];
-    return `<button type="button" class="wd-it ${has ? 'got' : ''} ${on ? 'on' : ''}" ${has ? `data-eq="${o.id}"` : `data-ex="${o.id}"`} style="--rc:${R.col}"><b>${has ? esc(o.name) : '？？？'}</b><span>${R.name}${has ? (on ? '・穿著' : '') : `・${R.ex} 點換`}</span></button>`;
+    return `<button type="button" class="wd-it ${has ? 'got' : ''} ${on ? 'on' : ''}" ${has ? `data-eq="${o.id}"` : o.limited ? '' : `data-ex="${o.id}"`} style="--rc:${R.col}"><b>${has ? esc(o.name) : '？？？'}</b><span>${o.limited ? '季節限定' : R.name}${has ? (on ? '・穿著' : '') : o.limited ? `・${SEASONS.find(x => x.id === o.limited).name}的任務` : `・${R.ex} 點換`}</span></button>`;
   }).join('')}</div>`).join('');
   return `<h3>扭蛋機<small>收集 ${own}/${OUTFITS.length}・閃亮點數 ${W.shards}</small></h3>
     <div class="gacha-row"><button type="button" class="gacha-b" data-gacha="1" ${run.cans < GACHA_COST ? 'disabled' : ''}>扭一次<i><img src="${G.icons.can}" alt="">${GACHA_COST}</i></button>

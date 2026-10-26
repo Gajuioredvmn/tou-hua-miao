@@ -114,12 +114,12 @@ function toonGang(m, oc, k = 0.9) {
 }
 function gangLoaf(m, t, act) { const c = Object.assign(new Cat(0, 0), { pose: 'loaf', act: act || 'none', t: t || 1, dir: 'down' }); return ART.fix(toonGang(m, c)); }
 // 白天：收編的貓窩在店裡（越收越多）
-const GANG_SPOTS = [[2.3, 9.4], [13.2, 10.6], [9.2, 15.3], [4.0, 15.2], [12.0, 15.6]];
+const GANG_SPOTS = [[2.3, 9.4], [13.2, 10.6], [9.2, 15.3], [4.0, 15.2], [12.0, 15.6], [1.6, 13.4]];
 function gangDay3D(sc, F) {
   const ms = gangMembers(sc.run); if (!ms.length) return;
   const t = sc.cat.t || 0;
   ms.forEach((m, i) => {
-    const st = gangOf(sc.run)[m.id]; if (st.caught || (st.target === 'shop' && catCornerLv(sc.run))) return;
+    const st = gangOf(sc.run)[m.id]; if (st.caught || st.away || (st.target === 'shop' && catCornerLv(sc.run))) return;
     const [x, z] = GANG_SPOTS[i], ph = Math.floor((t + i * 1.7) / 2.6) % 5;
     const act = ['none', 'blink', 'none', 'ear', 'yawn'][ph];
     pushSprite(F.sprites, gangLoaf(m, 1, act), x * TS, z * TS, { minLight: [0.6, 0.56, 0.55] });
@@ -129,7 +129,7 @@ function gangDay3D(sc, F) {
 // 傍晚老貓攤裡的收編區
 function gangShopHTML(run) {
   if (!gangOpen(run)) return '';
-  const rows = GANG.map(m => {
+  const rows = GANG.filter(m => !m.hidden || gangOf(run)[m.id]).map(m => {
     const st = gangOf(run)[m.id], need = (run.strays || 0) < m.need;
     const btn = st ? `<button type="button" class="buy" disabled>${st.caught ? '被抓了' : '小弟'}</button>`
       : `<button type="button" class="buy" data-gang="${m.id}" ${need || run.cans < m.cost ? 'disabled' : ''}><img src="${G.icons.can}" alt="罐罐"><b class="px">${m.cost}</b></button>`;
@@ -153,7 +153,9 @@ function gangBriefHTML(run) {
   const ms = gangMembers(run); if (!ms.length) return '';
   const rows = ms.map(m => {
     const st = gangOf(run)[m.id];
-    if (st.caught) return `<li class="gang-row"><b>${m.name}</b><span class="gang-t off">被${OWNERS[st.caught].person}抓走了，明天會帶回來</span></li>`;
+    if (st.away) { const d = EXPEDS.find(x => x.id === st.away), a = expOf(run).active.find(x => x.id === st.away); return `<li class="gang-row"><b>${m.name}</b><span class="gang-t off">去${d ? d.name : '遠方'}遠征中${a ? `（還要 ${a.left} 晚）` : ''}</span></li>`; }
+    if (st.rest > 0) return `<li class="gang-row"><b>${m.name}</b><span class="gang-t off">遠征回來累壞了，在貓窩休息</span></li>`;
+    if (st.caught) return `<li class="gang-row"><b>${m.name}</b><span class="gang-t off">被${OWNERS[st.caught] ? OWNERS[st.caught].person : '鄰居'}抓走了，明天會帶回來</span></li>`;
     const o = st.target;
     if (o === 'shop') return `<li class="gang-row"><b>${m.name}</b><button type="button" class="gang-t" data-gangt="${m.id}">店裡上班</button><em class="ok">招客人</em></li>`;
     const stars = starsOf(run, o);

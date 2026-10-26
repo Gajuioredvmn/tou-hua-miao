@@ -292,7 +292,7 @@ const UI = {
       ${items.length ? `<h3>今天店裡要賣的花</h3><ul class="tally">${rows}</ul>` : (R.deposited.length ? '' : '<p class="lead">店裡今天又是空的……</p>')}
       ${mults.length ? `<p class="mults">${mults.map(esc).join('<span>・</span>')}</p>` : ''}
       ${orders ? `<h3>訂單${st.scooter ? '<small>外送機車：獎勵 ×2</small>' : ''}</h3><ul class="tally">${orders}</ul>` : ''}
-      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${commissionTallyHTML(R)}${gangTallyHTML(R)}${nmTallyHTML(R)}${gardenHtml}${masterHtml}${heatHtml}
+      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${commissionTallyHTML(R)}${gangTallyHTML(R)}${nmTallyHTML(R)}${gardenHtml}${breedTallyHTML(R)}${rivalTallyHTML(R)}${expedTallyHTML(R)}${masterHtml}${heatHtml}
       <div class="total"><span>現在入帳</span><b class="px" id="tally-total">0</b></div>
       ${R.stockValue + gv > 0 ? `<div class="total sub"><span>白天客人上門買花</span><b class="px">≈ ${N(R.stockValue + gv)}</b></div>` : ''}
       ${growth}
@@ -338,7 +338,7 @@ const UI = {
         }).join('');
         body = `<p class="lead">「先投資店面，之後每天都多賺一點……可是房租也要留著。」</p>
           <p class="hint">還剩 <b>${nightsLeft}</b> 晚。越早裝回本越多；買下去馬上會看到店裡變樣。</p>
-          ${this.rentBar(run)}
+          ${this.rentBar(run)}${repShopHTML(run)}${chainShopHTML(run)}
           <ul class="ups">${rows}</ul>${windowHTML(run)}`;
       } else if (tab === 'garden') {
         body = gardenTabHTML(run, pickIdx);
@@ -361,9 +361,9 @@ const UI = {
         }).join('');
         body = `<p class="lead">「罐罐拿來，本事教你。」<br><small>學到的本事都會穿戴在花喵身上。</small></p>
           <div class="wallet"><img src="${G.icons.can}" alt=""><b class="px">${run.cans}</b><span>個罐罐</span></div>
-          ${itemsHTML(run)}${gachaHTML(run)}
+          ${(run.month || 1) > 1 ? seasonQuestHTML(run) : ''}${itemsHTML(run)}${gachaHTML(run)}
           <div class="cat-looks"><figure><canvas class="cat-look" data-who="tab"></canvas><figcaption>花喵現在的樣子</figcaption></figure>${run.upg.orange ? '<figure><canvas class="cat-look" data-who="orange"></canvas><figcaption>橘貓夥伴</figcaption></figure>' : ''}</div>
-          <ul class="ups">${rows}</ul>${gangShopHTML(run)}`;
+          <ul class="ups">${rows}</ul>${gangShopHTML(run)}${expedHTML(run)}`;
       }
       checkAchievements(run);
       const html = `<p class="eyebrow">傍晚</p><h2>${tab === 'store' ? '美玲的花店' : tab === 'garden' ? '頂樓花園' : tab === 'nm' ? '夜市花攤' : '巷口・老貓的攤子'}</h2>
@@ -413,6 +413,7 @@ const UI = {
         this.toast(`${nx.name}蓋好了！${nx.look}${g.story[g.lv] ? '' : '（明天早上有人會注意到）'}`, 3200);
         keep();
       }));
+      bindBreed(this.cardEl, run, keep); bindExped(this.cardEl, run, keep);
       this.cardEl.querySelectorAll('[data-pot]').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); pickIdx = pickIdx === +b.dataset.pot ? -1 : +b.dataset.pot; keep(); }));
       this.cardEl.querySelectorAll('[data-plant]').forEach(b => b.addEventListener('click', () => {
         if (plantPot(run, pickIdx, b.dataset.plant)) { SFX.play('buy'); this.toast(`種下${FLOWERS[b.dataset.plant].name}，${growNights(run, b.dataset.plant)} 晚後開花`, 2200); }
@@ -488,7 +489,7 @@ const UI = {
     const xeHtml = XE ? `<div class="event ev-x"><b>還有：${esc(XE.name)}${XE.when ? `<small>大約 ${fmtTime(xe.t0)}</small>` : ''}</b><span>${esc(XE.desc)}</span></div>` : '';
     const html = `<p class="eyebrow">${monthPre(run)}22:30 – ${fmtTime(end)}</p><h2>第${NUM[n]}晚</h2>
       <div class="event ev-${rules.event}"><b>${esc(ev.name)}</b><span>${esc(ev.desc)}</span></div>${xeHtml}
-      ${abHtml}${commissionBriefHTML(run)}${gangBriefHTML(run)}${zoneBriefHTML(run)}${masterHtml}${reactHtml}${ordHtml}
+      ${abHtml}${commissionBriefHTML(run)}${seasonBriefHTML(run)}${gangBriefHTML(run)}${zoneBriefHTML(run)}${masterHtml}${reactHtml}${ordHtml}
       ${news ? `<ul class="news">${news}</ul>` : ''}
       ${m <= 1 ? `<h3>${n === 1 ? '白天聽到的情報' : '今天聽到的情報'}</h3>
       ${intel || '<p class="lead">什麼都沒聽到……今晚只能見機行事。</p>'}` : (known.length ? `<details class="old"><summary>之前聽到的情報 ${known.length} 則</summary><ul class="intel">${li(known)}</ul></details>` : '')}

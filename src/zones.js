@@ -41,6 +41,15 @@ const LOST_ITEMS = {
 };
 function zonesOf(run) { return run.zones || (run.zones = { visits: {}, lostSeen: {}, lost: [], fish: 0, heat: {} }); }
 function sewerOpen(run) { return !!(run.upg && run.upg.sewer); }
+// 新區域的花：去得到那個地方才會有人來訂
+function zoneFlowerOk(run, t) {
+  const Z = run.zones || {};
+  if (t === 'plumeria') return !!Z.parkKey;
+  if (t === 'lotus') return !!Z.parkKey && !!run.upg.jump;
+  if (t === 'camellia') return !!Z.kingFriend;
+  if (t === 'ghostorchid') return !!(run.upg && run.upg.sewer);
+  return true;
+}
 function marketOpen(run) { return !!zonesOf(run).market; }
 
 // ---------- 地圖 ----------

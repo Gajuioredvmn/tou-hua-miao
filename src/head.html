@@ -332,6 +332,65 @@ button { font-family: var(--font-ui); -webkit-tap-highlight-color: transparent; 
 .grp.garden { background: #9ad86a; color: #1f3a10; }
 .grp.gangtag { background: #f2b24a; color: #3a2408; }
 .grp.nm { background: #ff8fd0; color: #3a0f2a; }
+.bslots { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin: 8px 0; }
+.bslot { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px; min-height: 64px; padding: 8px; border-radius: 12px; border: 2px dashed var(--edge); background: rgba(10, 11, 24, 0.3); color: var(--ink-dim); font: inherit; cursor: pointer; }
+.bslot.on { border-style: solid; border-color: #ffd25a; }
+.bslot.busy { border-style: solid; border-color: #c88af0; background: rgba(200, 138, 240, 0.12); cursor: default; color: var(--ink); }
+.bslot .bp { display: inline-flex; align-items: center; gap: 2px; font-size: 13px; }
+.bslot .bp img { width: 22px; height: 26px; object-fit: contain; }
+.bslot i { font-style: normal; color: #ffd25a; }
+.bslot small { width: 100%; text-align: center; font-size: 11.5px; color: var(--ink-dim); }
+.gpick-b .bk-known { font-style: normal; color: #ffd25a; }
+.gpick-b.cancel { justify-content: center; }
+.newab.breed { border-color: #c88af0; }
+.newab.rival { border-color: #7af0a0; }
+.chain-opts { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }
+.chain-opts li { display: grid; gap: 2px; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--edge); font-size: 13px; color: var(--ink-dim); }
+.chain-opts li b { font-weight: 400; font-size: 15px; color: var(--ink); }
+.chain-box { margin: 10px 0; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.3); }
+.chain-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--ink-dim); }
+.chain-top > b { font-weight: 400; font-size: 15px; color: var(--ink); }
+.chain-bars { display: flex; align-items: flex-end; gap: 3px; height: 38px; margin: 6px 0 2px; }
+.chain-bars i { flex: 1; max-width: 14px; border-radius: 3px 3px 0 0; background: #8ab0e8; }
+.chain-bars i.hi { background: #ffd25a; } .chain-bars i.lo { background: #ff7a5a; }
+.season-box { margin: 10px 0; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.3); }
+.season-box.s-spring { border-color: #ff9fc2; } .season-box.s-summer { border-color: #ffd25a; } .season-box.s-autumn { border-color: #f2953a; } .season-box.s-winter { border-color: #9fd0ff; }
+.season-top { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; align-items: baseline; font-size: 12.5px; color: var(--ink-dim); }
+.season-top b { font-weight: 400; font-size: 16px; color: var(--ink); }
+.season-q { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 4px; }
+.season-q li { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--ink-dim); }
+.season-q li.ok { color: #9fe8a8; } .season-q li.ok span::before { content: '✔ '; }
+.newab.exped { border-color: #8ad0ff; }
+.newab.exped .diary { font-style: normal; color: var(--ink-dim); font-size: 13px; }
+.newab .syn { font-style: normal; color: #ffd25a; font-size: 12px; margin-left: 4px; }
+.exp-act { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 4px; }
+.exp-act li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 10px; border-radius: 10px; background: rgba(138, 208, 255, 0.12); border: 2px solid #8ad0ff; font-size: 13px; }
+.exp-act li b { font-weight: 400; }
+.exp-list { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 6px; }
+.exp-list li.exp { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center; padding: 8px 10px; border-radius: 12px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.3); }
+.exp-list li.exp.sel { border-color: #ffd25a; } .exp-list li.exp.busy { opacity: 0.7; } .exp-list li.exp.locked { opacity: 0.5; }
+.exp-list li.exp div > b { font-weight: 400; font-size: 15px; display: block; }
+.exp-list li.exp div > span { display: block; font-size: 12px; color: var(--ink-dim); }
+.exp-list .exp-meta { color: #ffd25a !important; }
+.exp-list em { font-style: normal; font-size: 12px; color: #8ad0ff; }
+.exp-b { padding: 7px 12px; border-radius: 10px; border: 2px solid var(--edge); background: linear-gradient(#8ad0ff, #5a9ad8); color: #10203a; font: inherit; font-size: 13px; cursor: pointer; }
+.exp-pick { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.exp-m { display: flex; flex-direction: column; align-items: center; padding: 6px 10px; border-radius: 10px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.4); color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; }
+.exp-m small { font-size: 10.5px; color: var(--ink-dim); }
+.exp-m.on { border-color: #ffd25a; background: rgba(255, 210, 90, 0.18); }
+.exp-m:disabled { opacity: 0.4; cursor: default; }
+.exp-syn { width: 100%; margin: 0; font-size: 12px; color: #ffd25a; }
+.exp-go { margin-left: auto; }
+.rep-box { margin: 10px 0; padding: 10px 12px; border-radius: 12px; border: 2px solid #ffd25a; background: rgba(10, 11, 24, 0.3); }
+.rep-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--ink-dim); }
+.rep-top b { font-weight: 400; font-size: 16px; color: #ffd25a; }
+.rep-bar { height: 10px; border-radius: 5px; background: #3a3555; margin: 6px 0 2px; overflow: hidden; }
+.rep-bar i { display: block; height: 100%; background: linear-gradient(90deg, #ffd25a, #ff9fbb); }
+.rv-list { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 6px; }
+.rv-list li { padding: 7px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); font-size: 12.5px; color: var(--ink-dim); }
+.rv-list li b { font-weight: 400; color: var(--ink); margin-left: 6px; }
+.rv-list li p { margin: 2px 0 0; color: var(--ink); }
+.rv-s { color: #ffd25a; letter-spacing: -1px; } .rv-s i { font-style: normal; color: rgba(255, 255, 255, 0.2); }
 .gacha-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
 .gacha-b { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 8px; border-radius: 14px; border: 2px solid var(--edge); background: linear-gradient(#ff9fcb, #e86a9a); color: #2a1030; font: inherit; font-size: 16px; cursor: pointer; box-shadow: 0 3px 0 rgba(0,0,0,0.3); }
 .gacha-b.ten { background: linear-gradient(#ffe27a, #f2a63a); }

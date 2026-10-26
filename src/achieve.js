@@ -81,6 +81,28 @@ const ACH = [
   { id: 'dogfr', name: '阿福的朋友', desc: '用一條魚收買隔壁巷的柴犬', c: r => !!(r.zones || {}).dogFriend, cans: 20 },
   { id: 'ghost', name: '黑暗中的光', desc: '偷到幽靈蘭', c: r => !!bookOf(r).flowers.ghostorchid, cans: 25 },
   { id: 'lotus', name: '踩著荷葉', desc: '偷到公園的荷花', c: r => !!bookOf(r).flowers.lotus, cans: 15 },
+  // 配種
+  { id: 'hy1', name: '世界上沒有的花', desc: '配出第一個新品種', c: r => Object.keys((r.breed || {}).found || {}).length >= 1, cans: 15 },
+  { id: 'hy6', name: '育種家', desc: '配出 6 個新品種', c: r => Object.keys((r.breed || {}).found || {}).length >= 6, cans: 40 },
+  { id: 'hyall', name: '育種大師', desc: '全部新品種都配出來（包括第二代）', c: r => HYBRID_ORDER.every(k => ((r.breed || {}).found || {})[k]), cans: 100, title: '育種大師' },
+  { id: 'hyq3', name: '三顆星', desc: '把一個新品種選育到 ★★★', c: r => Object.values((r.breed || {}).q || {}).some(q => q >= 3), cans: 25 },
+  { id: 'gold', name: '花展金牌', desc: '社區花展拿到金牌', c: r => (((r.breed || {}).medals || {})[3] || 0) >= 1, cans: 40 },
+  // 對手
+  { id: 'duel1', name: '不服來戰', desc: '對決贏過煤炭一次', c: r => ((r.rival || {}).wins || 0) >= 1, cans: 10 },
+  { id: 'coal', name: '巷子的老大', desc: '屋頂決戰打贏煤炭，牠加入花喵幫', c: r => !!(r.rival || {}).friend, cans: 50, title: '巷子老大' },
+  { id: 'chain', name: '以小搏大', desc: '把對面的連鎖花店打到收掉', c: r => !!(r.chain || {}).closed, cans: 60, money: 20000, title: '巷口的傳奇' },
+  // 四季
+  { id: 'season1', name: '季節限定', desc: '完成一季的季節任務', c: r => (r.seasonsDone || 0) >= 1, cans: 25 },
+  { id: 'season4', name: '四季的貓', desc: '春夏秋冬的季節任務都完成過', c: r => (r.seasonsDone || 0) >= 4, cans: 80, title: '四季的貓' },
+  // 遠征
+  { id: 'exp1', name: '出發吧', desc: '第一次遠征平安回來', c: r => ((r.exped || {}).done || 0) >= 1, cans: 10 },
+  { id: 'exp10', name: '遠征隊長', desc: '完成 10 次遠征', c: r => ((r.exped || {}).done || 0) >= 10, cans: 40 },
+  { id: 'souv', name: '紀念品收藏家', desc: '六個遠征地點的紀念品都收集到', c: r => EXPEDS.every(d => ((r.exped || {}).seen || {})[d.id]), cans: 60, title: '旅行貓' },
+  { id: 'lv5', name: '身經百戰', desc: '有一隻花喵幫的貓升到 Lv.5', c: r => Object.values(r.gang || {}).some(st => st && memberLv(st) >= 5), cans: 30 },
+  // 口碑
+  { id: 'rep5', name: '區域人氣店', desc: '口碑升到 Lv.5', c: r => r.rep && repLv(r) >= 5, cans: 30 },
+  { id: 'rep10', name: '傳說中的花店', desc: '口碑升到 Lv.10', c: r => r.rep && repLv(r) >= 10, cans: 100, money: 50000, title: '傳說花店' },
+  { id: 'five', name: '五星好評', desc: '收到 10 則五顆星的評論', c: r => ((r.rep || {}).reviews || []).filter(x => x.s >= 5).length >= 10, cans: 20 },
   // 扭蛋
   { id: 'wd1', name: '第一件新衣', desc: '扭蛋扭到第一件衣服', c: r => Object.keys((r.wardrobe || {}).own || {}).length >= 1, cans: 5 },
   { id: 'wdset', name: '整套穿上', desc: '穿齊一整套套裝', c: r => r.wardrobe && activeSets(r).length >= 1, cans: 20 },

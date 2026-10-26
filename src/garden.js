@@ -251,7 +251,7 @@ function gardenTabHTML(run, pickIdx) {
     }
     potsHTML = `<div class="gpots">${cells.join('')}</div>`;
     if (pickIdx >= 0) {
-      const types = FLOWER_ORDER.filter(t => (cut[t] || 0) > 0);
+      const types = cutOrder().filter(t => (cut[t] || 0) > 0);
       potsHTML += types.length ? `<div class="gpick"><p>選一支插枝種下去：</p>${types.map(t => {
         const ok = plantable(run, t);
         return `<button type="button" class="gpick-b" data-plant="${t}" ${ok ? '' : 'disabled'}><img src="${G.icons[t]}" alt=""><b>${FLOWERS[t].name}</b><small>${ok ? `${growNights(run, t)} 晚開花・NT$ ${Math.round(flowerValue(run, t, 1))}` : '要玻璃花房'}</small><i class="px">×${cut[t]}</i></button>`;
@@ -260,7 +260,7 @@ function gardenTabHTML(run, pickIdx) {
     const fc = gardenForecast(run);
     const val = fc.reduce((s, f) => s + flowerValue(run, f.t, 1) * f.n, 0);
     potsHTML += `<p class="gforecast">${fc.length ? `明天早上收成：${fc.map(f => FLOWERS[f.t].name + ' ×' + f.n).join('、')}（約 ${money(Math.round(val))}）` : '明天沒有花會開。'}</p>`;
-    const inv = FLOWER_ORDER.filter(t => (cut[t] || 0) > 0);
+    const inv = cutOrder().filter(t => (cut[t] || 0) > 0);
     potsHTML += `<p class="gcuts">插枝：${inv.length ? inv.map(t => `${FLOWERS[t].name} ×${cut[t]}`).join('、') : '還沒有'}</p>`;
   }
   return `<p class="lead">「${lv ? '自己種的花，不用怕被鄰居認出來！' : '頂樓空著好可惜……蓋個花架，把插枝種起來吧！'}」</p>

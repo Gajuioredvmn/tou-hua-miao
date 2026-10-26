@@ -616,6 +616,8 @@ function shopDecor3D(sc, F, st, store) {
     pushSprite(F.sprites, artAFrame(), 3.5 * TS, 17.6 * TS); shadowAt(F, 3.5 * TS, 17.6 * TS, 0.7, 0.24);
   }
   expDecor3D(sc, F);
+  seasonDecor3D(sc, F);
+  repDecor3D(sc, F);
   gangDay3D(sc, F);
   winDay3D(sc, F);
   catCornerDay3D(sc, F);

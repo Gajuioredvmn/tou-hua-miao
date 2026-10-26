@@ -1065,10 +1065,13 @@ function* monthDayScript(S, n) {
   UI.hideDialog();
   yield* gardenMorningScript(S);
   yield* lostFoundScript(S);
-  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* zoneStoryScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
+  S.dayStart = S.stock.map(f => f.t);
+  yield* chainMorningScript(S, n);
+  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* zoneStoryScript(S)) && !(yield* breedStoryScript(S)) && !(yield* repStoryScript(S)) && !(yield* seasonStartScript(S)) && !(yield* newYearScript(S, n)) && !(yield* chainStoryScript(S)) && !(yield* rivalStoryScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
   yield* commissionScript(S, n);
+  yield* flowerShowScript(S, n);
   const k = 1 + (Math.random() < 0.5 ? 1 : 0);
   for (let i = 0; i < k; i++) {
     const o = genOrder(run, n), cu = S.customer(pick(['cust1', 'cust2', 'shopA', 'shopC', 'shopE', 'shopF']));
@@ -1082,9 +1085,12 @@ function* monthDayScript(S, n) {
   if (n === 4) { const left = Math.max(0, rentDue(run) - run.money); yield S.say(left > 0 ? `這個月還差 ${money(left)}……還有最後一晚。` : '房租夠了！可是多存一點總是好的。'); UI.hideDialog(); }
   if (S.stock.some(f => S.canSell(f)) || S.bouquets.length || storeOf(run).neon) { let w = 0; yield { update: dt => { if (!UI.modalOpen) w += dt; return w > 10 || (!S.stock.length && !S.bouquets.length && !storeOf(run).neon && !S.shoppers.length); } }; }
   yield* S.closeShop();
+  const chr = chainDayEnd(S), rpr = repDayEnd(S);
   S.tint = 'evening';
   UI.banner('傍晚');
   yield wait(0.8);
+  if (chr) { const d = Math.round(chr.after - chr.before); UI.toast(`對面的花漾：今天市佔率 ${Math.round(chr.after)}%（${d >= 0 ? '+' : ''}${d}）${chr.parts.filter(p => p[1] && p[0] > 0).slice(0, 3).map(p => p[1]).join('、')}`, 3400); yield wait(0.6); }
+  if (rpr) { const r0 = rpr.revs[0]; UI.toast(`口碑 ${rpr.delta >= 0 ? '+' : ''}${rpr.delta}${rpr.after > rpr.before ? `・升到 Lv.${rpr.after}！` : ''}　${r0 ? `${'★'.repeat(r0.s)}「${r0.text}」` : ''}`, 3800); yield wait(0.6); }
   const tuition = classIncome(run) + regularDaily(run) + catCornerIncome(run);
   if (tuition) { run.money += tuition; S.daySales += tuition; UI.toast(`花藝教室的學費 +${money(tuition)}`, 2400); SFX.play('coin'); }
   yield S.say(S.daySales > 0 ? `今天賣了 ${money(S.daySales)}！花喵，賞你罐罐。` : '今天沒什麼生意……花喵，罐罐還是給你。');

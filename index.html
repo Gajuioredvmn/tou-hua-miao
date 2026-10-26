@@ -340,6 +340,65 @@ button { font-family: var(--font-ui); -webkit-tap-highlight-color: transparent; 
 .grp.garden { background: #9ad86a; color: #1f3a10; }
 .grp.gangtag { background: #f2b24a; color: #3a2408; }
 .grp.nm { background: #ff8fd0; color: #3a0f2a; }
+.bslots { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin: 8px 0; }
+.bslot { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px; min-height: 64px; padding: 8px; border-radius: 12px; border: 2px dashed var(--edge); background: rgba(10, 11, 24, 0.3); color: var(--ink-dim); font: inherit; cursor: pointer; }
+.bslot.on { border-style: solid; border-color: #ffd25a; }
+.bslot.busy { border-style: solid; border-color: #c88af0; background: rgba(200, 138, 240, 0.12); cursor: default; color: var(--ink); }
+.bslot .bp { display: inline-flex; align-items: center; gap: 2px; font-size: 13px; }
+.bslot .bp img { width: 22px; height: 26px; object-fit: contain; }
+.bslot i { font-style: normal; color: #ffd25a; }
+.bslot small { width: 100%; text-align: center; font-size: 11.5px; color: var(--ink-dim); }
+.gpick-b .bk-known { font-style: normal; color: #ffd25a; }
+.gpick-b.cancel { justify-content: center; }
+.newab.breed { border-color: #c88af0; }
+.newab.rival { border-color: #7af0a0; }
+.chain-opts { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }
+.chain-opts li { display: grid; gap: 2px; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--edge); font-size: 13px; color: var(--ink-dim); }
+.chain-opts li b { font-weight: 400; font-size: 15px; color: var(--ink); }
+.chain-box { margin: 10px 0; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.3); }
+.chain-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--ink-dim); }
+.chain-top > b { font-weight: 400; font-size: 15px; color: var(--ink); }
+.chain-bars { display: flex; align-items: flex-end; gap: 3px; height: 38px; margin: 6px 0 2px; }
+.chain-bars i { flex: 1; max-width: 14px; border-radius: 3px 3px 0 0; background: #8ab0e8; }
+.chain-bars i.hi { background: #ffd25a; } .chain-bars i.lo { background: #ff7a5a; }
+.season-box { margin: 10px 0; padding: 10px 12px; border-radius: 12px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.3); }
+.season-box.s-spring { border-color: #ff9fc2; } .season-box.s-summer { border-color: #ffd25a; } .season-box.s-autumn { border-color: #f2953a; } .season-box.s-winter { border-color: #9fd0ff; }
+.season-top { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; align-items: baseline; font-size: 12.5px; color: var(--ink-dim); }
+.season-top b { font-weight: 400; font-size: 16px; color: var(--ink); }
+.season-q { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 4px; }
+.season-q li { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--ink-dim); }
+.season-q li.ok { color: #9fe8a8; } .season-q li.ok span::before { content: '✔ '; }
+.newab.exped { border-color: #8ad0ff; }
+.newab.exped .diary { font-style: normal; color: var(--ink-dim); font-size: 13px; }
+.newab .syn { font-style: normal; color: #ffd25a; font-size: 12px; margin-left: 4px; }
+.exp-act { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 4px; }
+.exp-act li { display: flex; justify-content: space-between; gap: 8px; padding: 6px 10px; border-radius: 10px; background: rgba(138, 208, 255, 0.12); border: 2px solid #8ad0ff; font-size: 13px; }
+.exp-act li b { font-weight: 400; }
+.exp-list { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 6px; }
+.exp-list li.exp { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center; padding: 8px 10px; border-radius: 12px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.3); }
+.exp-list li.exp.sel { border-color: #ffd25a; } .exp-list li.exp.busy { opacity: 0.7; } .exp-list li.exp.locked { opacity: 0.5; }
+.exp-list li.exp div > b { font-weight: 400; font-size: 15px; display: block; }
+.exp-list li.exp div > span { display: block; font-size: 12px; color: var(--ink-dim); }
+.exp-list .exp-meta { color: #ffd25a !important; }
+.exp-list em { font-style: normal; font-size: 12px; color: #8ad0ff; }
+.exp-b { padding: 7px 12px; border-radius: 10px; border: 2px solid var(--edge); background: linear-gradient(#8ad0ff, #5a9ad8); color: #10203a; font: inherit; font-size: 13px; cursor: pointer; }
+.exp-pick { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.exp-m { display: flex; flex-direction: column; align-items: center; padding: 6px 10px; border-radius: 10px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.4); color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; }
+.exp-m small { font-size: 10.5px; color: var(--ink-dim); }
+.exp-m.on { border-color: #ffd25a; background: rgba(255, 210, 90, 0.18); }
+.exp-m:disabled { opacity: 0.4; cursor: default; }
+.exp-syn { width: 100%; margin: 0; font-size: 12px; color: #ffd25a; }
+.exp-go { margin-left: auto; }
+.rep-box { margin: 10px 0; padding: 10px 12px; border-radius: 12px; border: 2px solid #ffd25a; background: rgba(10, 11, 24, 0.3); }
+.rep-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--ink-dim); }
+.rep-top b { font-weight: 400; font-size: 16px; color: #ffd25a; }
+.rep-bar { height: 10px; border-radius: 5px; background: #3a3555; margin: 6px 0 2px; overflow: hidden; }
+.rep-bar i { display: block; height: 100%; background: linear-gradient(90deg, #ffd25a, #ff9fbb); }
+.rv-list { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 6px; }
+.rv-list li { padding: 7px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.05); font-size: 12.5px; color: var(--ink-dim); }
+.rv-list li b { font-weight: 400; color: var(--ink); margin-left: 6px; }
+.rv-list li p { margin: 2px 0 0; color: var(--ink); }
+.rv-s { color: #ffd25a; letter-spacing: -1px; } .rv-s i { font-style: normal; color: rgba(255, 255, 255, 0.2); }
 .gacha-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
 .gacha-b { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 8px; border-radius: 14px; border: 2px solid var(--edge); background: linear-gradient(#ff9fcb, #e86a9a); color: #2a1030; font: inherit; font-size: 16px; cursor: pointer; box-shadow: 0 3px 0 rgba(0,0,0,0.3); }
 .gacha-b.ten { background: linear-gradient(#ffe27a, #f2a63a); }
@@ -7078,6 +7137,8 @@ function shopDecor3D(sc, F, st, store) {
     pushSprite(F.sprites, artAFrame(), 3.5 * TS, 17.6 * TS); shadowAt(F, 3.5 * TS, 17.6 * TS, 0.7, 0.24);
   }
   expDecor3D(sc, F);
+  seasonDecor3D(sc, F);
+  repDecor3D(sc, F);
   gangDay3D(sc, F);
   winDay3D(sc, F);
   catCornerDay3D(sc, F);
@@ -7342,6 +7403,10 @@ const FLOWERS = {
   osmanthus: { name: '桂花', price: 200, color: '#ffa53a', hue: 32, fragrant: true, where: '阿伯家、王家屋頂' },
   magnolia: { name: '玉蘭花', price: 160, color: '#fff6e0', fragrant: true, white: true, where: '林家屋頂、阿伯家屋頂' },
   peony: { name: '牡丹', price: 900, color: '#ff9fc2', hue: 336, where: '大宅花園（要會跳高高）' },
+  tulip: { name: '鬱金香', price: 280, color: '#ff7a9a', hue: 345, where: '春天：社區花圃、林家門口（季節限定）' },
+  chrysanthemum: { name: '菊花', price: 240, color: '#ffc63a', hue: 44, where: '秋天：社區花圃、阿伯家（季節限定）' },
+  poinsettia: { name: '聖誕紅', price: 360, color: '#e8394d', hue: 355, where: '冬天：王家院子（季節限定）' },
+  plumblossom: { name: '梅花', price: 520, color: '#ffd8e4', hue: 340, fragrant: true, where: '冬天：阿伯家、林家（季節限定）' },
   plumeria: { name: '雞蛋花', price: 240, color: '#fff4d0', fragrant: true, white: true, where: '公園的花圃（新區域）' },
   camellia: { name: '山茶花', price: 380, color: '#d8304a', hue: 352, where: '隔壁巷花藝老師的院子（新區域）' },
   lotus: { name: '荷花', price: 560, color: '#ffc2d8', hue: 340, where: '公園的荷花池（要會跳高高，踩荷葉過去）' },
@@ -11102,10 +11167,13 @@ function* monthDayScript(S, n) {
   UI.hideDialog();
   yield* gardenMorningScript(S);
   yield* lostFoundScript(S);
-  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* zoneStoryScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
+  S.dayStart = S.stock.map(f => f.t);
+  yield* chainMorningScript(S, n);
+  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* zoneStoryScript(S)) && !(yield* breedStoryScript(S)) && !(yield* repStoryScript(S)) && !(yield* seasonStartScript(S)) && !(yield* newYearScript(S, n)) && !(yield* chainStoryScript(S)) && !(yield* rivalStoryScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
   yield* commissionScript(S, n);
+  yield* flowerShowScript(S, n);
   const k = 1 + (Math.random() < 0.5 ? 1 : 0);
   for (let i = 0; i < k; i++) {
     const o = genOrder(run, n), cu = S.customer(pick(['cust1', 'cust2', 'shopA', 'shopC', 'shopE', 'shopF']));
@@ -11119,9 +11187,12 @@ function* monthDayScript(S, n) {
   if (n === 4) { const left = Math.max(0, rentDue(run) - run.money); yield S.say(left > 0 ? `這個月還差 ${money(left)}……還有最後一晚。` : '房租夠了！可是多存一點總是好的。'); UI.hideDialog(); }
   if (S.stock.some(f => S.canSell(f)) || S.bouquets.length || storeOf(run).neon) { let w = 0; yield { update: dt => { if (!UI.modalOpen) w += dt; return w > 10 || (!S.stock.length && !S.bouquets.length && !storeOf(run).neon && !S.shoppers.length); } }; }
   yield* S.closeShop();
+  const chr = chainDayEnd(S), rpr = repDayEnd(S);
   S.tint = 'evening';
   UI.banner('傍晚');
   yield wait(0.8);
+  if (chr) { const d = Math.round(chr.after - chr.before); UI.toast(`對面的花漾：今天市佔率 ${Math.round(chr.after)}%（${d >= 0 ? '+' : ''}${d}）${chr.parts.filter(p => p[1] && p[0] > 0).slice(0, 3).map(p => p[1]).join('、')}`, 3400); yield wait(0.6); }
+  if (rpr) { const r0 = rpr.revs[0]; UI.toast(`口碑 ${rpr.delta >= 0 ? '+' : ''}${rpr.delta}${rpr.after > rpr.before ? `・升到 Lv.${rpr.after}！` : ''}　${r0 ? `${'★'.repeat(r0.s)}「${r0.text}」` : ''}`, 3800); yield wait(0.6); }
   const tuition = classIncome(run) + regularDaily(run) + catCornerIncome(run);
   if (tuition) { run.money += tuition; S.daySales += tuition; UI.toast(`花藝教室的學費 +${money(tuition)}`, 2400); SFX.play('coin'); }
   yield S.say(S.daySales > 0 ? `今天賣了 ${money(S.daySales)}！花喵，賞你罐罐。` : '今天沒什麼生意……花喵，罐罐還是給你。');
@@ -11424,7 +11495,7 @@ const UI = {
       ${items.length ? `<h3>今天店裡要賣的花</h3><ul class="tally">${rows}</ul>` : (R.deposited.length ? '' : '<p class="lead">店裡今天又是空的……</p>')}
       ${mults.length ? `<p class="mults">${mults.map(esc).join('<span>・</span>')}</p>` : ''}
       ${orders ? `<h3>訂單${st.scooter ? '<small>外送機車：獎勵 ×2</small>' : ''}</h3><ul class="tally">${orders}</ul>` : ''}
-      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${commissionTallyHTML(R)}${gangTallyHTML(R)}${nmTallyHTML(R)}${gardenHtml}${masterHtml}${heatHtml}
+      ${extra.length ? `<ul class="tally">${extra.join('')}</ul>` : ''}${note}${commissionTallyHTML(R)}${gangTallyHTML(R)}${nmTallyHTML(R)}${gardenHtml}${breedTallyHTML(R)}${rivalTallyHTML(R)}${expedTallyHTML(R)}${masterHtml}${heatHtml}
       <div class="total"><span>現在入帳</span><b class="px" id="tally-total">0</b></div>
       ${R.stockValue + gv > 0 ? `<div class="total sub"><span>白天客人上門買花</span><b class="px">≈ ${N(R.stockValue + gv)}</b></div>` : ''}
       ${growth}
@@ -11470,7 +11541,7 @@ const UI = {
         }).join('');
         body = `<p class="lead">「先投資店面，之後每天都多賺一點……可是房租也要留著。」</p>
           <p class="hint">還剩 <b>${nightsLeft}</b> 晚。越早裝回本越多；買下去馬上會看到店裡變樣。</p>
-          ${this.rentBar(run)}
+          ${this.rentBar(run)}${repShopHTML(run)}${chainShopHTML(run)}
           <ul class="ups">${rows}</ul>${windowHTML(run)}`;
       } else if (tab === 'garden') {
         body = gardenTabHTML(run, pickIdx);
@@ -11493,9 +11564,9 @@ const UI = {
         }).join('');
         body = `<p class="lead">「罐罐拿來，本事教你。」<br><small>學到的本事都會穿戴在花喵身上。</small></p>
           <div class="wallet"><img src="${G.icons.can}" alt=""><b class="px">${run.cans}</b><span>個罐罐</span></div>
-          ${itemsHTML(run)}${gachaHTML(run)}
+          ${(run.month || 1) > 1 ? seasonQuestHTML(run) : ''}${itemsHTML(run)}${gachaHTML(run)}
           <div class="cat-looks"><figure><canvas class="cat-look" data-who="tab"></canvas><figcaption>花喵現在的樣子</figcaption></figure>${run.upg.orange ? '<figure><canvas class="cat-look" data-who="orange"></canvas><figcaption>橘貓夥伴</figcaption></figure>' : ''}</div>
-          <ul class="ups">${rows}</ul>${gangShopHTML(run)}`;
+          <ul class="ups">${rows}</ul>${gangShopHTML(run)}${expedHTML(run)}`;
       }
       checkAchievements(run);
       const html = `<p class="eyebrow">傍晚</p><h2>${tab === 'store' ? '美玲的花店' : tab === 'garden' ? '頂樓花園' : tab === 'nm' ? '夜市花攤' : '巷口・老貓的攤子'}</h2>
@@ -11545,6 +11616,7 @@ const UI = {
         this.toast(`${nx.name}蓋好了！${nx.look}${g.story[g.lv] ? '' : '（明天早上有人會注意到）'}`, 3200);
         keep();
       }));
+      bindBreed(this.cardEl, run, keep); bindExped(this.cardEl, run, keep);
       this.cardEl.querySelectorAll('[data-pot]').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); pickIdx = pickIdx === +b.dataset.pot ? -1 : +b.dataset.pot; keep(); }));
       this.cardEl.querySelectorAll('[data-plant]').forEach(b => b.addEventListener('click', () => {
         if (plantPot(run, pickIdx, b.dataset.plant)) { SFX.play('buy'); this.toast(`種下${FLOWERS[b.dataset.plant].name}，${growNights(run, b.dataset.plant)} 晚後開花`, 2200); }
@@ -11620,7 +11692,7 @@ const UI = {
     const xeHtml = XE ? `<div class="event ev-x"><b>還有：${esc(XE.name)}${XE.when ? `<small>大約 ${fmtTime(xe.t0)}</small>` : ''}</b><span>${esc(XE.desc)}</span></div>` : '';
     const html = `<p class="eyebrow">${monthPre(run)}22:30 – ${fmtTime(end)}</p><h2>第${NUM[n]}晚</h2>
       <div class="event ev-${rules.event}"><b>${esc(ev.name)}</b><span>${esc(ev.desc)}</span></div>${xeHtml}
-      ${abHtml}${commissionBriefHTML(run)}${gangBriefHTML(run)}${zoneBriefHTML(run)}${masterHtml}${reactHtml}${ordHtml}
+      ${abHtml}${commissionBriefHTML(run)}${seasonBriefHTML(run)}${gangBriefHTML(run)}${zoneBriefHTML(run)}${masterHtml}${reactHtml}${ordHtml}
       ${news ? `<ul class="news">${news}</ul>` : ''}
       ${m <= 1 ? `<h3>${n === 1 ? '白天聽到的情報' : '今天聽到的情報'}</h3>
       ${intel || '<p class="lead">什麼都沒聽到……今晚只能見機行事。</p>'}` : (known.length ? `<details class="old"><summary>之前聽到的情報 ${known.length} 則</summary><ul class="intel">${li(known)}</ul></details>` : '')}
@@ -12223,6 +12295,10 @@ UI.book = function (run, back, tab = 'bq') {
         return `<li class="nb"><div class="nb-h"><b>${esc(p.person)}</b><span class="nb-hearts">${'♥'.repeat(hearts)}<i>${'♡'.repeat(9 - hearts)}</i></span></div><ol>${chs}</ol><p>${hint}</p></li>`;
       }).join('');
       body = `<p class="lead">交情會因為：變成花園或花店的粉絲、收到他們送的花、送花賠罪、白天被懷疑時擋下來……慢慢變高。交情夠了，而且那家人沒在生氣，早上就會聽到下一段故事。</p><ul class="nb-list">${rows}</ul>`;
+    } else if (tab === 'rv') {
+      body = repBookHTML(run);
+    } else if (tab === 'hy') {
+      body = breedBookHTML(run);
     } else if (tab === 'ach') {
       body = achBookHTML(run);
     } else if (tab === 'ev') {
@@ -12232,7 +12308,7 @@ UI.book = function (run, back, tab = 'bq') {
       body = `<h3>白天的事件　${Object.keys(seen).length}/${DAY_EVENTS.length}</h3><ul class="ev-list">${ev}</ul>
         <h3>稀有的夜晚　${Object.keys(run.rareSeen || {}).length}/${Object.keys(RARE_NIGHTS).length}</h3><ul class="ev-list">${Object.keys(RARE_NIGHTS).map(k => `<li class="${(run.rareSeen || {})[k] ? 'got' : ''}"><b>${(run.rareSeen || {})[k] ? esc(RARE_NIGHTS[k].name) : '？？？'}</b><span class="px">${(run.rareSeen || {})[k] ? '×' + run.rareSeen[k] : ''}</span></li>`).join('')}</ul>
         <h3>花喵幫　${gangMembers(run).length}/${GANG.length}</h3><ul class="ev-list">${cats}</ul>
-        <p class="hint">巷子裡的流浪貓好感：${run.strays || 0}</p>${zoneBookHTML(run)}`;
+        <p class="hint">巷子裡的流浪貓好感：${run.strays || 0}</p>${zoneBookHTML(run)}${expedBookHTML(run)}`;
     } else {
       const fl = FLOWER_ORDER.map(t => {
         const n = B.flowers[t] || 0, F = FLOWERS[t];
@@ -12245,7 +12321,9 @@ UI.book = function (run, back, tab = 'bq') {
       <div class="tabs" role="tablist">
         <button type="button" class="tab ${tab === 'bq' ? 'on' : ''}" data-tab="bq" role="tab" aria-selected="${tab === 'bq'}">花束<small>${cnt.recipes + cnt.schemes} / ${totalBq}</small></button>
         <button type="button" class="tab ${tab === 'fl' ? 'on' : ''}" data-tab="fl" role="tab" aria-selected="${tab === 'fl'}">花<small>${cnt.flowers} / ${FLOWER_ORDER.length}</small></button>
+        <button type="button" class="tab ${tab === 'hy' ? 'on' : ''}" data-tab="hy" role="tab" aria-selected="${tab === 'hy'}">品種<small>${Object.keys(breedOf(run).found).length} / ${HYBRID_ORDER.length}</small></button>
         <button type="button" class="tab ${tab === 'nb' ? 'on' : ''}" data-tab="nb" role="tab" aria-selected="${tab === 'nb'}">鄰居<small>${storyProgress(run).reduce((a, p) => a + p.done, 0)} / 12</small></button>
+        <button type="button" class="tab ${tab === 'rv' ? 'on' : ''}" data-tab="rv" role="tab" aria-selected="${tab === 'rv'}">評論<small>Lv.${repLv(run)}</small></button>
         <button type="button" class="tab ${tab === 'ach' ? 'on' : ''}" data-tab="ach" role="tab" aria-selected="${tab === 'ach'}">成就<small>${ACH.filter(a => (run.ach || {})[a.id]).length} / ${ACH.length}</small></button>
         <button type="button" class="tab ${tab === 'ev' ? 'on' : ''}" data-tab="ev" role="tab" aria-selected="${tab === 'ev'}">事件<small>${Object.keys(run.evSeen || {}).length + gangMembers(run).length} / ${DAY_EVENTS.length + GANG.length}</small></button>
       </div>${body}`;
@@ -12267,7 +12345,8 @@ const CN_D = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '�
 function cn(n) { n = Math.max(0, Math.floor(n)); if (n <= 10) return n === 10 ? '十' : CN_D[n]; if (n < 20) return '十' + CN_D[n - 10]; const t = Math.floor(n / 10), o = n % 10; return CN_D[t] + '十' + (o ? CN_D[o] : ''); }
 
 // ---------- 房租 ----------
-function rentFor(m) { return 20000 + (m - 1) * 10000 + (m - 1) * (m - 2) * 1000; }
+// 房租：前半年越漲越快，第六個月之後每個月固定再漲一萬二（後期靠新品種、花園、遠征這些收入撐住）
+function rentFor(m) { if (m > 6) return rentFor(6) + (m - 6) * 12000; return 20000 + (m - 1) * 10000 + (m - 1) * (m - 2) * 1000; }
 function rentDue(run) { return rentFor(run.month || 1) + (run.debt || 0); }
 function monthPre(run) { return (run.month || 1) > 1 ? `第${cn(run.month)}個月・` : ''; }
 
@@ -12557,7 +12636,7 @@ function apologize(run, o) {
 const ORDER_WHO = ['熟客', '上班族', '咖啡店老闆', '婚禮花藝師', '學生', '隔壁巷的阿姨', '飯店採購'];
 function genOrder(run, n) {
   const th = themeOf(run), m = run.month || 1;
-  const pool = FLOWER_ORDER.filter(t => t !== 'lily' && !(t === 'orchid' && !run.upg.jump));
+  const pool = FLOWER_ORDER.filter(t => t !== 'lily' && !(t === 'orchid' && !run.upg.jump) && zoneFlowerOk(run, t));
   const boosted = th ? Object.keys(th.boost).filter(t => pool.includes(t)) : [];
   const t = boosted.length && Math.random() < 0.6 ? pick(boosted) : pick(pool);
   const each = Math.random() < 0.35 || FLOWERS[t].price >= 800;
@@ -12821,7 +12900,7 @@ function gardenTabHTML(run, pickIdx) {
     }
     potsHTML = `<div class="gpots">${cells.join('')}</div>`;
     if (pickIdx >= 0) {
-      const types = FLOWER_ORDER.filter(t => (cut[t] || 0) > 0);
+      const types = cutOrder().filter(t => (cut[t] || 0) > 0);
       potsHTML += types.length ? `<div class="gpick"><p>選一支插枝種下去：</p>${types.map(t => {
         const ok = plantable(run, t);
         return `<button type="button" class="gpick-b" data-plant="${t}" ${ok ? '' : 'disabled'}><img src="${G.icons[t]}" alt=""><b>${FLOWERS[t].name}</b><small>${ok ? `${growNights(run, t)} 晚開花・NT$ ${Math.round(flowerValue(run, t, 1))}` : '要玻璃花房'}</small><i class="px">×${cut[t]}</i></button>`;
@@ -12830,7 +12909,7 @@ function gardenTabHTML(run, pickIdx) {
     const fc = gardenForecast(run);
     const val = fc.reduce((s, f) => s + flowerValue(run, f.t, 1) * f.n, 0);
     potsHTML += `<p class="gforecast">${fc.length ? `明天早上收成：${fc.map(f => FLOWERS[f.t].name + ' ×' + f.n).join('、')}（約 ${money(Math.round(val))}）` : '明天沒有花會開。'}</p>`;
-    const inv = FLOWER_ORDER.filter(t => (cut[t] || 0) > 0);
+    const inv = cutOrder().filter(t => (cut[t] || 0) > 0);
     potsHTML += `<p class="gcuts">插枝：${inv.length ? inv.map(t => `${FLOWERS[t].name} ×${cut[t]}`).join('、') : '還沒有'}</p>`;
   }
   return `<p class="lead">「${lv ? '自己種的花，不用怕被鄰居認出來！' : '頂樓空著好可惜……蓋個花架，把插枝種起來吧！'}」</p>
@@ -13396,12 +13475,12 @@ function toonGang(m, oc, k = 0.9) {
 }
 function gangLoaf(m, t, act) { const c = Object.assign(new Cat(0, 0), { pose: 'loaf', act: act || 'none', t: t || 1, dir: 'down' }); return ART.fix(toonGang(m, c)); }
 // 白天：收編的貓窩在店裡（越收越多）
-const GANG_SPOTS = [[2.3, 9.4], [13.2, 10.6], [9.2, 15.3], [4.0, 15.2], [12.0, 15.6]];
+const GANG_SPOTS = [[2.3, 9.4], [13.2, 10.6], [9.2, 15.3], [4.0, 15.2], [12.0, 15.6], [1.6, 13.4]];
 function gangDay3D(sc, F) {
   const ms = gangMembers(sc.run); if (!ms.length) return;
   const t = sc.cat.t || 0;
   ms.forEach((m, i) => {
-    const st = gangOf(sc.run)[m.id]; if (st.caught || (st.target === 'shop' && catCornerLv(sc.run))) return;
+    const st = gangOf(sc.run)[m.id]; if (st.caught || st.away || (st.target === 'shop' && catCornerLv(sc.run))) return;
     const [x, z] = GANG_SPOTS[i], ph = Math.floor((t + i * 1.7) / 2.6) % 5;
     const act = ['none', 'blink', 'none', 'ear', 'yawn'][ph];
     pushSprite(F.sprites, gangLoaf(m, 1, act), x * TS, z * TS, { minLight: [0.6, 0.56, 0.55] });
@@ -13411,7 +13490,7 @@ function gangDay3D(sc, F) {
 // 傍晚老貓攤裡的收編區
 function gangShopHTML(run) {
   if (!gangOpen(run)) return '';
-  const rows = GANG.map(m => {
+  const rows = GANG.filter(m => !m.hidden || gangOf(run)[m.id]).map(m => {
     const st = gangOf(run)[m.id], need = (run.strays || 0) < m.need;
     const btn = st ? `<button type="button" class="buy" disabled>${st.caught ? '被抓了' : '小弟'}</button>`
       : `<button type="button" class="buy" data-gang="${m.id}" ${need || run.cans < m.cost ? 'disabled' : ''}><img src="${G.icons.can}" alt="罐罐"><b class="px">${m.cost}</b></button>`;
@@ -13435,7 +13514,9 @@ function gangBriefHTML(run) {
   const ms = gangMembers(run); if (!ms.length) return '';
   const rows = ms.map(m => {
     const st = gangOf(run)[m.id];
-    if (st.caught) return `<li class="gang-row"><b>${m.name}</b><span class="gang-t off">被${OWNERS[st.caught].person}抓走了，明天會帶回來</span></li>`;
+    if (st.away) { const d = EXPEDS.find(x => x.id === st.away), a = expOf(run).active.find(x => x.id === st.away); return `<li class="gang-row"><b>${m.name}</b><span class="gang-t off">去${d ? d.name : '遠方'}遠征中${a ? `（還要 ${a.left} 晚）` : ''}</span></li>`; }
+    if (st.rest > 0) return `<li class="gang-row"><b>${m.name}</b><span class="gang-t off">遠征回來累壞了，在貓窩休息</span></li>`;
+    if (st.caught) return `<li class="gang-row"><b>${m.name}</b><span class="gang-t off">被${OWNERS[st.caught] ? OWNERS[st.caught].person : '鄰居'}抓走了，明天會帶回來</span></li>`;
     const o = st.target;
     if (o === 'shop') return `<li class="gang-row"><b>${m.name}</b><button type="button" class="gang-t" data-gangt="${m.id}">店裡上班</button><em class="ok">招客人</em></li>`;
     const stars = starsOf(run, o);
@@ -14101,6 +14182,28 @@ const ACH = [
   { id: 'dogfr', name: '阿福的朋友', desc: '用一條魚收買隔壁巷的柴犬', c: r => !!(r.zones || {}).dogFriend, cans: 20 },
   { id: 'ghost', name: '黑暗中的光', desc: '偷到幽靈蘭', c: r => !!bookOf(r).flowers.ghostorchid, cans: 25 },
   { id: 'lotus', name: '踩著荷葉', desc: '偷到公園的荷花', c: r => !!bookOf(r).flowers.lotus, cans: 15 },
+  // 配種
+  { id: 'hy1', name: '世界上沒有的花', desc: '配出第一個新品種', c: r => Object.keys((r.breed || {}).found || {}).length >= 1, cans: 15 },
+  { id: 'hy6', name: '育種家', desc: '配出 6 個新品種', c: r => Object.keys((r.breed || {}).found || {}).length >= 6, cans: 40 },
+  { id: 'hyall', name: '育種大師', desc: '全部新品種都配出來（包括第二代）', c: r => HYBRID_ORDER.every(k => ((r.breed || {}).found || {})[k]), cans: 100, title: '育種大師' },
+  { id: 'hyq3', name: '三顆星', desc: '把一個新品種選育到 ★★★', c: r => Object.values((r.breed || {}).q || {}).some(q => q >= 3), cans: 25 },
+  { id: 'gold', name: '花展金牌', desc: '社區花展拿到金牌', c: r => (((r.breed || {}).medals || {})[3] || 0) >= 1, cans: 40 },
+  // 對手
+  { id: 'duel1', name: '不服來戰', desc: '對決贏過煤炭一次', c: r => ((r.rival || {}).wins || 0) >= 1, cans: 10 },
+  { id: 'coal', name: '巷子的老大', desc: '屋頂決戰打贏煤炭，牠加入花喵幫', c: r => !!(r.rival || {}).friend, cans: 50, title: '巷子老大' },
+  { id: 'chain', name: '以小搏大', desc: '把對面的連鎖花店打到收掉', c: r => !!(r.chain || {}).closed, cans: 60, money: 20000, title: '巷口的傳奇' },
+  // 四季
+  { id: 'season1', name: '季節限定', desc: '完成一季的季節任務', c: r => (r.seasonsDone || 0) >= 1, cans: 25 },
+  { id: 'season4', name: '四季的貓', desc: '春夏秋冬的季節任務都完成過', c: r => (r.seasonsDone || 0) >= 4, cans: 80, title: '四季的貓' },
+  // 遠征
+  { id: 'exp1', name: '出發吧', desc: '第一次遠征平安回來', c: r => ((r.exped || {}).done || 0) >= 1, cans: 10 },
+  { id: 'exp10', name: '遠征隊長', desc: '完成 10 次遠征', c: r => ((r.exped || {}).done || 0) >= 10, cans: 40 },
+  { id: 'souv', name: '紀念品收藏家', desc: '六個遠征地點的紀念品都收集到', c: r => EXPEDS.every(d => ((r.exped || {}).seen || {})[d.id]), cans: 60, title: '旅行貓' },
+  { id: 'lv5', name: '身經百戰', desc: '有一隻花喵幫的貓升到 Lv.5', c: r => Object.values(r.gang || {}).some(st => st && memberLv(st) >= 5), cans: 30 },
+  // 口碑
+  { id: 'rep5', name: '區域人氣店', desc: '口碑升到 Lv.5', c: r => r.rep && repLv(r) >= 5, cans: 30 },
+  { id: 'rep10', name: '傳說中的花店', desc: '口碑升到 Lv.10', c: r => r.rep && repLv(r) >= 10, cans: 100, money: 50000, title: '傳說花店' },
+  { id: 'five', name: '五星好評', desc: '收到 10 則五顆星的評論', c: r => ((r.rep || {}).reviews || []).filter(x => x.s >= 5).length >= 10, cans: 20 },
   // 扭蛋
   { id: 'wd1', name: '第一件新衣', desc: '扭蛋扭到第一件衣服', c: r => Object.keys((r.wardrobe || {}).own || {}).length >= 1, cans: 5 },
   { id: 'wdset', name: '整套穿上', desc: '穿齊一整套套裝', c: r => r.wardrobe && activeSets(r).length >= 1, cans: 20 },
@@ -14356,7 +14459,7 @@ function rollOne(run, floorSR) {
   if (W.pity >= 50) rar = 'SSR';   // 50 抽保底傳說
   if (floorSR && (rar === 'N' || rar === 'R')) rar = 'SR';
   if (rar === 'SSR') W.pity = 0;
-  const it = pick(OUTFITS.filter(o => o.r === rar));
+  const it = pick(OUTFITS.filter(o => o.r === rar && !o.limited));
   const dup = !!W.own[it.id];
   if (dup) W.shards += RARITY[rar].shard; else W.own[it.id] = 1;
   W.pulls++;
@@ -14432,7 +14535,7 @@ function gachaHTML(run) {
   const slotName = { hat: '帽子', glass: '眼鏡', cape: '披風' };
   const grid = ['hat', 'glass', 'cape'].map(slot => `<h4>${slotName[slot]}</h4><div class="wd-grid">${OUTFITS.filter(o => o.slot === slot).map(o => {
     const has = W.own[o.id], on = W.eq[slot] === o.id, R = RARITY[o.r];
-    return `<button type="button" class="wd-it ${has ? 'got' : ''} ${on ? 'on' : ''}" ${has ? `data-eq="${o.id}"` : `data-ex="${o.id}"`} style="--rc:${R.col}"><b>${has ? esc(o.name) : '？？？'}</b><span>${R.name}${has ? (on ? '・穿著' : '') : `・${R.ex} 點換`}</span></button>`;
+    return `<button type="button" class="wd-it ${has ? 'got' : ''} ${on ? 'on' : ''}" ${has ? `data-eq="${o.id}"` : o.limited ? '' : `data-ex="${o.id}"`} style="--rc:${R.col}"><b>${has ? esc(o.name) : '？？？'}</b><span>${o.limited ? '季節限定' : R.name}${has ? (on ? '・穿著' : '') : o.limited ? `・${SEASONS.find(x => x.id === o.limited).name}的任務` : `・${R.ex} 點換`}</span></button>`;
   }).join('')}</div>`).join('');
   return `<h3>扭蛋機<small>收集 ${own}/${OUTFITS.length}・閃亮點數 ${W.shards}</small></h3>
     <div class="gacha-row"><button type="button" class="gacha-b" data-gacha="1" ${run.cans < GACHA_COST ? 'disabled' : ''}>扭一次<i><img src="${G.icons.can}" alt="">${GACHA_COST}</i></button>
@@ -16406,6 +16509,8 @@ NightScene.prototype.render3D = function () {
   tunnelRender3D(this, F);
   rareRender3D(this, F, L);
   manholeRender3D(this, F);
+  rivalRender3D(this, F);
+  repNight3D(this, F, L);
   roofwayRender3D(this, F, st);
   expNight3D(this, F, L);
   winNight3D(this, F, L);
@@ -16922,6 +17027,15 @@ const LOST_ITEMS = {
 };
 function zonesOf(run) { return run.zones || (run.zones = { visits: {}, lostSeen: {}, lost: [], fish: 0, heat: {} }); }
 function sewerOpen(run) { return !!(run.upg && run.upg.sewer); }
+// 新區域的花：去得到那個地方才會有人來訂
+function zoneFlowerOk(run, t) {
+  const Z = run.zones || {};
+  if (t === 'plumeria') return !!Z.parkKey;
+  if (t === 'lotus') return !!Z.parkKey && !!run.upg.jump;
+  if (t === 'camellia') return !!Z.kingFriend;
+  if (t === 'ghostorchid') return !!(run.upg && run.upg.sewer);
+  return true;
+}
 function marketOpen(run) { return !!zonesOf(run).market; }
 
 // ---------- 地圖 ----------
@@ -18216,6 +18330,1365 @@ function zoneBookHTML(run) {
   };
 })();
 
+// ================= 配種新品種 =================
+// 頂樓花園蓋到第二級（層架）起，多一張「配種台」：拿兩支插枝配在一起，過兩晚看會開出什麼。
+//   ・配對了 → 新品種（偷不到，只有自己的花園種得出來，價錢高）
+//   ・沒配對 → 插枝用掉，但會留下「線索」：知道這種花跟哪個新品種有關係（圖鑑的「品種」頁）
+//   ・同一個品種跟自己配 → 選育，品質★往上升（最多三顆星，賣得更貴）
+//   ・新品種收成時會多帶回一支它的插枝，可以多種幾盆、拿去配第二代
+// 衍生：品種權利金（每天早上花市付一筆）、每月第三天的社區花展（拿最好的品種去比賽）
+const HYBRIDS = {
+  firebougain: { name: '火焰九重葛', a: 'bougain', b: 'sunflower', price: 460, color: '#ff6a2a', hue: 18, desc: '像火一樣的橘紅色苞片。' },
+  perfcarn: { name: '香水康乃馨', a: 'carnation', b: 'jasmine', price: 560, color: '#e4c4f2', hue: 285, fragrant: true, desc: '淡紫色，帶著茉莉的香味。' },
+  goldsun: { name: '金色向日葵', a: 'sunflower', b: 'osmanthus', price: 680, color: '#ffb81a', hue: 40, fragrant: true, desc: '花瓣金得發亮，聞起來有桂花香。' },
+  rainbowhyd: { name: '彩虹繡球', a: 'hydrangea', b: 'lisianthus', price: 820, color: '#c88af0', hue: 280, desc: '一球裡有好幾種顏色。' },
+  bluerose: { name: '藍玫瑰', a: 'rose', b: 'hydrangea', price: 950, color: '#5a7ae8', hue: 225, desc: '世界上本來沒有的藍色玫瑰。' },
+  dreamcam: { name: '夢幻山茶', a: 'camellia', b: 'plumeria', price: 1150, color: '#ffc0d8', hue: 338, desc: '從粉紅漸層到雪白的山茶。' },
+  starbaby: { name: '星空滿天星', a: 'babys', b: 'ghostorchid', price: 1450, color: '#3a4a9a', hue: 232, desc: '深藍色的小花，晚上會一閃一閃。' },
+  nightlotus: { name: '夜睡蓮', a: 'lotus', b: 'lisianthus', price: 1650, color: '#7a6ae0', hue: 252, desc: '只在晚上張開的紫色睡蓮。' },
+  pinktanhua: { name: '粉曇花', a: 'tanhua', b: 'peony', price: 2700, color: '#ffd0e0', hue: 340, fragrant: true, rare: true, desc: '粉紅色的曇花，開得比較久。' },
+  moonorchid: { name: '月光蘭', a: 'orchid', b: 'magnolia', price: 3100, color: '#fff4c0', hue: 50, rare: true, desc: '淡黃色的蝴蝶蘭，像月光。' },
+  phoenix: { name: '鳳凰花', a: 'firebougain', b: 'goldsun', price: 2500, color: '#ff4a2a', hue: 10, gen2: true, desc: '第二代：像鳳凰的尾羽。' },
+  galaxyrose: { name: '銀河玫瑰', a: 'bluerose', b: 'starbaby', price: 5400, color: '#4a2a8a', hue: 260, gen2: true, desc: '第二代：花瓣上灑滿星星。' },
+};
+const HYBRID_ORDER = Object.keys(HYBRIDS).sort((a, b) => HYBRIDS[a].price - HYBRIDS[b].price);
+for (const k of HYBRID_ORDER) { const h = HYBRIDS[k]; FLOWERS[k] = { name: h.name, price: h.price, color: h.color, hue: h.hue, fragrant: !!h.fragrant, hybrid: true, where: '自己的頂樓花園（配種）' }; }
+const QMULT = [1, 1, 1.35, 1.8];
+function breedOf(run) {
+  const b = run.breed || (run.breed = { slots: [], found: {}, q: {}, hints: {}, tries: 0, shows: {} });
+  for (const k of ['slots', 'found', 'q', 'hints', 'shows']) if (!b[k]) b[k] = k === 'slots' ? [] : {};
+  return b;
+}
+function breedOpen(run) { return gardenOf(run).lv >= 2; }
+function breedSlots(run) { const lv = gardenOf(run).lv; return lv >= 5 ? 3 : lv >= 4 ? 2 : lv >= 2 ? 1 : 0; }
+function hybridOf(a, b) { for (const k in HYBRIDS) { const h = HYBRIDS[k]; if ((h.a === a && h.b === b) || (h.a === b && h.b === a)) return k; } return null; }
+function hybridQ(run, t) { return breedOf(run).q[t] || 1; }
+function cutOrder() { return FLOWER_ORDER.concat(HYBRID_ORDER); }
+// 價錢：品質星星
+{
+  const _fv = flowerValue;
+  flowerValue = function (run, t, fresh) { const v = _fv(run, t, fresh); return HYBRIDS[t] && run ? v * QMULT[hybridQ(run, t)] : v; };
+  const _pl = plantable;
+  plantable = function (run, t) { if (HYBRIDS[t] && HYBRIDS[t].rare) return gardenOf(run).lv >= 5; return _pl(run, t); };
+}
+// 開始配種
+function startBreed(run, slot, a, b) {
+  const B = breedOf(run), cut = run.cuttings || (run.cuttings = {});
+  if (slot >= breedSlots(run) || B.slots[slot] || !a || !b) return false;
+  const need = {}; need[a] = (need[a] || 0) + 1; need[b] = (need[b] || 0) + 1;
+  for (const t in need) if ((cut[t] || 0) < need[t]) return false;
+  for (const t in need) cut[t] -= need[t];
+  const h = a === b && HYBRIDS[a] ? a : hybridOf(a, b);
+  B.slots[slot] = { a, b, left: h && HYBRIDS[h].gen2 ? 3 : 2 };
+  return true;
+}
+// 過一晚：配種台的進度（回傳早上要顯示的結果）
+function breedTick(run) {
+  const B = breedOf(run), out = [];
+  for (let i = 0; i < breedSlots(run); i++) {
+    const s = B.slots[i]; if (!s) continue;
+    s.left--; if (s.left > 0) continue;
+    B.slots[i] = null; B.tries++;
+    const cut = run.cuttings || (run.cuttings = {});
+    if (s.a === s.b && HYBRIDS[s.a]) {
+      // 選育：品質往上升
+      const q = hybridQ(run, s.a);
+      if (q < 3) { B.q[s.a] = q + 1; out.push({ kind: 'up', t: s.a, q: q + 1 }); }
+      else { cut[s.a] = Math.min(9, (cut[s.a] || 0) + 2); out.push({ kind: 'max', t: s.a }); }
+      continue;
+    }
+    const h = hybridOf(s.a, s.b);
+    if (h) {
+      const isNew = !B.found[h];
+      if (isNew) { B.found[h] = run.nightIdx || 1; B.hints[h] = { a: 1, b: 1 }; }
+      let mut = false;
+      if (isNew && Math.random() < 0.15) { B.q[h] = 2; mut = true; } else if (!B.q[h]) B.q[h] = 1;
+      cut[h] = Math.min(9, (cut[h] || 0) + 2);
+      out.push({ kind: isNew ? 'new' : 'again', t: h, mut, a: s.a, b: s.b });
+    } else {
+      // 沒配對：留下線索
+      const clues = [];
+      for (const k in HYBRIDS) {
+        if (B.found[k]) continue;
+        const H = HYBRIDS[k], hn = B.hints[k] || (B.hints[k] = {});
+        for (const side of ['a', 'b']) if ((H[side] === s.a || H[side] === s.b) && !hn[side]) { hn[side] = 1; clues.push(k); }
+      }
+      const back = Math.random() < 0.5 ? s.a : s.b; cut[back] = Math.min(9, (cut[back] || 0) + 1);
+      out.push({ kind: 'fail', a: s.a, b: s.b, clues: [...new Set(clues)], back });
+    }
+  }
+  return out;
+}
+// 品種權利金：每天早上花市付一筆
+function royaltyOf(run) {
+  const B = breedOf(run); let v = 0;
+  for (const k in B.found) v += Math.round(HYBRIDS[k].price * 0.25 * QMULT[hybridQ(run, k)]);
+  return v;
+}
+// 花園收成：新品種多帶回一支插枝
+{
+  const _gt = gardenTick;
+  gardenTick = function (run) {
+    const hv = _gt(run), cut = run.cuttings || (run.cuttings = {});
+    for (const h of hv) if (HYBRIDS[h.t]) cut[h.t] = Math.min(9, (cut[h.t] || 0) + 1);
+    return hv;
+  };
+}
+// 每晚結束：配種台、權利金
+{
+  const _nd = Flow.nightDone;
+  Flow.nightDone = function (res) {
+    const run = G.run;
+    const br = breedOpen(run) ? breedTick(run) : [];
+    const roy = royaltyOf(run);
+    const r = _nd.call(this, res);
+    const R = run.lastNight;
+    if (R) {
+      R.breed = br; R.royalty = roy;
+      if (roy) { run.money += roy; R.now += roy; R.total += roy; }
+      if (br.some(x => x.kind === 'new')) checkAchievements(run);
+    }
+    return r;
+  };
+}
+function breedTallyHTML(R) {
+  const br = R.breed || [], roy = R.royalty || 0;
+  if (!br.length && !roy) return '';
+  const line = x => {
+    if (x.kind === 'new') return `<p><b>新品種誕生：${FLOWERS[x.t].name}！</b>${x.mut ? '（突變！一開始就是 ★★）' : ''}　${FLOWERS[x.a].name} × ${FLOWERS[x.b].name}，多了 2 支插枝</p>`;
+    if (x.kind === 'again') return `<p>又配出${FLOWERS[x.t].name}：插枝 +2</p>`;
+    if (x.kind === 'up') return `<p>選育成功：${FLOWERS[x.t].name} 變成 ${'★'.repeat(x.q)}（賣價 ×${QMULT[x.q]}）</p>`;
+    if (x.kind === 'max') return `<p>${FLOWERS[x.t].name}已經是最好的品質了，多了 2 支插枝</p>`;
+    return `<p>${FLOWERS[x.a].name} × ${FLOWERS[x.b].name}：沒有開出新的花……${x.clues.length ? `<br>可是看得出來，它們跟 ${x.clues.length} 個還沒發現的新品種有關係（配種台和圖鑑多了線索）` : '<br>這兩種花好像都跟新品種沒什麼關係。'}${x.back ? `（${FLOWERS[x.back].name}的插枝還留著一支）` : ''}</p>`;
+  };
+  return `<div class="newab breed"><span class="tagnew">配種台</span>${br.map(line).join('')}${roy ? `<p>品種權利金：花市付了 <b class="px">${money(roy)}</b>（已算進入帳）</p>` : ''}</div>`;
+}
+
+// ---------- 傍晚：配種台 ----------
+let BSEL = null;   // { slot, a }
+function breedHTML(run) {
+  if (!gardenOpen(run)) return '';
+  if (!breedOpen(run)) return `<h3>配種台</h3><p class="hint">頂樓蓋到「層架＋遮陽網」就可以把兩種花配在一起，培育偷不到的新品種。</p>`;
+  const B = breedOf(run), cut = run.cuttings || {}, n = breedSlots(run);
+  const found = Object.keys(B.found).length;
+  const slots = [];
+  for (let i = 0; i < n; i++) {
+    const s = B.slots[i];
+    if (s) slots.push(`<div class="bslot busy"><span class="bp"><img src="${G.icons[s.a]}" alt="">${FLOWERS[s.a].name}</span><i>×</i><span class="bp"><img src="${G.icons[s.b]}" alt="">${FLOWERS[s.b].name}</span><small>${s.left <= 1 ? '明天早上揭曉' : `再 ${s.left} 晚`}</small></div>`);
+    else slots.push(`<button type="button" class="bslot ${BSEL && BSEL.slot === i ? 'on' : ''}" data-bslot="${i}"><span class="gp-plus">＋</span><small>${BSEL && BSEL.slot === i ? (BSEL.a ? `${FLOWERS[BSEL.a].name} × ？` : '選第一種花') : '配種'}</small></button>`);
+  }
+  let pick = '';
+  if (BSEL) {
+    const okT = t => BSEL.a ? (t === BSEL.a ? !!HYBRIDS[t] && (cut[t] || 0) >= 2 : (cut[t] || 0) >= 1) : (cut[t] || 0) >= 1;
+    const list = cutOrder().filter(t => (cut[t] || 0) > 0);
+    pick = list.length ? `<div class="gpick"><p>${BSEL.a ? `${FLOWERS[BSEL.a].name}要配什麼？${HYBRIDS[BSEL.a] ? '（選同一種＝選育，品質會變好）' : ''}` : '選第一種花的插枝：'}</p>${list.map(t => {
+      const ok = okT(t);
+      const known = BSEL.a ? hybridOf(BSEL.a, t) : null;
+      const tag = BSEL.a && known && B.found[known] ? `<em class="bk-known">${FLOWERS[known].name}</em>` : '';
+      return `<button type="button" class="gpick-b" data-bpick="${t}" ${ok ? '' : 'disabled'}><img src="${G.icons[t]}" alt=""><b>${FLOWERS[t].name}${HYBRIDS[t] ? ` ${'★'.repeat(hybridQ(run, t))}` : ''}</b><small>${tag || (HYBRIDS[t] ? '新品種' : '')}</small><i class="px">×${cut[t]}</i></button>`;
+    }).join('')}<button type="button" class="gpick-b cancel" data-bpick="">取消</button></div>` : `<div class="gpick"><p>還沒有插枝。晚上偷到花，就會順便帶回那種花的插枝。</p></div>`;
+  }
+  const clues = HYBRID_ORDER.filter(k => !B.found[k] && B.hints[k] && (B.hints[k].a || B.hints[k].b));
+  const clueHTML = clues.length ? `<p class="gcuts">線索：${clues.map(k => { const H = HYBRIDS[k], h = B.hints[k]; return `${h.a ? FLOWERS[H.a].name : '？？？'} × ${h.b ? FLOWERS[H.b].name : '？？？'}`; }).join('、')}</p>` : '';
+  return `<h3>配種台<small>發現 ${found}/${HYBRID_ORDER.length} 個新品種・權利金每天 ${money(royaltyOf(run))}</small></h3>
+    <p class="hint">兩支插枝配在一起，${n > 1 ? `同時可以配 ${n} 組，` : ''}兩晚後揭曉。沒配對也會留下線索；新品種跟自己配可以提升品質。</p>
+    <div class="bslots">${slots.join('')}</div>${pick}${clueHTML}`;
+}
+function bindBreed(card, run, keep) {
+  card.querySelectorAll('[data-bslot]').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); const i = +b.dataset.bslot; BSEL = BSEL && BSEL.slot === i ? null : { slot: i, a: null }; keep(); }));
+  card.querySelectorAll('[data-bpick]').forEach(b => b.addEventListener('click', () => {
+    const t = b.dataset.bpick;
+    if (!t || !BSEL) { BSEL = null; keep(); return; }
+    if (!BSEL.a) { BSEL.a = t; SFX.play('ui'); keep(); return; }
+    const a = BSEL.a, slot = BSEL.slot;
+    if (a === t && !HYBRIDS[t]) { SFX.play('nope'); UI.toast('同一種花配在一起不會變。新品種才能跟自己配（選育）', 2600); return; }
+    if (startBreed(run, slot, a, t)) { SFX.play('buy'); UI.toast(`${FLOWERS[a].name} × ${FLOWERS[t].name} 放上配種台了！`, 2400); }
+    else { SFX.play('nope'); UI.toast('插枝不夠', 1800); }
+    BSEL = null; keep();
+  }));
+}
+// 花園分頁接上配種台；插枝清單也列出新品種
+{
+  const _gt = gardenTabHTML;
+  gardenTabHTML = function (run, pickIdx) { return _gt(run, pickIdx) + breedHTML(run); };
+}
+
+// ---------- 白天：配種的故事、花展 ----------
+function* breedStoryScript(S) {
+  const run = S.run, f = run.flags, B = breedOf(run);
+  if (breedOpen(run) && !f.breedIntro) {
+    f.breedIntro = 1; S.shopOn = false;
+    const t = S.customer('teacher'); yield S.walkIn(t);
+    yield* S.talk(t, '花藝老師', [
+      ['妳好，我是隔壁巷教插花的。聽說妳頂樓有一座小花園？'],
+      ['我年輕的時候做過育種：把兩種花的花粉配在一起，運氣好就會開出世界上沒有的花。'],
+      ['像是紅玫瑰配繡球……說不定會開出藍色的玫瑰喔。'],
+      ['妳試試看。配出新品種的話，花市會付妳權利金呢。'],
+    ]);
+    yield S.walkOut(t);
+    B.hints.bluerose = { a: 1, b: 1 };
+    UI.toast('頂樓花園多了「配種台」：兩支插枝配在一起，兩晚後揭曉。先試試紅玫瑰 × 繡球花！', 4600);
+    return true;
+  }
+  // 第一次配出新品種：美玲好興奮
+  const firstNew = Object.keys(B.found).length >= 1 && !f.breedFirst;
+  if (firstNew) {
+    f.breedFirst = 1;
+    const k = Object.keys(B.found)[0];
+    yield S.say(`花喵！頂樓的配種台開花了……是${FLOWERS[k].name}！`);
+    yield S.say('全世界只有我們有這種花耶。今天就擺在櫃台最前面！');
+    const t = S.customer('teacher'); yield S.walkIn(t);
+    yield* S.talk(t, '花藝老師', [[`${FLOWERS[k].name}！妳真的配出來了……`], ['我已經幫妳跟花市登記了。以後每賣出一株，他們都會付妳權利金。'], ['對了，每個月第三天社區有花展。拿妳最好的品種去參加吧！']]);
+    yield S.walkOut(t);
+    return true;
+  }
+  return false;
+}
+const SHOW_PRIZE = [null, { name: '銅牌', money: 4000, cans: 10 }, { name: '銀牌', money: 12000, cans: 20 }, { name: '金牌', money: 30000, cans: 40 }];
+function* flowerShowScript(S, n) {
+  const run = S.run, B = breedOf(run), m = run.month || 1;
+  if (n !== 3 || !Object.keys(B.found).length || B.shows[m]) return false;
+  // 拿最好的：品質 × 價錢
+  const best = Object.keys(B.found).sort((a, b) => FLOWERS[b].price * QMULT[hybridQ(run, b)] - FLOWERS[a].price * QMULT[hybridQ(run, a)])[0];
+  const q = hybridQ(run, best);
+  const score = FLOWERS[best].price * QMULT[q] * (0.85 + Math.random() * 0.3);
+  const tier = score >= 2600 ? 3 : score >= 1100 ? 2 : 1;
+  const P = SHOW_PRIZE[tier];
+  const wasOn = S.shopOn; S.shopOn = false;
+  const c = S.customer('chief'); yield S.walkIn(c);
+  yield* S.talk(c, '里長', [['美玲！今天社區花展，妳的花也報名了喔！'], [`評審看到${FLOWERS[best].name}${'★'.repeat(q)}都嚇一跳……`], [`結果出爐：${P.name}！獎金 ${money(P.money)}！`]]);
+  B.shows[m] = 1; run.money += P.money; run.cans += P.cans; B.medals = B.medals || {}; B.medals[tier] = (B.medals[tier] || 0) + 1;
+  SFX.play('coin'); S.fx.hearts(S.cat.x, S.cat.y - 10, 8);
+  UI.toast(`社區花展：${FLOWERS[best].name} 拿到${P.name}！現金 ${money(P.money)}、罐罐 +${P.cans}${tier < 3 ? '（品質★越高、品種越稀有，越有機會拿金牌）' : ''}`, 4800);
+  yield S.walkOut(c);
+  S.shopOn = wasOn;
+  return true;
+}
+
+// ---------- 圖鑑：品種 ----------
+function breedBookHTML(run) {
+  const B = breedOf(run);
+  if (!breedOpen(run) && !Object.keys(B.found).length) return '<p class="lead">頂樓花園蓋到「層架＋遮陽網」就可以開始配種。</p>';
+  const rows = HYBRID_ORDER.map(k => {
+    const H = HYBRIDS[k], got = B.found[k], h = B.hints[k] || {};
+    const pa = got || h.a ? FLOWERS[H.a].name : '？？？', pb = got || h.b ? FLOWERS[H.b].name : '？？？';
+    return `<li class="fl ${got ? 'got' : ''}"><img src="${G.icons[k]}" alt=""><div><b>${got ? H.name : '？？？'}</b>${got ? `<span class="px">${H.price}</span><em>${'★'.repeat(hybridQ(run, k))}</em>` : ''}${H.gen2 ? '<em>第二代</em>' : ''}${H.rare ? '<em>要玻璃花房</em>' : ''}<p>${pa} × ${pb}${got ? '　' + esc(H.desc) : ''}</p></div><i class="px">${got ? '✔' : '—'}</i></li>`;
+  }).join('');
+  const md = B.medals || {};
+  return `<p class="lead">配出來的新品種、知道的線索。沒配對也會留下線索，慢慢推理出來吧。</p>
+    <div class="bk-goal">發現 <b class="px">${Object.keys(B.found).length}/${HYBRID_ORDER.length}</b>　配了 ${B.tries} 次${md[3] || md[2] || md[1] ? `　花展：金 ${md[3] || 0}・銀 ${md[2] || 0}・銅 ${md[1] || 0}` : ''}</div>
+    <ul class="fl-list">${rows}</ul>`;
+}
+
+// ---------- 圖：新品種的花頭、盆栽 ----------
+function hRose(x, y, r, c1, c2, c3, part) {
+  O.eo(x, y, r, r * 0.92, c1, { part });
+  O.e(x + r * 0.3, y + r * 0.35, r * 0.7, r * 0.5, c2, { only: part });
+  O.curve([[x - r * 0.5, y - r * 0.1], [x, y - r * 0.5], [x + r * 0.45, y - r * 0.05], [x, y + r * 0.3]], c3, 0.9);
+}
+Object.assign(HEAD2, {
+  bluerose(x, y, s, r) { hRose(x, y, 3.1 * s, '#5a7ae8', '#3a54b8', '#22348a', 41); },
+  galaxyrose(x, y, s, r) { hRose(x, y, 3.3 * s, '#5a3aa8', '#3a2478', '#1e1450', 42); for (let i = 0; i < 5; i++) O.dot(x + Math.cos(i * 2.3 + r) * 1.8 * s, y + Math.sin(i * 2.3 + r) * 1.6 * s, 0.4 * s, '#ffffff'); },
+  firebougain(x, y, s, r) { for (let i = 0; i < 3; i++) { const a = i / 3 * Math.PI * 2 + r; O.eo(x + Math.cos(a) * 1.6 * s, y + Math.sin(a) * 1.5 * s, 2 * s, 1.6 * s, i % 2 ? '#ff6a2a' : '#ff8a3a', { rot: a }); } O.dot(x, y, 0.7 * s, '#ffe66a'); },
+  perfcarn(x, y, s, r) {
+    O.blobO([[x - 2.6 * s, y + 0.6 * s], [x - 2.2 * s, y - 1.4 * s], [x - 1 * s, y - 2.4 * s], [x + 0.6 * s, y - 2.2 * s], [x + 2.2 * s, y - 1.6 * s], [x + 2.7 * s, y + 0.2 * s], [x + 1.6 * s, y + 1.6 * s], [x - 1.4 * s, y + 1.8 * s]], '#e4c4f2');
+    O.curve([[x - 1.8 * s, y - 0.4 * s], [x - 0.6 * s, y - 1.2 * s], [x + 0.6 * s, y - 0.6 * s], [x + 1.8 * s, y - 1.1 * s]], '#b88ad0', 0.6);
+    O.curve([[x - 1.6 * s, y + 0.8 * s], [x - 0.2 * s, y + 0.2 * s], [x + 1.4 * s, y + 0.7 * s]], '#b88ad0', 0.6);
+  },
+  goldsun(x, y, s, r) {
+    for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2 + r; O.eo(x + Math.cos(a) * 2.8 * s, y + Math.sin(a) * 2.6 * s, 1.5 * s, 0.8 * s, i % 2 ? '#ffb81a' : '#ff9a1a', { rot: a }); }
+    O.eo(x, y, 1.9 * s, 1.8 * s, '#8a4a12'); O.dot(x - 0.5 * s, y - 0.5 * s, 0.6 * s, '#ffe08a'); O.dot(x + 2.6 * s, y - 2.4 * s, 0.4 * s, '#ffffff');
+  },
+  rainbowhyd(x, y, s, r) {
+    O.eo(x, y, 3.3 * s, 3 * s, '#c8a8f0', { part: 43 });
+    const cols = ['#ff9fbb', '#ffd84d', '#9fe8a8', '#7ab8f0', '#c88af0'];
+    [[-1.6, -1.2], [1, -1.6], [-0.4, 0.4], [1.8, 0.6], [-1.8, 1]].forEach(([dx, dy], i) => { const cx = x + dx * s, cy = y + dy * s; for (let k = 0; k < 4; k++) O.e(cx + Math.cos(k * 1.57 + 0.4) * 0.55 * s, cy + Math.sin(k * 1.57 + 0.4) * 0.55 * s, 0.55 * s, 0.55 * s, cols[i], { only: 43 }); });
+  },
+  dreamcam(x, y, s, r) {
+    for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2 + r; O.eo(x + Math.cos(a) * 2.2 * s, y + Math.sin(a) * 2 * s, 1.9 * s, 1.6 * s, '#ff9fc2', { rot: a }); }
+    for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 + r + 0.3; O.e(x + Math.cos(a) * 1 * s, y + Math.sin(a) * 0.9 * s, 1.3 * s, 1.1 * s, '#fff0f6'); }
+    O.dot(x, y, 0.5 * s, '#ffd84d');
+  },
+  starbaby(x, y, s, r) {
+    O.e(x, y, 3.4 * s, 2.8 * s, 'rgba(90,110,220,0.35)');
+    for (let j = 0; j < 9; j++) O.dot(x + Math.cos(j * 2.4 + r * 6) * 2.6 * s, y + Math.sin(j * 2.4 + r * 6) * 2 * s, 0.8 * s, '#3a4a9a');
+    for (let j = 0; j < 5; j++) O.dot(x + Math.cos(j * 1.9 + r) * 1.8 * s, y + Math.sin(j * 1.9 + r) * 1.4 * s, 0.4 * s, '#ffffff');
+  },
+  nightlotus(x, y, s, r) {
+    for (const [a, col, l] of [[-1.05, '#5a4ab8', 2.2], [1.05, '#5a4ab8', 2.2], [-0.55, '#7a6ae0', 2.6], [0.55, '#7a6ae0', 2.6], [0, '#a89af0', 2.9]]) O.eo(x + Math.sin(a) * l * 0.9 * s, y + 1.2 * s - Math.cos(a) * l * 0.9 * s, 1.25 * s, l * s * 0.85, col, { rot: a });
+    O.dot(x, y + 0.9 * s, 0.7 * s, '#ffe08a');
+  },
+  pinktanhua(x, y, s, r) {
+    for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2 + r; O.eo(x + Math.cos(a) * 2.3 * s, y + Math.sin(a) * 2.1 * s, 1.9 * s, 0.6 * s, i % 2 ? '#ffd0e0' : '#ffe4ee', { rot: a }); }
+    O.e(x, y, 1.4 * s, 1.3 * s, '#fff6f8'); for (let i = 0; i < 5; i++) O.dot(x + Math.cos(i * 1.26) * 0.7 * s, y + Math.sin(i * 1.26) * 0.7 * s, 0.3 * s, '#ffd84d');
+  },
+  moonorchid(x, y, s, r) {
+    for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + i * Math.PI * 2 / 5; O.eo(x + Math.cos(a) * 2.4 * s, y + Math.sin(a) * 2.2 * s, 2.2 * s, 1.9 * s, '#fff4c0'); }
+    O.e(x, y + 0.6 * s, 1.2 * s, 1.4 * s, '#7a9ae8'); O.dot(x, y - 0.2 * s, 0.5 * s, '#ffffff');
+  },
+  phoenix(x, y, s, r) {
+    for (const [a, col, l] of [[-1.1, '#ff4a2a', 2.4], [1.1, '#ff4a2a', 2.4], [-0.55, '#ff8a2a', 3], [0.55, '#ff8a2a', 3], [0, '#ffd84d', 3.4]]) O.eo(x + Math.sin(a) * l * 0.8 * s, y + 1 * s - Math.cos(a) * l * 0.8 * s, 1 * s, l * s * 0.8, col, { rot: a });
+    O.dot(x, y + 1 * s, 0.7 * s, '#ffe9a8');
+  },
+});
+for (const k of HYBRID_ORDER) BUNCH[k] = { stem: '#4f8a3c', leaf: true, head: HEAD2[k] };
+{
+  const _dp2 = drawPlant2;
+  drawPlant2 = function (t) {
+    if (!HYBRIDS[t]) { _dp2(t); return; }
+    const H = HEAD2[t];
+    leafBall(-5, -16, 6, 4.6); leafBall(5, -16.5, 6, 4.6); leafBall(0, -20, 6, 4.4);
+    for (const [x0, x1, y1] of [[-2, -5, -23], [0, 0.5, -27], [2, 5.5, -24]]) { O.curve([[x0, -14], [x1 * 0.6, (y1 - 14) / 2 - 6], [x1, y1]], CM.ink, 2.2); O.curve([[x0, -14], [x1 * 0.6, (y1 - 14) / 2 - 6], [x1, y1]], PC.stem, 1.1); }
+    H(-5, -24, 1.0, 0.3); H(5.5, -25, 0.95, 1.1); H(0.5, -28.5, 1.1, 0.7);
+    // 新品種的盆：白瓷金邊
+    drawPotBase('white', 20);
+    O.blobO([[-9.4, -8.2], [9.4, -8.2], [9.0, -6.6], [-9.0, -6.6]], '#e8c45a');
+  };
+}
+for (const k of HYBRID_ORDER) { const p = HYBRIDS[k].a; if (PLANTS[p]) PLANTS[k] = PLANTS[p]; else if (PLANTS[HYBRIDS[p] && HYBRIDS[p].a]) PLANTS[k] = PLANTS[HYBRIDS[p].a]; if (ICONS[p]) ICONS[k] = ICONS[p]; else if (HYBRIDS[p] && ICONS[HYBRIDS[p].a]) ICONS[k] = ICONS[HYBRIDS[p].a]; }
+{
+  const _vi = vectorIcons;
+  vectorIcons = function () { const out = _vi(); for (const k of HYBRID_ORDER) out[k] = toonFrame('icon-' + k, 10, 12.5, () => { OT.set(0); drawSprig(k); }).toDataURL(); return out; };
+}
+
+// ================= 競爭對手 =================
+// 晚上：隔壁巷的黑貓「煤炭」跑來我們巷子偷花（搶同一批盆栽），被牠偷走的那一家也會更警戒。
+//   碰到嘴上叼著花的煤炭可以「對決」（瞪眼比氣勢：指針停在綠色區按，三戰兩勝）：贏了牠的花歸你，輸了你嘴上的花被叼走。
+//   贏越多次，煤炭的故事就往前走；最後一次「屋頂決戰」贏了，牠會加入花喵幫。
+// 白天：第四個月，對面開了一家連鎖花店「花漾」。每天比「市佔率」：
+//   早上選今天的作戰（特價跟進／辦活動／堅持原價），傍晚結算：有新品種、包花束、櫥窗、熟客、粉絲都會加分。
+//   市佔率影響每一筆生意的價錢；連續三天七成五以上，連鎖店就撐不下去了。
+// ---------- 晚上的煤炭 ----------
+function rivalOf(run) { return run.rival || (run.rival = { wins: 0, losses: 0, nights: 0, ch: 0, friend: false, stolen: 0 }); }
+function rivalActive(run) {
+  const R = rivalOf(run), m = run.month || 1;
+  if (R.friend) return false;
+  return m >= 4 || (m >= 3 && (run.flags.blackCatSeen || 0) >= 1);
+}
+const COAL = { id: 'coal', name: '煤炭', pal: RIVAL_LOOK.pal };
+function rivalArt(rv) { return withGear(null, () => ART.fix(toonGang(COAL, rv))); }
+function initRival(sc) {
+  const run = sc.run, R = rivalOf(run);
+  sc.rival = null;
+  if (!rivalActive(run) || sc.raid) return;
+  const final = R.wins >= 6 && !R.friend;
+  if (!final && Math.random() > 0.6) return;
+  const from = Math.random() < 0.5 ? [7.5, 41.4] : [1.6, 5.6];
+  const rv = Object.assign(new Cat(from[0] * TS, from[1] * TS), { state: 'wait', t: 0, at: sc.time + rnd(15, 55), from, carry: [], trips: 0, path: [], speed: 30, final, hiss: 0, skill: Math.min(1, 0.25 + R.wins * 0.1) });
+  sc.rival = rv; sc.rivalLog = { took: [], duel: null };
+  if (final) setTimeout(() => { if (G.scene === sc) UI.toast('今晚空氣不太一樣……煤炭要來做個了斷。找到牠，打贏最後一次對決！', 4200); }, 2600);
+}
+function rivalPickPot(sc) {
+  const rv = sc.rival;
+  const pots = sc.pots.filter(p => p.avail && !p.gone && !p.top && p.t !== 'lily' && p.owner !== 'mansion' && p.owner !== 'storm' && !(p.t === 'tanhua' && sc.tanhuaState() !== 'tanhua'));
+  if (!pots.length) return null;
+  pots.sort((a, b) => dist(a.x, a.y, rv.x, rv.y) - dist(b.x, b.y, rv.x, rv.y));
+  return pick(pots.slice(0, 3));
+}
+function rivalUpdate(sc, dt) {
+  const rv = sc.rival; if (!rv || rv.state === 'gone') return;
+  const c = sc.cat; rv.t += dt;
+  if (rv.hiss > 0) rv.hiss -= dt;
+  if (rv.state === 'wait') { if (sc.time >= rv.at) { rv.state = 'hunt'; rv.target = null; } else return; }
+  const go = (x, y) => { rv.path = sc.groundPath(rv.x, rv.y, x, y) || [[x, y]]; };
+  if (rv.state === 'hunt') {
+    if (!rv.target || !rv.target.avail) { rv.target = rivalPickPot(sc); if (!rv.target) { rv.state = 'leave'; go(rv.from[0] * TS, rv.from[1] * TS); } else go(rv.target.x, rv.target.y + 2); }
+    if (rv.target && !rv.path.length) {
+      rv.grab = (rv.grab || 0) + dt; rv.moving = false;
+      if (rv.grab > 1.0) {
+        rv.grab = 0; const p = rv.target;
+        if (p.avail) {
+          p.avail = false; rv.carry.push(p.t); sc.rivalLog.took.push({ t: p.t, owner: p.owner });
+          sc.fx.text(p.x, p.y - 16, '被煤炭叼走了！', '#c8b8ff');
+          if (HEAT_OWNERS.includes(p.owner)) heatAdd(sc.run, p.owner, 5);
+          if (Cam.visible(p.x, p.y, 40)) SFX.tone(700, 0.08, { to: 500, vol: 0.05, type: 'triangle' });
+          if (!sc.tips.rivalSteal && Cam.visible(p.x, p.y, 60)) { sc.tips.rivalSteal = 1; UI.toast('黑貓煤炭在偷我們巷子的花！靠近叼著花的牠，按「對決」把花搶回來', 4200); }
+        }
+        rv.target = null;
+        if (rv.carry.length >= 2) { rv.state = 'leave'; go(rv.from[0] * TS, rv.from[1] * TS); }
+      }
+    }
+  }
+  if (rv.state === 'leave' && !rv.path.length) {
+    rv.trips++;
+    if (rv.trips < 2 && sc.end - sc.time > 50) { rv.carry = []; rv.state = 'wait'; rv.at = sc.time + rnd(20, 40); rv.x = rv.from[0] * TS; rv.y = rv.from[1] * TS; }
+    else rv.state = 'gone';
+  }
+  if (rv.state === 'flee' && !rv.path.length) rv.state = 'gone';
+  // 走路
+  if (rv.path && rv.path.length) {
+    const [tx, ty] = rv.path[0], dx = tx - rv.x, dy = ty - rv.y, d = Math.hypot(dx, dy);
+    const sp = rv.speed * (rv.state === 'flee' ? 2.2 : 1) * dt;
+    if (d <= sp) { rv.x = tx; rv.y = ty; rv.path.shift(); }
+    else { rv.x += dx / d * sp; rv.y += dy / d * sp; }
+    rv.moving = true; rv.running = rv.state === 'flee';
+    if (Math.abs(dx) > Math.abs(dy) * 0.9) rv.dir = dx > 0 ? 'right' : 'left'; else rv.dir = dy > 0 ? 'down' : 'up';
+  } else { rv.moving = false; rv.running = false; }
+  // 碰到花喵：沒叼花就哈氣走開
+  const d = dist(c.x, c.y, rv.x, rv.y);
+  if (d < 1.6 * TS && !c.top && rv.state !== 'flee') {
+    if (!rv.met) { rv.met = true; rivalOf(sc.run).met = 1; sc.fx.text(rv.x, rv.y - 18, '嘶——！', '#ffd25a'); SFX.tone(400, 0.25, { to: 260, vol: 0.06, type: 'sawtooth' }); }
+    if (!rv.carry.length && rv.hiss <= 0 && !rv.final) { rv.hiss = 3; sc.fx.text(rv.x, rv.y - 18, '哼。', '#c8b8ff'); }
+  }
+}
+// 對決：瞪眼比氣勢（三戰兩勝）
+class RivalDuel {
+  constructor(sc) {
+    this.sc = sc; this.rv = sc.rival; this.round = 0; this.score = [0, 0]; this.t = 0; this.phase = 'intro'; this.pos = 0; this.dir = 1; this.msg = '';
+    const k = this.rv.skill + (this.rv.final ? 0.25 : 0);
+    this.speeds = [1.3 + k * 0.8, 1.6 + k * 0.9, 1.9 + k * 1.0];
+    this.zones = [[0.36, 0.64], [0.4, 0.6], [0.43, 0.57]];
+    if (hasSet(sc.run, 'thief')) this.zones = this.zones.map(([a, b]) => [a - 0.03, b + 0.03]);
+  }
+  input(type) {
+    if (type !== 'down' && type !== 'key') return true;
+    if (this.phase === 'play') {
+      const z = this.zones[this.round], ok = this.pos >= z[0] && this.pos <= z[1];
+      this.score[ok ? 0 : 1]++; this.phase = 'result'; this.t = 0; this.msg = ok ? pick(['瞪回去了！', '氣勢贏了！', '煤炭退了一步！']) : pick(['被瞪輸了……', '眨眼了！', '耳朵往後縮了……']);
+      SFX.play(ok ? 'heart' : 'fail'); vibrate(ok ? 30 : 60);
+    } else if (this.phase === 'intro' && this.t > 0.6) { this.phase = 'play'; this.t = 0; }
+    return true;
+  }
+  update(dt) {
+    this.t += dt;
+    if (this.phase === 'intro' && this.t > 1.6) { this.phase = 'play'; this.t = 0; }
+    if (this.phase === 'play') {
+      const sp = this.speeds[this.round];
+      this.pos += this.dir * sp * dt; if (this.pos > 1) { this.pos = 1; this.dir = -1; } if (this.pos < 0) { this.pos = 0; this.dir = 1; }
+      if (this.t > 4) { this.score[1]++; this.phase = 'result'; this.t = 0; this.msg = '發呆太久了……'; SFX.play('fail'); }
+    } else if (this.phase === 'result' && this.t > 0.9) {
+      if (this.score[0] >= 2 || this.score[1] >= 2) { this.phase = 'end'; this.t = 0; this.win = this.score[0] >= 2; }
+      else { this.round++; this.phase = 'play'; this.t = 0; this.pos = Math.random(); }
+    } else if (this.phase === 'end' && this.t > 1.2) { this.done = true; }
+  }
+  render(g, W, H) {
+    g.save();
+    g.fillStyle = 'rgba(10,8,24,0.55)'; g.fillRect(0, 0, W, H);
+    const cy = H * 0.42;
+    // 兩隻貓的大頭
+    const sc = this.sc;
+    const me = ART.cat(Object.assign({}, sc.cat, { pose: null, dir: 'right', moving: false })), him = rivalArt(Object.assign(new Cat(0, 0), { dir: 'left', moving: false, t: this.t }));
+    const big = Math.min(W / 2.6, 170);
+    const draw = (a, x, flip) => { if (!a || !a.img) return; const w = big, h = big * a.h / a.w; g.save(); g.translate(x, cy); if (flip) g.scale(-1, 1); g.drawImage(a.img, -w / 2, -h + 20, w, h); g.restore(); };
+    for (const [x, col] of [[W * 0.27, 'rgba(255,214,140,'], [W * 0.73, 'rgba(160,255,190,']]) { const gr = g.createRadialGradient(x, cy - big * 0.3, 4, x, cy - big * 0.3, big * 0.75); gr.addColorStop(0, col + '0.55)'); gr.addColorStop(1, col + '0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, cy - big * 0.3, big * 0.75, 0, TAU); g.fill(); }
+    // 中間的火花
+    for (let i = 0; i < 6; i++) { const a = this.t * 4 + i, r = 6 + (i % 3) * 5; g.fillStyle = i % 2 ? '#ffd25a' : '#ffffff'; g.beginPath(); g.arc(W / 2 + Math.cos(a) * r, cy - big * 0.35 + Math.sin(a * 1.3) * r, 2.2, 0, TAU); g.fill(); }
+    draw(me, W * 0.27, false); draw(him, W * 0.73, false);
+    CM.text(g, W / 2, cy - big * 0.8, this.rv.final ? '屋頂決戰' : '對決！', '#ffd25a', 30, 1, { rot: -0.05 });
+    CM.text(g, W * 0.27, cy + 34, '花喵', '#fff', 15, 1); CM.text(g, W * 0.73, cy + 34, '煤炭', '#c8f0d0', 15, 1);
+    // 比分
+    for (let i = 0; i < 2; i++) {
+      for (let k = 0; k < 2; k++) { g.fillStyle = this.score[i] > k ? (i ? '#ff7a5a' : '#ffd25a') : 'rgba(255,255,255,0.2)'; g.beginPath(); g.arc((i ? W * 0.73 : W * 0.27) - 9 + k * 18, cy + 56, 6.5, 0, TAU); g.fill(); }
+    }
+    const w = Math.min(280, W - 60), x = (W - w) / 2, y = cy + 92;
+    if (this.phase === 'intro') CM.text(g, W / 2, y, '指針停在綠色的地方就按！三戰兩勝', '#fff', 15, 1);
+    else if (this.phase === 'play' || this.phase === 'result') {
+      const z = this.zones[this.round];
+      g.fillStyle = '#3a3555'; CM.rr(g, x, y, w, 18, 9); g.fill();
+      g.fillStyle = '#6ad08a'; CM.rr(g, x + w * z[0], y, w * (z[1] - z[0]), 18, 6); g.fill();
+      const px = x + w * this.pos;
+      g.fillStyle = '#ffd25a'; g.strokeStyle = CM.ink; g.lineWidth = 2.5; g.beginPath(); g.moveTo(px, y + 22); g.lineTo(px - 8, y + 34); g.lineTo(px + 8, y + 34); g.closePath(); g.fill(); g.stroke(); g.fillRect(px - 1.5, y - 3, 3, 22);
+      CM.text(g, W / 2, y - 18, `第 ${this.round + 1} 回合`, '#e8e2ff', 14, 1);
+      if (this.phase === 'result') CM.text(g, W / 2, y + 60, this.msg, '#fff3c8', 18, 1);
+    } else if (this.phase === 'end') CM.text(g, W / 2, y + 10, this.win ? (this.rv.final ? '煤炭低下頭了……' : '贏了！煤炭把花丟下來了') : '輸了……煤炭叼著花跑了', this.win ? '#ffd25a' : '#ff9a8a', 20, 1);
+    g.restore();
+  }
+}
+function startDuel(sc) {
+  const rv = sc.rival; if (!rv) return;
+  sc.duel = new RivalDuel(sc); sc.mode = 'duel'; Input.release(); sc.cat.moving = false; rv.path = []; rv.moving = false;
+  Input.game = (type, a) => sc.duel.input(type, a);
+  UI.setAction(null); UI.setSkills([]);
+}
+function endDuel(sc) {
+  const D = sc.duel, rv = sc.rival, c = sc.cat, run = sc.run, R = rivalOf(run);
+  sc.duel = null; Input.game = null; sc.mode = 'play'; c.inv = 1.5;
+  if (D.win) {
+    R.wins++; sc.rivalLog.duel = 'win';
+    const got = [];
+    while (rv.carry.length && c.carry.length < sc.capacity()) { const t = rv.carry.pop(); c.carry.push({ t, fresh: 0.9, pot: { owner: null } }); got.push(t); }
+    rv.carry = [];
+    if (rv.final) { R.friend = true; R.finalWon = run.nightIdx || 1; UI.toast('煤炭不再瞪你了。牠繞著你走了一圈，蹭了一下……好像認你當老大了！', 4600); SFX.play('heart'); }
+    else UI.toast(got.length ? `贏了對決！搶回${got.map(t => FLOWERS[t].name).join('、')}` : '贏了對決！煤炭夾著尾巴跑了', 3000);
+  } else {
+    R.losses++; sc.rivalLog.duel = 'lose';
+    if (c.carry.length) { const f = c.carry.pop(); rv.carry.push(f.t); UI.toast(`輸了……煤炭連你嘴上的${FLOWERS[f.t].name}都叼走了`, 3000); }
+    else UI.toast('輸了……煤炭哼了一聲走掉了', 2600);
+  }
+  rv.state = 'flee'; rv.path = sc.groundPath(rv.x, rv.y, rv.from[0] * TS, rv.from[1] * TS) || [];
+  checkAchievements(run);
+}
+(function () {
+  const P = NightScene.prototype;
+  const _u = P.update;
+  P.update = function (dt) {
+    if (!this.rivalInit) { this.rivalInit = true; try { initRival(this); } catch (e) { console.error(e); } }
+    if (this.mode === 'duel' && this.duel) {
+      this.fx.update(dt); this.duel.update(dt); if (this.duel.done) endDuel(this); UI.nightHud(this); return;
+    }
+    const r = _u.call(this, dt);
+    if (this.mode === 'play' && this.rival) rivalUpdate(this, dt * (this.timeScale || 1));
+    return r;
+  };
+  const _ft = P.findTarget;
+  P.findTarget = function () {
+    _ft.call(this);
+    const rv = this.rival, c = this.cat;
+    if (this.mode !== 'play' || !rv || rv.state === 'gone' || rv.state === 'flee' || rv.state === 'wait' || c.top || c.jump) return;
+    if ((rv.carry.length || rv.final) && dist(c.x, c.y, rv.x, rv.y) < 1.8 * TS) {
+      this.target = { kind: 'rival', ref: { x: rv.x, y: rv.y } };
+      UI.setAction('對決');
+    }
+  };
+  const _act = P.onAction;
+  P.onAction = function () {
+    if (this.mode === 'play' && this.target && this.target.kind === 'rival') { startDuel(this); return; }
+    return _act.call(this);
+  };
+  const _r3 = P.render3D;
+  P.render3D = function () { const r = _r3.call(this); if (this.duel && R3.ov) this.duel.render(R3.ov, R3.W, R3.H); return r; };
+  const _fin = P.finish;
+  P.finish = function (timeUp) {
+    if (this.rival && this.rivalLog) { const R = rivalOf(this.run); R.nights++; R.stolen += this.rivalLog.took.length; this.stats.rivalTook = this.rivalLog.took.length; this.stats.rivalDuel = this.rivalLog.duel; }
+    return _fin.call(this, timeUp);
+  };
+})();
+function rivalRender3D(sc, F) {
+  const rv = sc.rival; if (!rv || rv.state === 'gone' || rv.state === 'wait' || sc.mode === 'zone') return;
+  pushSprite(F.sprites, rivalArt(rv), rv.x, rv.y + 0.6, { minLight: [0.32, 0.3, 0.38] });
+  shadowAt(F, rv.x, rv.y + 0.6, 0.7, 0.26, 1, 0);
+  rv.carry.forEach((t, i) => pushSprite(F.sprites, ART.icon(t), rv.x + (rv.dir === 'left' ? -5 : rv.dir === 'right' ? 5 : (i - 0.5) * 3), rv.y + 1.6, { lift: 0.36 + i * 0.05, minLight: [0.45, 0.42, 0.48] }));
+  // 綠色的眼睛在暗處發光
+  glowQuad(F.glow, rv.x / TS + (rv.dir === 'left' ? -0.15 : rv.dir === 'right' ? 0.15 : 0), 0.62, rv.y / TS + 0.08, 0.16, [0.5, 1, 0.6, 0.35]);
+}
+// 早上結算：煤炭昨晚做了什麼
+function rivalTallyHTML(R) {
+  const n = R.rivalTook || 0, d = R.rivalDuel;
+  if (!n && !d) return '';
+  return `<div class="newab rival"><span class="tagnew">煤炭</span><p>${n ? `煤炭昨晚從巷子叼走了 ${n} 朵花（被偷的那幾家更警戒了）。` : '煤炭昨晚出現了。'}${d === 'win' ? '<br>對決贏了！' : d === 'lose' ? '<br>對決輸了……' : ''}</p></div>`;
+}
+{
+  const _nd = Flow.nightDone;
+  Flow.nightDone = function (res) {
+    const r = _nd.call(this, res);
+    const L = G.run.lastNight; if (L && res.stats) { L.rivalTook = res.stats.rivalTook || 0; L.rivalDuel = res.stats.rivalDuel || null; }
+    return r;
+  };
+}
+// 煤炭加入花喵幫：每晚多叼一朵新區域的花
+GANG.push({ id: 'coal', name: '煤炭', cost: 0, need: 999, perk: 'coal', desc: '隔壁巷的老大：每晚多叼回一朵公園或隔壁巷的花', pal: RIVAL_LOOK.pal, hidden: true });
+{
+  const _gn = gangNight;
+  gangNight = function (run, n) {
+    const res = _gn(run, n);
+    const st = gangOf(run).coal;
+    if (st && !st.caught && st.target !== 'shop') { const t = pick(['plumeria', 'camellia', 'camellia', 'lotus']); res.flowers.push({ t, fresh: 1, owner: null, raid: true, gang: 'coal' }); const rep = res.report.find(x => x.id === 'coal'); if (rep) rep.got.push(t); }
+    return res;
+  };
+}
+// ---------- 煤炭的故事 ----------
+function* rivalStoryScript(S) {
+  const run = S.run, R = rivalOf(run), f = run.flags;
+  if (R.met && !f.rv1) {
+    f.rv1 = 1; S.shopOn = false;
+    const b = S.customer('bo'); yield S.walkIn(b);
+    yield* S.talk(b, '阿伯', [['昨晚看到一隻黑貓在巷子裡叼花……那是隔壁巷的「煤炭」。'], ['以前是一戶人家養的，搬家的時候沒帶走。從那之後就很兇，誰都不讓靠近。'], ['妳家花喵要是碰到牠，可別輸了氣勢喔。']]);
+    yield S.walkOut(b);
+    return true;
+  }
+  if (R.wins >= 3 && !f.rv2) {
+    f.rv2 = 1;
+    yield S.say('咦？貓門口有一朵山茶花……還有黑色的貓毛。');
+    yield S.say('是煤炭放的嗎？好像是在說「下次不會輸給你」。');
+    S.stock.push({ t: 'camellia', fresh: 1, owner: 'gift' });
+    UI.hideDialog(); UI.toast('煤炭留了一朵山茶花在門口（店裡多一朵花）。再贏牠幾次……', 3600);
+    return true;
+  }
+  if (R.wins >= 6 && !R.friend && !f.rv3) {
+    f.rv3 = 1;
+    yield S.say('今天整條巷子的貓都怪怪的，一直往屋頂上看。');
+    yield S.say('林先生說，煤炭昨晚在屋頂上叫了一整晚……像在等誰。');
+    UI.hideDialog(); UI.toast('下一次碰到煤炭，就是「屋頂決戰」：打贏牠，牠就會服你。', 4000);
+    return true;
+  }
+  if (R.friend && !f.rv4) {
+    f.rv4 = 1;
+    const g = gangOf(run); g.coal = { target: gangDefaultTarget(run), caught: null, hauls: 0 };
+    yield S.say('花喵……你後面那隻是……煤炭？！');
+    yield S.say('牠跟著你回來了耶。在貓窩旁邊趴下來，好像打算住下來了。');
+    yield S.say('好吧！歡迎加入花喵幫，煤炭。');
+    UI.hideDialog(); SFX.play('meow'); UI.toast('煤炭加入花喵幫！晚上出門前可以派牠去偷花，牠每次還會多叼一朵新區域的花', 4400);
+    return true;
+  }
+  return false;
+}
+
+// ---------- 白天的連鎖花店「花漾」 ----------
+function chainOf(run) { return run.chain || (run.chain = { open: false, share: 50, hi: 0, lo: 0, closed: false, days: 0, plan: null, hist: [] }); }
+function chainActive(run) { const C = chainOf(run); return C.open && !C.closed; }
+function chainMult(run) {
+  const C = chainOf(run);
+  if (C.closed) return 1.1;
+  if (!C.open) return 1;
+  return (0.72 + 0.56 * C.share / 100) * (C.plan === 'sale' ? 0.85 : 1);
+}
+{
+  const _sell = DayScene.prototype.sell;
+  DayScene.prototype.sell = function (v, pot, wrap) { const m = chainMult(this.run); if (m !== 1 && v > 0) v = v * m; return _sell.call(this, v, pot, wrap); };
+  const _us = DayScene.prototype.updateShoppers;
+  DayScene.prototype.updateShoppers = function (dt) {
+    // 辦活動的那天，客人來得比較快
+    if (chainOf(this.run).plan === 'event' && this.shopOn && this.shopT > 0) this.shopT -= dt * 0.45;
+    return _us.call(this, dt);
+  };
+}
+function* chainMorningScript(S, n) {
+  const run = S.run, C = chainOf(run), m = run.month || 1;
+  if (C.closed) return;
+  if (!C.open) {
+    if (m < 4) return;
+    C.open = true; C.share = 55;
+    const wasOn = S.shopOn; S.shopOn = false;
+    const k = S.customer('butler'); yield S.walkIn(k);
+    yield* S.talk(k, '花漾連鎖・店長 Kevin', [
+      ['妳好～我是對面新開的「花漾」店長 Kevin。全台灣有八十家分店喔。'],
+      ['我們的花都是大量進貨，價錢只要妳的一半。'],
+      ['這條巷子的客人……以後就請多指教囉。'],
+      ['（Kevin 看了一眼櫃台上的花喵，笑了一下就走了）', null, 'M'],
+    ]);
+    yield S.walkOut(k);
+    yield S.say('……八十家分店？我們只有一家，還有一隻貓。');
+    yield S.say('可是我們的花是全世界最特別的。花喵，我們不能輸！');
+    UI.hideDialog(); S.shopOn = wasOn;
+    UI.toast('對面開了連鎖花店「花漾」！每天會比市佔率：市佔越高，每筆生意賣得越貴。有新品種、包花束、櫥窗佈置、熟客、粉絲都會加分', 5200);
+    C.plan = 'keep'; return;
+  }
+  if (n < 2 || n > 4) { C.plan = null; return; }
+  // 今天的作戰
+  C.plan = null;
+  let pick2 = null;
+  yield S.modal(done => UI.modal(`<p class="eyebrow">對面的花漾連鎖</p><h2>今天怎麼打？</h2><p class="lead">市佔率 <b class="px">${Math.round(C.share)}%</b>（${C.share >= 60 ? '我們領先' : C.share <= 40 ? '被搶走不少客人' : '勢均力敵'}）。${C.hi ? `已經連續 ${C.hi} 天七成五以上！` : ''}</p>
+      <ul class="chain-opts"><li><b>特價跟進</b>今天每筆生意打 85 折，市佔 +5</li><li><b>辦活動</b>花 NT$ 3,000 辦試插花活動：客人來得快，市佔 +9</li><li><b>堅持原價</b>不跟他們拼價錢（店裡有新品種的話市佔 +3）</li></ul>`,
+    [{ label: '特價跟進', onClick: () => { pick2 = 'sale'; done(); } }, { label: run.money >= 3000 ? '辦活動' : '辦活動（錢不夠）', onClick: () => { pick2 = run.money >= 3000 ? 'event' : 'keep'; done(); } }, { label: '堅持原價', primary: true, onClick: () => { pick2 = 'keep'; done(); } }], { cls: 'small' }));
+  C.plan = pick2 || 'keep';
+  if (C.plan === 'event') { run.money -= 3000; UI.toast('門口擺出試插花的小桌子，路過的人都停下來看！', 2600); }
+}
+function chainDayEnd(S) {
+  const run = S.run, C = chainOf(run);
+  if (!chainActive(run) || S.n < 2 || S.n > 4) return null;
+  const parts = [];
+  const add = (v, why) => { if (v) parts.push([v, why]); };
+  add(-4, '對面打廣告');
+  if (C.plan === 'sale') add(5, '特價跟進'); else if (C.plan === 'event') add(9, '試插花活動');
+  const hy = (S.dayStart || []).some(t => HYBRIDS[t]);
+  if (hy) add(C.plan === 'keep' ? 7 : 4, '店裡有新品種');
+  const bq = Math.min(6, (S.bqSold || 0) * 2); add(bq, '包了花束');
+  if (run.window) add(2, '櫥窗佈置');
+  const vip = REGULARS.filter(x => (regOf(run)[x.id] || 0) >= VIP_AT).length; add(vip, 'VIP 熟客');
+  add(Math.min(4, (run.fans || []).length), '粉絲幫忙宣傳');
+  const kinds = new Set(S.dayStart || []).size; if (kinds >= 6) add(2, '花的種類多');
+  if (!(S.dayStart || []).length) add(-6, '店裡沒有花');
+  if (Math.random() < 0.25) add(-5, '對面買一送一');
+  add(Math.round(rnd(-2, 2)), '');
+  const delta = parts.reduce((a, p) => a + p[0], 0);
+  const before = C.share;
+  C.share = clamp(C.share + delta, 5, 95); C.days++;
+  C.hist.push(Math.round(C.share)); if (C.hist.length > 12) C.hist.shift();
+  C.hi = C.share >= 75 ? C.hi + 1 : 0; C.lo = C.share <= 20 ? C.lo + 1 : 0;
+  C.plan = null;
+  return { before, after: C.share, parts };
+}
+{
+  // 早上記下今天店裡有哪些花；包花束時記一筆
+  const _mb = DayScene.prototype.bouquetMade;
+  if (_mb) DayScene.prototype.bouquetMade = function (bq) { this.bqSold = (this.bqSold || 0) + 1; return _mb.call(this, bq); };
+}
+function* chainStoryScript(S) {
+  const run = S.run, C = chainOf(run), f = run.flags;
+  if (C.open && !C.closed && C.hi >= 3) {
+    C.closed = true; f.chainWon = run.nightIdx || 1;
+    const k = S.customer('butler'); yield S.walkIn(k);
+    yield* S.talk(k, 'Kevin', [['……總公司決定，這間分店收掉了。'], ['我做了十年連鎖花店，第一次輸給一家只有一個老闆和一隻貓的店。'], ['妳的花，真的不一樣。'], ['對了，我們店的花藝師小敏說想來妳這裡工作。她很優秀，拜託妳了。']]);
+    yield S.walkOut(k);
+    yield S.say('我們贏了！花喵，我們打贏八十家分店了！');
+    UI.hideDialog(); SFX.play('heart'); S.fx.hearts(S.cat.x, S.cat.y - 10, 10);
+    UI.toast('花漾連鎖收掉了！花藝師小敏加入：以後每筆生意都多賣一成', 4600);
+    checkAchievements(run);
+    return true;
+  }
+  if (C.open && !C.closed && C.lo >= 3 && !f.chainRally) {
+    f.chainRally = 1;
+    const bonded = ['wang', 'lin', 'bo', 'public'].filter(o => (run.bond && run.bond[o] || 0) >= 4);
+    const w = S.customer('wang'); yield S.walkIn(w);
+    if (bonded.length >= 2) {
+      yield* S.talk(w, '王太太', [['美玲！我聽說對面在搶妳的客人？'], ['我已經跟社區的太太們說好了，以後買花只來妳這裡！'], ['阿伯和林先生也說要幫妳宣傳喔。']]);
+      C.share = Math.min(95, C.share + 18); C.lo = 0;
+      UI.toast('老鄰居力挺！市佔率 +18', 3200); SFX.play('heart');
+    } else {
+      yield* S.talk(w, '王太太', [['對面的花好便宜喔……啊，美玲，我不是那個意思啦。'], ['妳要不要多跟大家打好關係？鄰居都會幫自己人的。']]);
+      UI.toast('跟鄰居的交情夠深，被打趴的時候他們會出手幫忙', 3600);
+    }
+    yield S.walkOut(w);
+    return true;
+  }
+  return false;
+}
+function chainTodayHTML(res) {
+  if (!res) return '';
+  const d = Math.round(res.after - res.before);
+  return `<div class="chain-res"><b>今天的市佔率：${Math.round(res.after)}%（${d >= 0 ? '+' : ''}${d}）</b><span>${res.parts.filter(p => p[1]).map(p => `${p[1]} ${p[0] > 0 ? '+' : ''}${p[0]}`).join('・')}</span></div>`;
+}
+function chainShopHTML(run) {
+  const C = chainOf(run);
+  if (!C.open) return '';
+  if (C.closed) return `<p class="hint">對面的花漾連鎖已經收掉了。花藝師小敏在店裡幫忙：每筆生意多賣一成。</p>`;
+  const bars = C.hist.map(v => `<i style="height:${Math.max(4, v * 0.36)}px" class="${v >= 75 ? 'hi' : v <= 20 ? 'lo' : ''}"></i>`).join('');
+  return `<div class="chain-box"><div class="chain-top"><b>對面的花漾連鎖</b><span>市佔率 <b class="px">${Math.round(C.share)}%</b>　生意 ×${chainMult(run).toFixed(2)}</span></div><div class="chain-bars">${bars}</div><p class="hint">連續 3 天七成五以上，連鎖店就撐不下去了。新品種、花束、櫥窗、VIP、粉絲都會讓客人選我們。</p></div>`;
+}
+
+// ================= 四季 =================
+// 每三個月換一季：第 1–3 個月春天、4–6 夏天、7–9 秋天、10–12 冬天，之後又是春天（第二年）。
+// 每一季：
+//   ・當季的花賣得比較貴，巷子裡有些盆栽換成季節限定的花（鬱金香、菊花、聖誕紅、梅花）
+//   ・晚上的樣子和規則不一樣：春天花瓣飄、被偷的花隔天就長回來；夏天螢火蟲、颱風比較多；
+//     秋天落葉、夜比較長；冬天寒流，大家躲在家裡（巡守少一趟），呼出白白的氣
+//   ・季節任務：三個目標全部完成，拿到只有那一季拿得到的限定衣服
+//   ・花店門口跟著季節換擺設；冬天最後一個月是年節，客人買花特別大方
+const SEASONS = [
+  { id: 'spring', name: '春天', emoji: '🌸', boost: { tulip: 1.3, rose: 1.15, babys: 1.15, periwinkle: 1.2 }, line: '春天來了！巷子裡開滿了花，鬱金香也冒出來了。',
+    rules: '被偷的花隔天就長回來；常常下雨', quest: [{ k: 'tulip', n: 8, txt: '偷到 8 朵鬱金香' }, { k: 'bq', n: 3, txt: '包 3 個花束' }, { k: 'rainS', n: 1, txt: '下雨的晚上拿到 S 評價' }], reward: 'sakura' },
+  { id: 'summer', name: '夏天', emoji: '🌻', boost: { sunflower: 1.35, jasmine: 1.25, lotus: 1.25, plumeria: 1.25 }, line: '好熱的夏天……向日葵和茉莉最好賣。晚上會有螢火蟲喔。',
+    rules: '螢火蟲飛來飛去；颱風夜比較多', quest: [{ k: 'sunflower', n: 6, txt: '偷到 6 朵向日葵' }, { k: 'cute', n: 15, txt: '賣萌成功 15 次' }, { k: 'clean', n: 2, txt: '兩個晚上都沒被發現' }], reward: 'melon' },
+  { id: 'autumn', name: '秋天', emoji: '🍁', boost: { chrysanthemum: 1.3, osmanthus: 1.3, lisianthus: 1.15 }, line: '秋天了，桂花好香。菊花也開了。',
+    rules: '夜晚比較長（多 20 分鐘）；落葉沙沙響', quest: [{ k: 'autumnF', n: 8, txt: '偷到 8 朵桂花或菊花' }, { k: 'breed', n: 2, txt: '配種 2 次' }, { k: 'haul8', n: 1, txt: '一晚帶回 8 朵以上' }], reward: 'maple' },
+  { id: 'winter', name: '冬天', emoji: '❄️', boost: { poinsettia: 1.35, plumblossom: 1.35, camellia: 1.3, carnation: 1.1 }, line: '寒流來了，好冷……聖誕紅和梅花開了。',
+    rules: '寒流：大家躲在家裡，巡守少一趟', quest: [{ k: 'poinsettia', n: 6, txt: '偷到 6 朵聖誕紅' }, { k: 'plum', n: 3, txt: '偷到 3 枝梅花' }, { k: 'sales', n: 60000, txt: '這一季白天賣出 NT$ 60,000' }], reward: 'muff' },
+];
+function seasonIdx(run) { return Math.floor((((run && run.month) || 1) - 1) / 3) % 4; }
+function seasonOf(run) { return SEASONS[seasonIdx(run)]; }
+function seasonKey(run) { return seasonIdx(run) + '-' + Math.floor((((run && run.month) || 1) - 1) / 12); }
+function seasonBoost(run, t) { return seasonOf(run).boost[t] || 1; }
+const SEASON_FLOWERS = { tulip: 0, chrysanthemum: 2, poinsettia: 3, plumblossom: 3 };
+function seasonFlowerOk(run, t) { return SEASON_FLOWERS[t] === undefined || SEASON_FLOWERS[t] === seasonIdx(run); }
+function newYearMonth(run) { return seasonIdx(run) === 3 && (((run.month || 1) - 1) % 3) === 2; }
+{
+  const _fv = flowerValue;
+  flowerValue = function (run, t, fresh) { return _fv(run, t, fresh) * (run ? seasonBoost(run, t) : 1); };
+}
+// 訂單只訂得到當季的花
+{
+  const _go = genOrder;
+  genOrder = function (run, n) { for (let i = 0; i < 12; i++) { const o = _go(run, n); if (seasonFlowerOk(run, o.t)) return o; } return _go(run, n); };
+}
+// ---------- 季節任務 ----------
+function seasonQ(run) {
+  const key = seasonKey(run);
+  if (!run.seasonQ || run.seasonQ.key !== key) run.seasonQ = { key, prog: {}, done: false };
+  return run.seasonQ;
+}
+function seasonAdd(run, k, n = 1) {
+  const Q = seasonQ(run); if (Q.done) return;
+  const S = seasonOf(run); if (!S.quest.some(q => q.k === k)) return;
+  Q.prog[k] = (Q.prog[k] || 0) + n;
+  if (S.quest.every(q => (Q.prog[q.k] || 0) >= q.n)) {
+    Q.done = true;
+    const W = wardrobe(run); W.own[S.reward] = 1;
+    run.seasonsDone = (run.seasonsDone || 0) + 1;
+    setTimeout(() => { UI.toast(`${S.name}的季節任務全部完成！拿到限定衣服「${outfitById(S.reward).name}」（老貓攤的衣櫃）`, 4600); SFX.play('heart'); }, 1200);
+  }
+}
+function seasonQuestHTML(run) {
+  const S = seasonOf(run), Q = seasonQ(run), R = outfitById(S.reward);
+  return `<div class="season-box s-${S.id}"><div class="season-top"><b>${S.emoji} ${S.name}</b><span>${esc(S.rules)}</span></div>
+    <ul class="season-q">${S.quest.map(q => { const v = Math.min(q.n, Q.prog[q.k] || 0); return `<li class="${v >= q.n ? 'ok' : ''}"><span>${esc(q.txt)}</span><b class="px">${q.k === 'sales' ? Math.round(v / 1000) + 'k/' + q.n / 1000 + 'k' : v + '/' + q.n}</b></li>`; }).join('')}</ul>
+    <p class="hint">${Q.done ? `完成了！限定衣服「${R.name}」已經在衣櫃裡。` : `全部完成：限定衣服「${R.name}」（只有${S.name}拿得到）`}　當季的花：${Object.keys(S.boost).map(t => FLOWERS[t] ? FLOWERS[t].name : t).join('、')}</p></div>`;
+}
+{
+  const _nd = Flow.nightDone;
+  Flow.nightDone = function (res) {
+    const run = G.run, sc = G.scene;
+    const ev = sc && sc.kind === 'night' ? sc.event : null;
+    const dep = res.deposited || [];
+    const cnt = t => dep.filter(f => f.t === t && !f.gang).length;
+    const r = _nd.call(this, res);
+    const L = run.lastNight || {}, st = res.stats || {};
+    seasonAdd(run, 'tulip', cnt('tulip')); seasonAdd(run, 'sunflower', cnt('sunflower'));
+    seasonAdd(run, 'autumnF', cnt('osmanthus') + cnt('chrysanthemum'));
+    seasonAdd(run, 'poinsettia', cnt('poinsettia')); seasonAdd(run, 'plum', cnt('plumblossom'));
+    if (L.grade && L.grade.g === 'S' && ev === 'rain') seasonAdd(run, 'rainS');
+    if ((st.caught || 0) === 0 && dep.filter(f => !f.gang).length > 0) seasonAdd(run, 'clean');
+    if (st.cuteWin) seasonAdd(run, 'cute', st.cuteWin);
+    if (dep.filter(f => !f.gang).length >= 8) seasonAdd(run, 'haul8');
+    if (L.breed) seasonAdd(run, 'breed', L.breed.length);
+    return r;
+  };
+  const _mb = DayScene.prototype.bouquetMade;
+  DayScene.prototype.bouquetMade = function (bq) { seasonAdd(this.run, 'bq'); return _mb.call(this, bq); };
+  const _sell = DayScene.prototype.sell;
+  DayScene.prototype.sell = function (v, pot, wrap) {
+    if (v > 0 && newYearMonth(this.run)) v *= 1.3;
+    if (v > 0) seasonAdd(this.run, 'sales', v);
+    return _sell.call(this, v, pot, wrap);
+  };
+}
+// ---------- 晚上：季節的規則 ----------
+{
+  const _rules = nightRulesFor;
+  nightRulesFor = function (run, n) {
+    const R = _rules(run, n);
+    if (!R || (run.month || 1) <= 1) return R;
+    const s = seasonIdx(run);
+    if (s === 3) return Object.assign({}, R, { patrol: R.patrol.slice(0, Math.max(0, R.patrol.length - 1)), event: R.event === 'bbq' ? 'clear' : R.event });
+    if (s === 0 && R.event === 'clear' && (n % 2 === 0)) return Object.assign({}, R, { event: 'rain' });
+    if (s === 2 && R.event === 'outage' && Math.random() < 0.5) return Object.assign({}, R, { event: 'bbq' });
+    return R;
+  };
+  const _rr = rollRare;
+  rollRare = function (run, n) {
+    const r = _rr(run, n);
+    if (!r && seasonIdx(run) === 1 && (run.month || 1) >= 2 && Math.random() < 0.08) return 'storm';
+    return r;
+  };
+}
+// 季節限定的花換進巷子的盆栽
+const SEASON_SWAP = [
+  { s: 0, from: ['periwinkle'], owners: ['public', 'empty', 'lin'], to: 'tulip', k: 0.6 },
+  { s: 2, from: ['bougain', 'periwinkle'], owners: ['public', 'bo', 'empty'], to: 'chrysanthemum', k: 0.55 },
+  { s: 3, from: ['rose', 'bougain'], owners: ['wang', 'public'], to: 'poinsettia', k: 0.6 },
+  { s: 3, from: ['periwinkle', 'bougain', 'jasmine'], owners: ['bo', 'lin'], to: 'plumblossom', k: 0.45 },
+];
+function seasonInitNight(sc) {
+  const run = sc.run, s = seasonIdx(run);
+  if ((run.month || 1) <= 1 && s === 0) { sc.seasonFx = 'spring'; return; }
+  for (const R of SEASON_SWAP) {
+    if (R.s !== s) continue;
+    for (const p of sc.pots) if (R.from.includes(p.t) && R.owners.includes(p.owner) && hash(p.tx, p.ty, 77) < R.k) p.t = R.to;
+  }
+  if (s === 0) for (const p of sc.pots) if (p.regrowing) { p.avail = true; p.regrowing = false; }
+  if (s === 2) sc.end += 20;
+  sc.seasonFx = SEASONS[s].id;
+}
+(function () {
+  const P = NightScene.prototype;
+  const _u = P.update;
+  P.update = function (dt) {
+    if (!this.seasonInit) { this.seasonInit = true; try { seasonInitNight(this); } catch (e) { console.error(e); } }
+    return _u.call(this, dt);
+  };
+  const _r3 = P.render3D;
+  P.render3D = function () {
+    const r = _r3.call(this);
+    if (R3.ov && this.mode !== 'zone' && this.mode !== 'zonewait' && !this.duel) seasonOverlay(this, R3.ov, R3.W, R3.H);
+    return r;
+  };
+})();
+// 季節的粒子（疊在畫面上）
+function seasonOverlay(sc, g, W, H) {
+  const id = sc.seasonFx; if (!id) return;
+  const P = sc.seasonP || (sc.seasonP = []);
+  const dt = R3.dt || 0.016, want = id === 'summer' ? 18 : id === 'winter' ? 0 : 26;
+  while (P.length < want) P.push({ x: Math.random() * W, y: Math.random() * H, vx: rnd(-12, 12), vy: id === 'summer' ? rnd(-6, 6) : rnd(18, 40), ph: rnd(0, 6), s: rnd(0.7, 1.3) });
+  g.save();
+  for (const p of P) {
+    p.ph += dt * (id === 'summer' ? 2 : 2.4);
+    p.x += (p.vx + Math.sin(p.ph) * (id === 'summer' ? 14 : 18)) * dt; p.y += (p.vy + (id === 'summer' ? Math.cos(p.ph * 0.7) * 10 : 0)) * dt;
+    if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; } if (p.y < -12) p.y = H + 8; if (p.x < -12) p.x = W + 8; if (p.x > W + 12) p.x = -8;
+    if (id === 'spring') { g.save(); g.translate(p.x, p.y); g.rotate(p.ph); g.fillStyle = 'rgba(255,190,215,0.85)'; g.beginPath(); g.ellipse(0, 0, 4 * p.s, 2.4 * p.s, 0, 0, TAU); g.fill(); g.restore(); }
+    else if (id === 'autumn') { g.save(); g.translate(p.x, p.y); g.rotate(p.ph * 0.6); g.fillStyle = p.s > 1 ? 'rgba(230,110,50,0.85)' : 'rgba(240,170,60,0.85)'; g.beginPath(); for (let i = 0; i < 5; i++) { const a = i / 5 * TAU; g.lineTo(Math.cos(a) * 5 * p.s, Math.sin(a) * 5 * p.s); g.lineTo(Math.cos(a + 0.6) * 2 * p.s, Math.sin(a + 0.6) * 2 * p.s); } g.closePath(); g.fill(); g.restore(); }
+    else if (id === 'summer') { const a = 0.45 + 0.45 * Math.sin(p.ph * 2.3); const gr = g.createRadialGradient(p.x, p.y, 0, p.x, p.y, 9); gr.addColorStop(0, `rgba(220,255,140,${a})`); gr.addColorStop(1, 'rgba(220,255,140,0)'); g.fillStyle = gr; g.beginPath(); g.arc(p.x, p.y, 9, 0, TAU); g.fill(); g.fillStyle = `rgba(250,255,200,${a})`; g.beginPath(); g.arc(p.x, p.y, 1.8, 0, TAU); g.fill(); }
+  }
+  if (id === 'winter') {
+    // 寒流：冷冷的藍色、花喵呼出白氣
+    g.fillStyle = 'rgba(150,180,255,0.07)'; g.fillRect(0, 0, W, H);
+    const c = sc.cat, t = c.t || 0;
+    if (R3.at && sc.mode === 'play' && (Math.floor(t * 0.8) % 2 === 0)) {
+      const k = (t * 0.8) % 1, side = c.dir === 'left' ? -1 : c.dir === 'right' ? 1 : 0;
+      const [sx, sy] = R3.at(c.x + side * 6, c.y, 1.0 + (c.h || 0) * Math.cos(R3.pitch));
+      g.fillStyle = `rgba(240,248,255,${0.5 * (1 - k)})`; g.beginPath(); g.arc(sx + side * k * 14, sy - k * 10, 3 + k * 7, 0, TAU); g.fill();
+    }
+  }
+  g.restore();
+}
+// ---------- 白天：換季的那天 ----------
+function* seasonStartScript(S) {
+  const run = S.run, key = seasonKey(run);
+  run.seasonSeen = run.seasonSeen || {};
+  if ((run.month || 1) <= 1 || run.seasonSeen[key]) return false;
+  run.seasonSeen[key] = 1;
+  const Sx = seasonOf(run), wasOn = S.shopOn; S.shopOn = false;
+  UI.banner(Sx.emoji + ' ' + Sx.name);
+  yield S.say(Sx.line);
+  if (Sx.id === 'winter') yield S.say('這一季的最後一個月是年節，大家買花都很大方喔！');
+  UI.hideDialog(); S.shopOn = wasOn;
+  UI.toast(`${Sx.name}：${Sx.rules}。季節任務在老貓攤可以看，完成有${Sx.name}限定的衣服`, 4800);
+  return true;
+}
+function* newYearScript(S, n) {
+  const run = S.run;
+  if (!newYearMonth(run) || n !== 2 || (run.flags.newYear || 0) === run.month) return false;
+  run.flags.newYear = run.month;
+  const wasOn = S.shopOn; S.shopOn = false;
+  yield S.say('快過年了！門口貼了春聯，花喵也收到紅包了。');
+  run.cans += 20; SFX.play('coin');
+  yield S.say('這個月客人買花都會多給一點，大家都想討個吉利。');
+  UI.hideDialog(); S.shopOn = wasOn;
+  UI.toast('年節：這個月白天每筆生意多三成！紅包：罐罐 +20', 3800);
+  return true;
+}
+// ---------- 花店門口的季節擺設 ----------
+function toonSeasonDecor(id) {
+  return toonFrameInfo(toonFrame('sdecor-' + id, 44, 46, () => {
+    if (id === 'spring') { for (const [x, c] of [[-9, '#ff7a9a'], [-3, '#ffd84d'], [3, '#e8394d'], [9, '#ffffff']]) { O.curve([[x, -10], [x, -22]], CM.ink, 2); O.curve([[x, -10], [x, -22]], PC.stem, 1); HEAD2.tulip(x, -24, 0.9, 0); } O.blobO([[-15, -12], [15, -12], [13, -1], [-13, -1]], '#b8864a'); }
+    else if (id === 'summer') { O.curve([[0, -2], [0, -22]], CM.ink, 2.4); O.curve([[0, -2], [0, -22]], '#8a8a9a', 1.2); O.eo(0, -28, 9, 9, '#cfe8ff'); for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + 0.4; O.e(Math.cos(a) * 4.5, -28 + Math.sin(a) * 4.5, 3.4, 2, '#7ab8f0', { rot: a }); } O.dot(0, -28, 1.6, '#4a6a9a'); O.eo(0, -1.5, 7, 2, '#8a8a9a'); }
+    else if (id === 'autumn') { O.eo(0, -7, 11, 7.5, '#f2953a'); for (const dx of [-5, 0, 5]) O.curve([[dx, -14], [dx * 0.6, -7], [dx, -0.5]], '#c86a1a', 0.8); O.curve([[0, -14], [1.5, -18]], '#6a4a2a', 1.6); for (const [x, y] of [[-12, -16], [11, -15]]) HEAD2.chrysanthemum(x, y, 0.9, 0); }
+    else if (id === 'winter') { for (const x of [-9, 9]) { O.curve([[x, -40], [x, -30]], CM.ink, 1); O.eo(x, -24, 5.5, 6.5, '#e8394d'); O.e(x, -24, 3, 6, '#c8243a'); O.blobO([[x - 2, -18], [x + 2, -18], [x + 1.4, -15], [x - 1.4, -15]], '#ffd84d'); } HEAD2.poinsettia(0, -12, 1.2, 0); O.blobO([[-7, -6], [7, -6], [6, -1], [-6, -1]], '#c9744d'); }
+  }), false, 0.5, 0.95);
+}
+function seasonDecor3D(sc, F) {
+  const run = sc.run; if ((run.month || 1) <= 1) return;
+  const id = seasonOf(run).id, cpd = Math.cos(R3.pitch);
+  pushSprite(F.sprites, ART.fix(toonSeasonDecor(id)), 2.2 * TS, 15.6 * TS, { minLight: [0.65, 0.6, 0.6] });
+  pushSprite(F.sprites, ART.fix(toonSeasonDecor(id)), 12.8 * TS, 15.6 * TS, { minLight: [0.65, 0.6, 0.6], flip: true });
+  if (id === 'winter' && newYearMonth(run)) glowQuad(F.glow, 7.5, 2.6, 5.4, 1.2, [1, 0.3, 0.2, 0.18]);
+}
+
+// ---------- 新的花：鬱金香、菊花、聖誕紅、梅花 ----------
+Object.assign(HEAD2, {
+  tulip(x, y, s, r) {
+    const col = ['#ff7a9a', '#ffd84d', '#e8394d', '#ffffff', '#c88af0'][Math.floor(Math.abs(r * 7)) % 5];
+    O.blobO([[x - 2.4 * s, y - 2.2 * s], [x - 1.2 * s, y - 0.8 * s], [x, y - 2.8 * s], [x + 1.2 * s, y - 0.8 * s], [x + 2.4 * s, y - 2.2 * s], [x + 2.2 * s, y + 1.2 * s], [x, y + 2.4 * s], [x - 2.2 * s, y + 1.2 * s]], col);
+    O.curve([[x, y - 1.6 * s], [x, y + 1.6 * s]], 'rgba(0,0,0,0.18)', 0.7);
+  },
+  chrysanthemum(x, y, s, r) {
+    O.eo(x, y, 3.3 * s, 3.1 * s, '#ffc63a');
+    for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2 + r; O.e(x + Math.cos(a) * 2.3 * s, y + Math.sin(a) * 2.1 * s, 1.2 * s, 0.45 * s, i % 2 ? '#ffd86a' : '#ffe9a0', { rot: a }); }
+    for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2 + r; O.e(x + Math.cos(a) * 1.1 * s, y + Math.sin(a) * 1 * s, 0.8 * s, 0.4 * s, '#f2a81a', { rot: a }); }
+    O.dot(x, y, 0.6 * s, '#c8781a');
+  },
+  poinsettia(x, y, s, r) {
+    for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2 + r; O.eo(x + Math.cos(a) * 2.2 * s, y + Math.sin(a) * 2 * s, 2.3 * s, 1 * s, i % 2 ? '#d8243a' : '#e8394d', { rot: a }); }
+    for (let i = 0; i < 4; i++) { const a = i / 4 * Math.PI * 2 + r + 0.4; O.e(x + Math.cos(a) * 1.2 * s, y + Math.sin(a) * 1.1 * s, 1.2 * s, 0.5 * s, '#ff5a6a', { rot: a }); }
+    for (let i = 0; i < 4; i++) O.dot(x + Math.cos(i * 1.6) * 0.5 * s, y + Math.sin(i * 1.6) * 0.5 * s, 0.35 * s, '#ffd84d');
+  },
+  plumblossom(x, y, s, r) {
+    O.curve([[x - 3.4 * s, y + 1.6 * s], [x - 0.6 * s, y + 0.4 * s], [x + 2.6 * s, y - 1.8 * s]], '#5a3a2a', 1.2);
+    for (const [dx, dy, k] of [[-1.6, 0.6, 0.9], [1.4, -1.2, 1], [3, -2.4, 0.7]]) {
+      const cx = x + dx * s, cy = y + dy * s;
+      O.eo(cx, cy, 1.9 * s * k, 1.9 * s * k, '#ffc8d8');
+      for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; O.e(cx + Math.cos(a) * 0.95 * s * k, cy + Math.sin(a) * 0.95 * s * k, 0.85 * s * k, 0.85 * s * k, '#ffe4ee'); }
+      O.dot(cx, cy, 0.45 * s * k, '#e8577e');
+    }
+  },
+});
+Object.assign(BUNCH, {
+  tulip: { stem: '#5a9a4c', leaf: true, head: HEAD2.tulip },
+  chrysanthemum: { stem: '#4f8a3c', leaf: true, head: HEAD2.chrysanthemum },
+  poinsettia: { stem: '#3f7a3a', leaf: true, head: HEAD2.poinsettia },
+  plumblossom: { stem: '#5a3a2a', leaf: false, tall: 1.1, head: HEAD2.plumblossom },
+});
+{
+  const _dp2 = drawPlant2;
+  drawPlant2 = function (t) {
+    const H = HEAD2[t];
+    if (t === 'tulip') {
+      for (const [x0, x1, y1, r] of [[-3, -6, -22, 0.1], [0, 0.5, -26, 0.3], [3, 6, -23, 0.6]]) { O.curve([[x0, -12], [x1 * 0.6, (y1 - 12) / 2], [x1, y1]], CM.ink, 2.2); O.curve([[x0, -12], [x1 * 0.6, (y1 - 12) / 2], [x1, y1]], '#5a9a4c', 1.1); H(x1, y1 - 2, 1.05, r); }
+      for (const [x, a] of [[-5, -0.5], [5, 0.5]]) O.eo(x, -15, 2, 5.5, '#6aaa5a', { rot: a });
+      drawPotBase('clay', 20);
+    } else if (t === 'chrysanthemum') {
+      leafBall(-5, -16, 6, 4.4, '#4f8a3c'); leafBall(5, -16.5, 6, 4.4, '#4f8a3c'); leafBall(0, -19.5, 6, 4.2, '#5a9a48');
+      H(-5, -21, 1.0, 0.2); H(5, -22, 1.0, 1); H(0, -26, 1.1, 0.5);
+      drawPotBase('clay', 20);
+    } else if (t === 'poinsettia') {
+      leafBall(-5, -16, 6, 4.4, '#2f6a3a', '#1f4a2a'); leafBall(5, -16.5, 6, 4.4, '#2f6a3a', '#1f4a2a');
+      H(-4, -21, 1.15, 0.3); H(5, -22, 1.1, 0.9); H(0.5, -25.5, 1.2, 0.6);
+      drawPotBase('clay', 20); O.blobO([[-9.6, -8.4], [9.6, -8.4], [9.2, -6.6], [-9.2, -6.6]], '#e8c45a');
+    } else if (t === 'plumblossom') {
+      O.curve([[0, -12], [-2, -20], [-6, -27], [-9, -29]], CM.ink, 2.6); O.curve([[0, -12], [-2, -20], [-6, -27], [-9, -29]], '#5a3a2a', 1.5);
+      O.curve([[-1, -18], [3, -23], [7, -26]], CM.ink, 2.2); O.curve([[-1, -18], [3, -23], [7, -26]], '#5a3a2a', 1.2);
+      H(-6, -27, 1.0, 0); H(5, -24, 0.95, 0); H(-2, -21, 0.8, 0);
+      O.blobO([[-10, -11], [10, -11], [8, -1], [-8, -1]], '#4a5a6a'); O.e(0, -11, 9.6, 1.6, '#6a7a6a');
+    } else _dp2(t);
+  };
+}
+Object.assign(PLANTS, {
+  tulip: ['.N...Y..R.', 'NNN.YYY.RR', '.N...Y..R.', '..L..L..L.', '..L.LL.LL.', '...LLLL...', '....LL....', '....L.....'],
+  chrysanthemum: ['..YYY.....', '.YuYuY.YY.', '..YYY.YuY.', '.LL.L..Y..', '.LlLL.LL..', '..LLlLL...', '...LLL....', '....L.....'],
+  poinsettia: ['..R.R.....', '.RRrRR.R..', '..RRR.RRR.', '.R.L..RR..', '.LlLL.L...', '..LLlLL...', '...LLL....', '....L.....'],
+  plumblossom: ['N.......N.', '.Nt...tN..', '..tN.Nt...', '...t.t....', '...ttt....', '....t.....', '....t.....', '....t.....'],
+});
+Object.assign(ICONS, {
+  tulip: ['N.N..', 'NNN..', '.N...', '..L..', '..L..'],
+  chrysanthemum: ['YuY..', 'uYYu.', 'YuY..', '..L..', '..L..'],
+  poinsettia: ['R.R..', 'RrRR.', '.RR..', '..L..', '..L..'],
+  plumblossom: ['N..N.', '.tN..', '..t..', '..t..', '..t..'],
+});
+
+// ---------- 限定衣服 ----------
+OUTFITS.push(
+  { id: 'sakura', slot: 'hat', name: '櫻花髮夾', r: 'SR', limited: 'spring' },
+  { id: 'melon', slot: 'hat', name: '西瓜帽', r: 'SR', limited: 'summer' },
+  { id: 'maple', slot: 'cape', name: '楓葉披風', r: 'SR', limited: 'autumn', c: '#d8602a', d: '#ffb84a' },
+  { id: 'muff', slot: 'hat', name: '毛毛耳罩', r: 'SR', limited: 'winter' },
+);
+{
+  const _hd = hatDraw;
+  hatDraw = function (Q, x, y, k, id) {
+    const P = pts => pts.map(([a, b]) => [x + a * k, y + b * k]);
+    if (id === 'sakura') { for (const [dx, dy, s] of [[-7, 1, 1], [-2.5, -1, 0.8]]) { for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; Q.ell(x + (dx + Math.cos(a) * 2.2 * s) * k, y + (dy + Math.sin(a) * 2.2 * s) * k, 1.9 * s * k, 1.9 * s * k, '#ffc8dc'); } Q.ellF(x + dx * k, y + dy * k, 1.1 * s * k, 1.1 * s * k, '#ff7aa0'); } return; }
+    if (id === 'melon') { Q.poly(P([[-12, 1], [12, 1], [9, -7], [0, -10], [-9, -7]]), '#4fa84a'); for (const u of [-6, 0, 6]) Q.line(P([[u, 0], [u * 0.8, -9]]), '#2f6a2a', 1.4 * k); Q.poly(P([[-12.6, 1.8], [12.6, 1.8], [12.2, -1.6], [-12.2, -1.6]]), '#ff6a6a'); for (const u of [-7, -2, 3, 8]) Q.ellF(x + u * k, y - 0.2 * k, 0.8 * k, 0.6 * k, '#2a1a1a'); return; }
+    if (id === 'muff') { Q.line(P([[-10, 2], [-7, -8], [0, -11], [7, -8], [10, 2]]), '#e86a8a', 2.2 * k); for (const s of [-1, 1]) { Q.ell(x + s * 11 * k, y + 3 * k, 4.6 * k, 5.2 * k, '#fff2f6'); Q.ellF(x + s * 11 * k, y + 3 * k, 2.4 * k, 2.8 * k, '#ffd0de'); } return; }
+    return _hd(Q, x, y, k, id);
+  };
+  const _ex = exchangeOutfit;
+  exchangeOutfit = function (run, id) { const o = outfitById(id); if (o && o.limited) return false; return _ex(run, id); };
+}
+
+function seasonBriefHTML(run) {
+  if ((run.month || 1) <= 1) return '';
+  const S = seasonOf(run), Q = seasonQ(run);
+  const left = S.quest.filter(q => (Q.prog[q.k] || 0) < q.n).map(q => q.txt);
+  return `<p class="hint">${S.emoji} ${S.name}：${esc(S.rules)}${Q.done ? '　季節任務完成了！' : left.length ? `　季節任務還差：${esc(left.join('、'))}` : ''}${rivalActive(run) ? '　今晚煤炭可能會出現。' : ''}</p>`;
+}
+
+// ================= 花喵幫遠征 =================
+// 派花喵幫的貓去遠一點的地方（一到三晚），回來帶著花、插枝、罐罐、紀念品，還有一篇遠征日記。
+//   ・去遠征的貓那幾晚不能幫忙偷巷子的花
+//   ・每隻貓會升級（最多五級）：級數越高，遠征越順利、帶回越多
+//   ・特定的組合有默契加成（例如小黑＋煤炭：影子雙人組，絕對不會失手）
+//   ・完成遠征會解鎖更遠的地方；每個地方第一次去會帶回一樣紀念品（圖鑑「事件」頁）
+//   ・山上的苗圃有稀有插枝（配種用）、花博公園有神秘的種子（新品種的線索）
+const EXPEDS = [
+  { id: 'river', name: '河堤花海', nights: 1, need: 1, risk: 0.08, unlock: 0, souvenir: '河堤撿到的漂亮石頭', desc: '河堤邊開滿野花，近又安全。', loot: { flowers: [['sunflower', 'babys', 'periwinkle', 'carnation'], 4, 6], cans: [4, 8] } },
+  { id: 'market', name: '夜市後巷', nights: 1, need: 1, risk: 0.15, unlock: 0, souvenir: '夜市的小木頭彈珠', desc: '攤販收攤後，後巷有吃不完的東西。', loot: { cans: [10, 20], fish: [1, 2], flowers: [['rose', 'carnation'], 1, 3] } },
+  { id: 'campus', name: '大學校園', nights: 2, need: 2, risk: 0.18, unlock: 2, souvenir: '一張被叼回來的考卷（58 分）', desc: '校園裡的繡球和桔梗開得很好，可是晚上有警衛。', loot: { flowers: [['hydrangea', 'lisianthus', 'magnolia', 'jasmine'], 5, 8], cans: [6, 12], gacha: [0, 1] } },
+  { id: 'wholesale', name: '花市批發場', nights: 2, need: 2, risk: 0.22, unlock: 2, souvenir: '批發場的紅色拍賣號碼牌', desc: '凌晨的花市，地上掉了好多插枝。', loot: { cuts: [['rose', 'hydrangea', 'jasmine', 'osmanthus', 'lisianthus', 'carnation', 'sunflower', 'magnolia', 'babys', 'bougain'], 3, 5], flowers: [['rose', 'lisianthus', 'hydrangea'], 3, 5] } },
+  { id: 'nursery', name: '山上的苗圃', nights: 3, need: 3, risk: 0.28, unlock: 4, souvenir: '苗圃老闆的舊草帽', desc: '路很遠，可是有平常拿不到的稀有插枝。', loot: { cuts: [['peony', 'orchid', 'tanhua', 'camellia', 'plumeria'], 2, 4], flowers: [['peony', 'orchid', 'tanhua'], 1, 3], clue: [1, 1] } },
+  { id: 'expo', name: '花博公園', nights: 3, need: 3, risk: 0.32, unlock: 6, souvenir: '花博紀念徽章', desc: '全台灣最大的花園。帶回來的東西可能改變一切。', loot: { flowers: [['peony', 'orchid', 'hydrangea', 'lisianthus', 'rose'], 6, 10], cans: [20, 40], seed: [1, 1], money: [8000, 16000] } },
+];
+const EXP_SYNERGY = [
+  { a: 'black', b: 'coal', name: '影子雙人組', desc: '絕對不會失手', safe: true },
+  { a: 'calico', b: 'white', name: '招福組合', desc: '帶回的東西多三成', more: 1.3 },
+  { a: 'ginger', b: 'calico', name: '大橘帶路', desc: '多叼回 2 朵花', plus: 2 },
+  { a: 'white', b: 'coal', name: '黑白配', desc: '帶回一條魚', fish: 1 },
+];
+const EXP_XP = [0, 2, 5, 9, 14];
+function expOf(run) { return run.exped || (run.exped = { active: [], done: 0, seen: {}, log: [] }); }
+function memberLv(st) { let lv = 1; for (let i = 0; i < EXP_XP.length; i++) if ((st.xp || 0) >= EXP_XP[i]) lv = i + 1; return lv; }
+function expUnlocked(run, d) { return expOf(run).done >= d.unlock; }
+function freeMembers(run) { return gangMembers(run).filter(m => { const st = gangOf(run)[m.id]; return !st.caught && !st.away && !st.rest; }); }
+function synergyOf(ids) { return EXP_SYNERGY.filter(s => ids.includes(s.a) && ids.includes(s.b)); }
+function startExped(run, id, ids) {
+  const d = EXPEDS.find(x => x.id === id), E = expOf(run);
+  if (!d || !expUnlocked(run, d) || ids.length < d.need || E.active.some(a => a.id === id)) return false;
+  const G2 = gangOf(run);
+  for (const m of ids) { const st = G2[m]; if (!st || st.caught || st.away || st.rest) return false; }
+  for (const m of ids) G2[m].away = id;
+  E.active.push({ id, ids: ids.slice(), left: d.nights });
+  return true;
+}
+const rint = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+function resolveExped(run, a) {
+  const d = EXPEDS.find(x => x.id === a.id), E = expOf(run), G2 = gangOf(run);
+  const mem = a.ids.map(id => GANG.find(m => m.id === id)).filter(Boolean);
+  const lvSum = a.ids.reduce((s, id) => s + memberLv(G2[id] || {}), 0);
+  const syn = synergyOf(a.ids);
+  const safe = syn.some(s => s.safe) || a.ids.includes('black') && d.risk < 0.2;
+  const fail = !safe && Math.random() < Math.max(0.02, d.risk - lvSum * 0.03);
+  const more = syn.reduce((k, s) => k * (s.more || 1), 1) * (1 + (lvSum - a.ids.length) * 0.06);
+  const out = { id: d.id, name: d.name, ids: a.ids, names: mem.map(m => m.name), fail, flowers: [], cuts: [], cans: 0, fish: 0, money: 0, gacha: 0, clue: null, seed: null, souvenir: null, syn: syn.map(s => s.name), lvup: [], diary: '' };
+  if (!fail) {
+    const L = d.loot;
+    if (L.flowers) { const n = Math.round(rint(L.flowers[1], L.flowers[2]) * more) + syn.reduce((k, s) => k + (s.plus || 0), 0) + (a.ids.includes('ginger') ? 1 : 0); for (let i = 0; i < n; i++) out.flowers.push(pick(L.flowers[0])); if (a.ids.includes('calico') && Math.random() < 0.4) out.flowers.push(pick(['peony', 'orchid'])); }
+    if (L.cuts) { const n = Math.round(rint(L.cuts[1], L.cuts[2]) * more); for (let i = 0; i < n; i++) out.cuts.push(pick(L.cuts[0])); }
+    if (L.cans) out.cans = Math.round(rint(L.cans[0], L.cans[1]) * more);
+    if (L.fish) out.fish = rint(L.fish[0], L.fish[1]);
+    out.fish += syn.reduce((k, s) => k + (s.fish || 0), 0);
+    if (L.money) out.money = Math.round(rint(L.money[0], L.money[1]) * more / 100) * 100;
+    if (L.gacha) out.gacha = rint(L.gacha[0], L.gacha[1]);
+    if (L.clue && typeof breedOf === 'function') {
+      const B = breedOf(run), cand = HYBRID_ORDER.filter(k => !B.found[k] && !(B.hints[k] && B.hints[k].a && B.hints[k].b));
+      if (cand.length) { const k = pick(cand); const h = B.hints[k] || (B.hints[k] = {}); if (!h.a) h.a = 1; else h.b = 1; out.clue = k; }
+    }
+    if (L.seed && typeof breedOf === 'function') {
+      const B = breedOf(run), cand = HYBRID_ORDER.filter(k => !B.found[k]);
+      if (cand.length) { const k = pick(cand); B.hints[k] = { a: 1, b: 1 }; out.seed = k; }
+    }
+    if (!E.seen[d.id]) { E.seen[d.id] = run.nightIdx || 1; out.souvenir = d.souvenir; }
+  } else {
+    for (const id of a.ids) if (G2[id]) G2[id].rest = 2;
+    out.cans = rint(1, 3);
+  }
+  // 經驗值
+  for (const id of a.ids) {
+    const st = G2[id]; if (!st) continue;
+    const was = memberLv(st); st.xp = (st.xp || 0) + d.nights + (fail ? 0 : 1); st.exps = (st.exps || 0) + 1;
+    if (memberLv(st) > was) out.lvup.push(GANG.find(m => m.id === id).name + ' Lv.' + memberLv(st));
+  }
+  E.done += fail ? 0 : 1;
+  out.diary = expDiary(d, out);
+  E.log.unshift({ n: run.nightIdx || 1, id: d.id, fail, names: out.names }); if (E.log.length > 12) E.log.length = 12;
+  return out;
+}
+function expDiary(d, o) {
+  const who = o.names.join('和');
+  if (o.fail) return pick([`${who}在${d.name}被人發現，一路逃回來，累得趴在貓窩裡起不來（休息一晚）。`, `${who}在${d.name}迷路了，繞了好久才回家，什麼都沒帶到（休息一晚）。`]);
+  const lines = {
+    river: [`${who}在河堤上追了一整晚的螢火蟲，順便叼回一大把野花。`, `河堤的風好舒服，${who}在草地上打滾，回來全身都是花瓣。`],
+    market: [`${who}在夜市後巷被炸雞攤的老闆餵得飽飽的，還偷偷帶了魚回來。`, `${who}跟夜市的流浪貓們交換了情報，順便叼回幾個罐頭。`],
+    campus: [`${who}在大學圖書館的窗台上睡了一晚，回程經過繡球花步道。`, `${who}被一群熬夜的大學生拍照、餵食，臨走前從花壇叼了好幾朵花。`],
+    wholesale: [`凌晨三點的花市好熱鬧，${who}在推車底下撿了一堆插枝。`, `${who}跟著送貨的機車溜進批發場，叼回來的插枝夠種好幾盆。`],
+    nursery: [`山上的苗圃好冷，${who}縮在溫室旁邊，等老闆睡著才行動。`, `${who}爬了一整晚的山路，在苗圃的角落找到幾支稀有的插枝。`],
+    expo: [`${who}在花博公園的大溫室裡迷路，卻意外找到一顆神秘的種子。`, `${who}躲過三個警衛、兩隻狗，從全台灣最大的花園凱旋歸來。`],
+  }[d.id];
+  return pick(lines);
+}
+// 每晚結束：遠征的進度
+{
+  const _gn = gangNight;
+  gangNight = function (run, n) {
+    // 休息、遠征中的貓不出門
+    const G2 = gangOf(run), hide = [];
+    for (const id in G2) { const st = G2[id]; if (st && (st.away || st.rest) && !st.caught) { hide.push([id, st.caught]); st.caught = st.away || 'rest'; } }
+    const res = _gn(run, n);
+    for (const [id, c] of hide) G2[id].caught = c;
+    for (const id in G2) if (G2[id] && G2[id].rest > 0 && !G2[id].away) G2[id].rest--;
+    return res;
+  };
+  const _nd = Flow.nightDone;
+  Flow.nightDone = function (res) {
+    const run = G.run, E = expOf(run), back = [];
+    for (const a of E.active) a.left--;
+    for (const a of E.active.filter(a => a.left <= 0)) back.push(resolveExped(run, a));
+    E.active = E.active.filter(a => a.left > 0);
+    // 帶回來的花直接進店裡（算在今晚的花裡）
+    for (const o of back) for (const t of o.flowers) res.deposited.push({ t, fresh: 0.9, owner: null, raid: true, gang: 'exp' });
+    const r = _nd.call(this, res);
+    // 今晚才回來的貓：明晚開始可以出門
+    for (const o of back) for (const id of o.ids) if (gangOf(run)[id]) gangOf(run)[id].away = null;
+    const L = run.lastNight;
+    if (L) L.exped = back;
+    for (const o of back) {
+      run.cans += o.cans; run.money += o.money; if (L) L.now += o.money;
+      if (o.fish) { const Z = zonesOf(run); Z.fish = (Z.fish || 0) + o.fish; }
+      if (o.cuts.length) { const cut = run.cuttings || (run.cuttings = {}); for (const t of o.cuts) cut[t] = Math.min(9, (cut[t] || 0) + 1); }
+      if (o.gacha) { const W = wardrobe(run); for (let i = 0; i < o.gacha; i++) { const x = rollOne(run, false); o.gachaGot = (o.gachaGot || []).concat(x.it.name); } }
+    }
+    if (back.length) checkAchievements(run);
+    return r;
+  };
+}
+function expedTallyHTML(R) {
+  const ex = R.exped || []; if (!ex.length) return '';
+  return `<div class="newab exped"><span class="tagnew">遠征回來了</span>${ex.map(o => {
+    const bits = [];
+    if (o.flowers.length) bits.push(`花 ${o.flowers.length} 朵`);
+    if (o.cuts.length) bits.push(`插枝：${[...new Set(o.cuts)].map(t => FLOWERS[t].name).join('、')}`);
+    if (o.cans) bits.push(`罐罐 +${o.cans}`); if (o.fish) bits.push(`小魚 +${o.fish}`); if (o.money) bits.push(money(o.money));
+    if (o.gachaGot) bits.push(`撿到衣服：${o.gachaGot.join('、')}`);
+    if (o.clue) bits.push('新品種的線索 +1'); if (o.seed) bits.push(`神秘的種子：${FLOWERS[o.seed].name}的配方！`);
+    return `<p><b>${o.name}</b>（${o.names.join('、')}）${o.syn.length ? `<em class="syn">${o.syn.join('、')}</em>` : ''}<br><i class="diary">${esc(o.diary)}</i>${bits.length ? '<br>' + bits.join('・') : ''}${o.souvenir ? `<br>紀念品：${esc(o.souvenir)}` : ''}${o.lvup.length ? `<br>升級了：${o.lvup.join('、')}` : ''}</p>`;
+  }).join('')}</div>`;
+}
+// ---------- 傍晚：老貓攤的遠征板 ----------
+let EXSEL = null;   // { id, ids: [] }
+function expedHTML(run) {
+  if (!gangOpen(run) || !gangMembers(run).length) return '';
+  const E = expOf(run), G2 = gangOf(run), free = freeMembers(run);
+  const act = E.active.map(a => { const d = EXPEDS.find(x => x.id === a.id); return `<li class="exp-on"><b>${d.name}</b><span>${a.ids.map(id => GANG.find(m => m.id === id).name).join('、')}　還要 ${a.left} 晚</span></li>`; }).join('');
+  const rows = EXPEDS.map(d => {
+    const ok = expUnlocked(run, d), busy = E.active.some(a => a.id === d.id), sel = EXSEL && EXSEL.id === d.id;
+    if (!ok) return `<li class="exp locked"><div><b>？？？</b><span>完成 ${d.unlock} 次遠征後解鎖</span></div></li>`;
+    const pickHTML = sel ? `<div class="exp-pick">${gangMembers(run).map(m => { const st = G2[m.id], can = free.includes(m), on = EXSEL.ids.includes(m.id); return `<button type="button" class="exp-m ${on ? 'on' : ''}" data-expm="${m.id}" ${can ? '' : 'disabled'}>${m.name}<small>Lv.${memberLv(st)}${st.away ? '・遠征中' : st.rest ? '・休息' : st.caught ? '・被抓' : ''}</small></button>`; }).join('')}
+      ${synergyOf(EXSEL.ids).map(s => `<p class="exp-syn">默契：${s.name}（${s.desc}）</p>`).join('')}
+      <button type="button" class="buy exp-go" data-expgo="1" ${EXSEL.ids.length >= d.need ? '' : 'disabled'}>出發（${EXSEL.ids.length}/${d.need}）</button></div>` : '';
+    return `<li class="exp ${busy ? 'busy' : ''} ${sel ? 'sel' : ''}"><div><b>${d.name}${E.seen[d.id] ? ' ✔' : ''}</b><span>${esc(d.desc)}</span><span class="exp-meta">${d.nights} 晚・要 ${d.need} 隻貓・危險 ${'！'.repeat(Math.ceil(d.risk * 10 / 1.2))}</span></div>
+      ${busy ? '<em>遠征中</em>' : `<button type="button" class="exp-b" data-exp="${d.id}">${sel ? '取消' : '派貓去'}</button>`}${pickHTML}</li>`;
+  }).join('');
+  return `<h3 class="gang-h">花喵幫遠征<small>完成 ${E.done} 次・遠征的貓那幾晚不會幫忙偷花</small></h3>${act ? `<ul class="exp-act">${act}</ul>` : ''}<ul class="exp-list">${rows}</ul>`;
+}
+function bindExped(card, run, keep) {
+  card.querySelectorAll('[data-exp]').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); const id = b.dataset.exp; EXSEL = EXSEL && EXSEL.id === id ? null : { id, ids: [] }; keep(); }));
+  card.querySelectorAll('[data-expm]').forEach(b => b.addEventListener('click', () => {
+    if (!EXSEL) return; const id = b.dataset.expm, d = EXPEDS.find(x => x.id === EXSEL.id);
+    const i = EXSEL.ids.indexOf(id);
+    if (i >= 0) EXSEL.ids.splice(i, 1); else if (EXSEL.ids.length < Math.max(d.need, 3)) EXSEL.ids.push(id);
+    SFX.play('ui'); keep();
+  }));
+  card.querySelectorAll('[data-expgo]').forEach(b => b.addEventListener('click', () => {
+    if (!EXSEL) return; const d = EXPEDS.find(x => x.id === EXSEL.id);
+    if (startExped(run, EXSEL.id, EXSEL.ids)) { SFX.play('meow'); UI.toast(`${EXSEL.ids.map(id => GANG.find(m => m.id === id).name).join('、')}出發去${d.name}了！${d.nights} 晚後回來`, 3000); }
+    EXSEL = null; keep();
+  }));
+}
+function expedBookHTML(run) {
+  const E = expOf(run);
+  if (!gangOpen(run)) return '';
+  return `<h3>遠征紀念品　${Object.keys(E.seen).length}/${EXPEDS.length}</h3><ul class="ev-list">${EXPEDS.map(d => `<li class="${E.seen[d.id] ? 'got' : ''}"><b>${E.seen[d.id] ? esc(d.souvenir) : '？？？'}</b><span>${E.seen[d.id] ? d.name : ''}</span></li>`).join('')}</ul>`;
+}
+
+// ================= 口碑等級 =================
+// 第二個月起，每天傍晚結算「口碑」：賣得好、包花束、有新品種、VIP 熟客、比對面連鎖店受歡迎都會加分；
+// 可是鄰居起疑（警戒兩顆星以上）就會有「花是偷來的？」的謠言，口碑會掉。偷太兇，名聲也會受影響。
+// 衍生：
+//   ・客人每天留評論（評論牆），會提到店裡真的發生過的事
+//   ・升級有獎勵：賣價加成、雜誌採訪、網紅打卡、電視台採訪、婚禮包場……
+//   ・店面跟著變：門口的口碑星星招牌越掛越亮，晚上也看得到
+const REP_LV = [
+  { xp: 0, name: '巷子裡的小花店' },
+  { xp: 12, name: '附近有點名氣', perk: '雜誌來採訪' },
+  { xp: 30, name: '鄰里口耳相傳', perk: '賣價 ×1.05' },
+  { xp: 55, name: '網路上的話題', perk: '網紅來打卡（客人來得比較快）' },
+  { xp: 85, name: '區域人氣店', perk: '門口掛上金色星星招牌' },
+  { xp: 120, name: '城市裡的名店', perk: '賣價 ×1.10' },
+  { xp: 165, name: '電視台指定', perk: '電視台來採訪' },
+  { xp: 220, name: '婚禮花藝首選', perk: '大型委託的報酬 ×1.3' },
+  { xp: 285, name: '巷弄名店', perk: '牆上掛「巷弄名店」匾額，賣價 ×1.15' },
+  { xp: 360, name: '傳說中的花店', perk: '稱號「傳說花店」，賣價 ×1.20' },
+];
+const REP_PRICE = [1, 1, 1.05, 1.05, 1.05, 1.1, 1.1, 1.1, 1.15, 1.2];
+function repOf(run) { return run.rep || (run.rep = { xp: 0, lv: 1, reviews: [], seen: {} }); }
+function repLv(run) { const R = repOf(run); let lv = 1; for (let i = 0; i < REP_LV.length; i++) if (R.xp >= REP_LV[i].xp) lv = i + 1; return lv; }
+{
+  const _fv = flowerValue;
+  flowerValue = function (run, t, fresh) { return _fv(run, t, fresh) * (run && run.rep ? REP_PRICE[repLv(run) - 1] : 1); };
+}
+// 大型委託報酬加成
+if (typeof commissionTake === 'function') {
+  const _ct = commissionTake;
+  commissionTake = function (run, stock) { const r = _ct(run, stock); if (r && r.paid && repLv(run) >= 8) r.paid = Math.round(r.paid * 1.3); return r; };
+}
+// ---------- 評論 ----------
+const REVIEW_WHO = ['路過的上班族', '附近的大學生', '帶小孩的媽媽', '散步的阿公', '外地來的觀光客', '咖啡廳老闆', '花藝愛好者', '隔壁里的太太', '剛下班的護理師', '騎腳踏車的高中生'];
+function makeReview(S, ctx) {
+  const run = S.run, good = [], bad = [];
+  if (ctx.hy.length) good.push(`買到${FLOWERS[pick(ctx.hy)].name}！全世界好像只有這家有。`);
+  if (ctx.bq) good.push('老闆娘包的花束配色好美，送人超有面子。');
+  if (ctx.kinds >= 6) good.push('花的種類好多，每次來都有新東西。');
+  if (storeOf(run).catcorner) good.push('店裡有好多貓，順便吸貓，太療癒了。');
+  good.push(pick(['櫃台那隻虎斑貓好可愛，一直對我眨眼睛。', '花很新鮮，老闆娘人超好。', '價錢實在，比連鎖店有溫度。', '店裡好香，一進門心情就變好。']));
+  if ((storeOf(run).expand || 0) >= 1) good.push('買花還可以喝咖啡，週末來坐一下剛好。');
+  if (ctx.season) good.push(`${ctx.season}的花擺得好有季節感。`);
+  if (ctx.rumor.length) bad.push(`聽說${ctx.rumor.map(o => OWNERS[o].person).join('、')}家的花一直被偷……這家店的花該不會是……？`);
+  if (!ctx.kinds) bad.push('今天去的時候店裡沒什麼花，有點可惜。');
+  if (ctx.chainLow) bad.push('對面的連鎖店比較便宜耶……');
+  let score = 3.4 + good.length * 0.35 - bad.length * 0.9 + rnd(-0.6, 0.6);
+  score = clamp(Math.round(score), 1, 5);
+  const text = score <= 2 && bad.length ? pick(bad) : score >= 4 ? pick(good) : pick(good.concat(bad));
+  return { who: pick(REVIEW_WHO), s: score, text, n: run.nightIdx || 1 };
+}
+// 傍晚結算口碑
+function repDayEnd(S) {
+  const run = S.run;
+  if ((run.month || 1) < 2 || S.n < 2 || S.n > 4) return null;
+  const R = repOf(run), before = repLv(run);
+  const start = S.dayStart || [];
+  const ctx = {
+    hy: start.filter(t => HYBRIDS[t]), bq: S.bqSold || 0, kinds: new Set(start).size,
+    rumor: HEAT_OWNERS.filter(o => starsOf(run, o) >= 2 && o !== 'mansion'),
+    chainLow: chainActive(run) && chainOf(run).share < 40,
+    season: (run.month || 1) > 1 ? seasonOf(run).name : null,
+  };
+  const parts = [];
+  const add = (v, why) => { if (v) parts.push([v, why]); };
+  add(Math.min(6, Math.floor((S.daySales || 0) / 3000)), '生意');
+  add(Math.min(4, ctx.bq * 2), '花束');
+  if (ctx.hy.length) add(3, '新品種');
+  add(REGULARS.filter(x => (regOf(run)[x.id] || 0) >= VIP_AT).length, 'VIP 熟客');
+  if (chainActive(run) && chainOf(run).share >= 60) add(2, '比對面受歡迎');
+  if (chainOf(run).closed) add(1, '打敗連鎖店的名聲');
+  add(Math.min(2, (run.fans || []).length), '粉絲');
+  if (ctx.rumor.length) add(-3 * ctx.rumor.length, '偷花的謠言');
+  if (!ctx.kinds) add(-2, '店裡沒花');
+  const n = 1 + (Math.random() < 0.5 ? 1 : 0), revs = [];
+  for (let i = 0; i < n; i++) { const r = makeReview(S, ctx); revs.push(r); R.reviews.unshift(r); }
+  if (R.reviews.length > 30) R.reviews.length = 30;
+  const avg = revs.reduce((a, r) => a + r.s, 0) / revs.length;
+  add(avg >= 4.5 ? 2 : avg >= 4 ? 1 : avg <= 2 ? -2 : 0, '評論');
+  const delta = parts.reduce((a, p) => a + p[0], 0);
+  R.xp = Math.max(0, R.xp + delta);
+  const after = repLv(run);
+  if (after > before) R.lvUp = after;
+  return { delta, parts, revs, before, after };
+}
+// ---------- 升級的小故事 ----------
+function* repStoryScript(S) {
+  const run = S.run, R = repOf(run), lv = repLv(run);
+  for (let k = 2; k <= lv; k++) {
+    if (R.seen[k]) continue;
+    R.seen[k] = 1;
+    const wasOn = S.shopOn; S.shopOn = false;
+    UI.banner(`口碑 Lv.${k}・${REP_LV[k - 1].name}`);
+    if (k === 2) {
+      const c = S.customer('shopB'); yield S.walkIn(c);
+      yield* S.talk(c, '雜誌編輯', [['您好，我們是《城市散步》雜誌。最近好多讀者推薦妳的店！'], ['可以拍幾張照片嗎？……那隻貓也一起！']]);
+      yield S.walkOut(c);
+      run.money += 5000; run.cans += 10; SFX.play('coin');
+      UI.toast('上雜誌了！採訪費 NT$ 5,000、罐罐 +10', 3600);
+    } else if (k === 4) {
+      const c = S.customer('shopE'); yield S.walkIn(c);
+      yield* S.talk(c, '網紅小花', [['哈囉大家～我現在在一間超可愛的巷弄花店！'], ['你們看這隻貓！（花喵配合地翻肚）'], ['連結放在下面，大家快來打卡～']]);
+      yield S.walkOut(c);
+      run.flags.buzz = (run.nightIdx || 0) + 4; SFX.play('heart');
+      UI.toast('網紅打卡！接下來幾天客人來得特別快', 3600);
+    } else if (k === 7) {
+      const c = S.customer('shopA'); yield S.walkIn(c);
+      yield* S.talk(c, '電視台記者', [['我們是晚間新聞的「巷弄裡的小確幸」單元！'], ['聽說這家店的老闆娘，一個人撐起了整條巷子的花香……'], ['還有一隻傳說中會帶來好運的貓？']]);
+      yield S.walkOut(c);
+      run.money += 20000; run.cans += 30; SFX.play('coin');
+      UI.toast('上電視了！通告費 NT$ 20,000、罐罐 +30', 3600);
+    } else {
+      yield S.say(k === 10 ? '花喵……我們變成「傳說中的花店」了。從快倒閉的小店，走到這裡……謝謝你。' : `大家都說我們是「${REP_LV[k - 1].name}」了！`);
+      if (REP_LV[k - 1].perk) UI.toast(`口碑 Lv.${k}：${REP_LV[k - 1].perk}`, 3600);
+    }
+    UI.hideDialog(); S.shopOn = wasOn;
+    checkAchievements(run);
+    return true;
+  }
+  return false;
+}
+// ---------- 花店分頁：口碑 ----------
+function repShopHTML(run) {
+  if ((run.month || 1) < 2) return '';
+  const R = repOf(run), lv = repLv(run), cur = REP_LV[lv - 1], nx = REP_LV[lv];
+  const k = nx ? (R.xp - cur.xp) / (nx.xp - cur.xp) : 1;
+  const revs = R.reviews.slice(0, 3).map(r => `<li><span class="rv-s">${'★'.repeat(r.s)}<i>${'★'.repeat(5 - r.s)}</i></span><b>${esc(r.who)}</b><p>${esc(r.text)}</p></li>`).join('');
+  return `<div class="rep-box"><div class="rep-top"><b>口碑 Lv.${lv}</b><span>${esc(cur.name)}${REP_PRICE[lv - 1] > 1 ? `・賣價 ×${REP_PRICE[lv - 1]}` : ''}</span></div>
+    <div class="rep-bar"><i style="width:${Math.round(k * 100)}%"></i></div>
+    <p class="hint">${nx ? `下一級：${esc(nx.perk || nx.name)}（${R.xp}/${nx.xp}）` : '已經是最高級了！'}　鄰居起疑會傳出偷花的謠言，口碑會掉。</p>
+    ${revs ? `<ul class="rv-list">${revs}</ul>` : ''}</div>`;
+}
+function repBookHTML(run) {
+  const R = repOf(run);
+  if (!R.reviews.length) return '<p class="lead">第二個月起，客人會留下評論。</p>';
+  const avg = R.reviews.reduce((a, r) => a + r.s, 0) / R.reviews.length;
+  return `<p class="lead">客人留下的評論（最近 30 則）。平均 <b class="px">${avg.toFixed(1)}</b> 顆星。</p><ul class="rv-list">${R.reviews.map(r => `<li><span class="rv-s">${'★'.repeat(r.s)}<i>${'★'.repeat(5 - r.s)}</i></span><b>${esc(r.who)}</b><p>${esc(r.text)}</p></li>`).join('')}</ul>`;
+}
+// ---------- 店面：口碑招牌 ----------
+function toonRepSign(lv) {
+  return toonFrameInfo(toonFrame('repsign-' + lv, 46, 30, () => {
+    const gold = lv >= 5, plaque = lv >= 9;
+    O.blobO([[-20, -26], [20, -26], [20, -6], [-20, -6]], plaque ? '#5a2a1a' : gold ? '#2a2440' : '#f2e8d8');
+    O.blobO([[-18, -24], [18, -24], [18, -8], [-18, -8]], plaque ? '#8a3a24' : gold ? '#3a3260' : '#fff8ec');
+    const n = Math.min(5, Math.ceil(lv / 2));
+    for (let i = 0; i < n; i++) { const x = -((n - 1) * 6) / 2 + i * 6; for (let k = 0; k < 5; k++) { const a = k / 5 * Math.PI * 2 - Math.PI / 2; O.e(x + Math.cos(a) * 1.4, -16 + Math.sin(a) * 1.4, 1.5, 1.5, gold || plaque ? '#ffd84d' : '#ff9fbb'); } O.dot(x, -16, 1.2, gold || plaque ? '#fff2a8' : '#ffd0de'); }
+    O.curve([[-8, -26], [0, -32], [8, -26]], CM.ink, 1.2);
+  }), false, 0.5, 0.95);
+}
+function repDecor3D(sc, F) {
+  const run = sc.run; if ((run.month || 1) < 2) return;
+  const lv = repLv(run); if (lv < 2) return;
+  const cpd = Math.cos(R3.pitch);
+  pushSprite(F.sprites, ART.fix(toonRepSign(lv)), 10.6 * TS, 3.6 * TS, { lift: 1.25 * cpd, minLight: [0.75, 0.7, 0.65] });
+  if (lv >= 5) glowQuad(F.glow, 10.6, 1.9, 3.7, 0.7, [1, 0.85, 0.4, 0.22]);
+}
+function repNight3D(sc, F, L) {
+  const run = sc.run; if ((run.month || 1) < 2) return;
+  const lv = repLv(run); if (lv < 5) return;
+  pushSprite(F.sprites, ART.fix(toonRepSign(lv)), 10.2 * TS, 5.15 * TS, { lift: 1.6 * Math.cos(R3.pitch), unlit: true });
+  glowQuad(F.glow, 10.2, 2.2, 5.2, 0.8, [1, 0.85, 0.4, 0.3 + 0.05 * Math.sin((sc.cat.t || 0) * 2)]);
+  L.push({ x: 10.2, y: 2.2, z: 5.6, r: 2.2, c: [0.6, 0.48, 0.2], pri: 0.8 });
+}
+
 // ================= 啟動 =================
 const G = { S: null, maps: {}, bg: {}, run: null, scene: null, icons: {}, paused: false };
 
@@ -18302,7 +19775,7 @@ function boot(data) {
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
-  window.__TH = { loadSave, clearSave, G, Flow, UI, Input, Cam, View, R3, GL3, DayScene, NightScene, setScene, newRun, CuteGame, CharmCut, OrangeCat, ART, ZN: { zoneEnter, zonesOf, LOST_ITEMS, ZONES }, OUT: { pullGacha, equipOutfit, exchangeOutfit, hasSet, activeSets, wardrobe, OUTFITS }, GEAR: { drawMeowArt2, drawBellyArt2, drawRubArt2, VXR, orangeCloseup, cuteHead, withGear, catGearFor, catRefArt, toonOrangePal: ORANGE_PAL, TAB } };
+  window.__TH = { loadSave, clearSave, G, Flow, UI, Input, Cam, View, R3, GL3, DayScene, NightScene, setScene, newRun, CuteGame, CharmCut, OrangeCat, ART, RP: { repOf, repLv, repDayEnd }, FV: (r, t, f) => flowerValue(r, t, f), RENT: rentFor, EX: { startExped, expOf, EXPEDS }, RV: { rivalOf, chainOf, initRival, startDuel, chainDayEnd }, BR: { startBreed, breedTick, breedOf, HYBRIDS, HYBRID_ORDER, royaltyOf }, ZN: { zoneEnter, zonesOf, LOST_ITEMS, ZONES }, OUT: { pullGacha, equipOutfit, exchangeOutfit, hasSet, activeSets, wardrobe, OUTFITS }, GEAR: { drawMeowArt2, drawBellyArt2, drawRubArt2, VXR, orangeCloseup, cuteHead, withGear, catGearFor, catRefArt, toonOrangePal: ORANGE_PAL, TAB } };
 }
 
 (function start() {
