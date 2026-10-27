@@ -359,7 +359,7 @@ NightScene.prototype.render3D = function () {
   }
   if (c.box && this.mode === 'play') {
     // 紙箱還能撐多久
-    const [sx, sy] = R3.at(c.x, c.y + 0.6, 1.05 + ch * cp), k = 1 - c.box.t / 15;
+    const [sx, sy] = R3.at(c.x, c.y + 0.6, 1.05 + ch * cp), k = 1 - c.box.t / (this.boxMax || 15);
     g.lineWidth = 4; g.strokeStyle = CM.ink; g.beginPath(); g.arc(sx, sy, 7, 0, 7); g.stroke();
     g.strokeStyle = k > 0.3 ? '#e8c08a' : '#ff7a5a'; g.lineWidth = 2.4; g.beginPath(); g.arc(sx, sy, 7, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * k); g.stroke();
   }

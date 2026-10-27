@@ -103,6 +103,12 @@ const ACH = [
   { id: 'rep5', name: '區域人氣店', desc: '口碑升到 Lv.5', c: r => r.rep && repLv(r) >= 5, cans: 30 },
   { id: 'rep10', name: '傳說中的花店', desc: '口碑升到 Lv.10', c: r => r.rep && repLv(r) >= 10, cans: 100, money: 50000, title: '傳說花店' },
   { id: 'five', name: '五星好評', desc: '收到 10 則五顆星的評論', c: r => ((r.rep || {}).reviews || []).filter(x => x.s >= 5).length >= 10, cans: 20 },
+  // 本事進階
+  { id: 'branch1', name: '走自己的路', desc: '選了第一條進階路線', c: r => Object.keys(r.branch || {}).length >= 1, cans: 15 },
+  { id: 'branch6', name: '全面進化', desc: '六個技能都選了進階路線', c: r => Object.keys(r.branch || {}).length >= 6, cans: 60 },
+  { id: 'combo1', name: '組合技', desc: '學會第一個組合技', c: r => COMBOS.some(x => hasCombo(r, x.id)), cans: 20 },
+  { id: 'master5', name: '熟能生巧', desc: '一個技能的熟練度練到 Lv.5', c: r => MASTERY.some(m => masteryLv(r, m) >= 5), cans: 30 },
+  { id: 'legend3', name: '傳說中的貓', desc: '學會 3 個傳說技能', c: r => LEGENDS.filter(L => L.ok(r)).length >= 3, cans: 50, title: '傳說之貓' },
   // 扭蛋
   { id: 'wd1', name: '第一件新衣', desc: '扭蛋扭到第一件衣服', c: r => Object.keys((r.wardrobe || {}).own || {}).length >= 1, cans: 5 },
   { id: 'wdset', name: '整套穿上', desc: '穿齊一整套套裝', c: r => r.wardrobe && activeSets(r).length >= 1, cans: 20 },

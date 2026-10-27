@@ -37,7 +37,7 @@ class Cat {
     if (this.top && scene.topH) { const th = scene.topH(this.x, this.y); this.h += (th - this.h) * Math.min(1, dt * 9); }
     if (!this.moving) { this.running = false; return; }
     if (this.pose === 'loaf') this.pose = null;
-    const sp = this.box ? 17 : this.running ? 62 : 30;
+    const sp = this.box ? 17 : (this.running ? 62 : 30 * (this.walkMul || 1)) * (this.dashMul || 1);
     const dx = v.x * sp * dt, dy = v.y * sp * dt;
     if (Math.abs(v.x) > Math.abs(v.y) * 0.9) this.dir = v.x > 0 ? 'right' : 'left';
     else this.dir = v.y > 0 ? 'down' : 'up';

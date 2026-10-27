@@ -41,7 +41,7 @@ NightScene.prototype.finishListen = function () {
   run.stats.listens = (run.stats.listens || 0) + 1;
   const unknown = (LISTEN_INTEL[w.owner] || []).filter(k => INTEL[k] && !run.intel[k]);
   let msg;
-  if (unknown.length && Math.random() < 0.6) {
+  if (unknown.length && Math.random() < (this.intelP || 0.6)) {
     const k = pick(unknown); run.intel[k] = run.nightIdx || 1;
     msg = `偷聽到情報：${INTEL[k]}`;
   } else {
@@ -57,9 +57,9 @@ NightScene.prototype.updateNewSkills = function (dt) {
   if (up.shadow) {
     const still = !c.moving && !c.running && !c.jump && !c.box && !c.home;
     const lit = this.litAt(c.x, c.y);
-    if (still && (!lit || up.shadow >= 2)) this.shadowT += dt; else this.shadowT = 0;
+    if (still && (!lit || up.shadow >= 2 || this.shadowAny)) this.shadowT += dt; else this.shadowT = 0;
     const was = c.shadow;
-    c.shadow = this.shadowT >= (up.shadow >= 2 ? 0.8 : 1.6);
+    c.shadow = this.shadowT >= (up.shadow >= 2 ? 0.8 : 1.6) * (this.shadowMul || 1);
     if (c.shadow && !was) {
       this.fx.text(c.x, c.y - 14, '……', '#8a80b8');
       if (!this.tips.shadow) { this.tips.shadow = 1; UI.toast('融進影子裡了！不動的時候，走過來的人幾乎看不到你', 3200); }
@@ -68,7 +68,7 @@ NightScene.prototype.updateNewSkills = function (dt) {
   // 偷聽：一動就中斷
   if (this.listening) {
     if (c.moving || c.jump) { this.listening = null; c.pose = null; this.fx.text(c.x, c.y - 14, '沒聽清楚……', '#b8b3d8'); }
-    else { this.listening.t += dt; if (this.listening.t >= (hasSet(this.run, 'detective') ? 1.2 : 2.4)) this.finishListen(); }
+    else { this.listening.t += dt; if (this.listening.t >= (hasSet(this.run, 'detective') ? 1.2 : 2.4) * (this.listenMul || 1)) this.finishListen(); }
   }
   // 跑酷連跳
   this.pk.t += dt;
@@ -76,7 +76,8 @@ NightScene.prototype.updateNewSkills = function (dt) {
     if (up.parkour && !c.jump.pk) { c.jump.dur *= 0.75; c.jump.pk = true; }
   }
   if (!c.jump && this.wasJump) {
-    if (this.pk.t <= 1.4) this.pk.n++; else this.pk.n = 1;
+    if (this.pk.t <= 1.4 + (this.pkBonus || 0)) this.pk.n++; else this.pk.n = 1;
+    if (this.pk.n === 3) this.stats.pk3 = (this.stats.pk3 || 0) + 1;
     this.pk.t = 0;
     if (this.pk.n >= 2) {
       this.fx.text(c.x, c.y - 18, `連跳 ×${this.pk.n}`, '#ffd25a', 1.3);
@@ -88,12 +89,12 @@ NightScene.prototype.updateNewSkills = function (dt) {
   this.wasJump = !!c.jump;
 };
 // 連跳中：腳步沒有聲音
-NightScene.prototype.pkSilent = function () { return !!this.run.upg.parkour && this.pk.n >= 2 && this.pk.t <= 1.4; };
+NightScene.prototype.pkSilent = function () { return !!this.run.upg.parkour && this.pk.n >= 2 && this.pk.t <= 1.4 + (this.pkBonus || 0); };
 // 偷聽時頭上的進度
 function listenOverlay(sc, g) {
   const L = sc.listening; if (!L || !g) return;
   const c = sc.cat, [sx, sy] = R3.at(c.x, c.y, 1.6 + (c.h || 0) * Math.cos(R3.pitch));
   g.fillStyle = 'rgba(20,16,40,0.7)'; g.beginPath(); g.arc(sx, sy - 18, 14, 0, TAU); g.fill();
-  g.strokeStyle = '#c8b8ff'; g.lineWidth = 3; g.beginPath(); g.arc(sx, sy - 18, 11, -Math.PI / 2, -Math.PI / 2 + TAU * Math.min(1, L.t / (hasSet(sc.run, 'detective') ? 1.2 : 2.4))); g.stroke();
+  g.strokeStyle = '#c8b8ff'; g.lineWidth = 3; g.beginPath(); g.arc(sx, sy - 18, 11, -Math.PI / 2, -Math.PI / 2 + TAU * Math.min(1, L.t / (hasSet(sc.run, 'detective') ? 1.2 : 2.4) * (sc.listenMul || 1))); g.stroke();
   CM.text(g, sx, sy - 17, '聽', '#ffffff', 11, 1, { weight: 800 });
 }

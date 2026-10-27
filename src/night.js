@@ -487,7 +487,7 @@ class NightScene {
       const tile = this.map.at(Math.floor(c.x / TS), Math.floor((c.y - 2) / TS));
       c.hidden = tile === 'b' && !c.top;
       c.home = tile === 'C' && !c.top;
-      if (c.box) { c.box.t += realDt; if (c.box.t > 15) { c.box = null; this.fx.text(c.x, c.y - 14, '啪！', '#e8c08a'); UI.toast('紙箱撐不住，破掉了！'); SFX.play('knock'); } }
+      if (c.box) { c.box.t += realDt; if (c.box.t > (this.boxMax || 15)) { c.box = null; this.fx.text(c.x, c.y - 14, '啪！', '#e8c08a'); UI.toast('紙箱撐不住，破掉了！'); SFX.play('knock'); } }
       if (this.orange) {
         this.orange.update(realDt, this);
         this.orangeLookout(realDt); this.orangeSeen(realDt);
@@ -784,7 +784,7 @@ class NightScene {
       this.fx.text(p.x, p.y - 16, f.name, '#ffe2ea', 1.4, p.top ? 0.75 + this.topH(p.x, p.y - 2) * Math.cos(0.64) : undefined);
       if (!this.tips.carry) { this.tips.carry = 1; UI.toast('叼到了！帶回花店門口的貓門才算數'); }
       // 偷別人家的花，被聽見的機會
-      this.noise(p.x, p.y - 4, 1.4 * TS, 'cat');
+      if ((this.pickNoise === undefined ? 1 : this.pickNoise) > 0) this.noise(p.x, p.y - 4, 1.4 * TS * (this.pickNoise === undefined ? 1 : this.pickNoise), 'cat');
     } else if (tg.kind === 'knock') {
       const o = tg.ref; o.used = true; this.stats.knocks++;
       if (o.knock === 'trash') {

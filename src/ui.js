@@ -363,7 +363,7 @@ const UI = {
           <div class="wallet"><img src="${G.icons.can}" alt=""><b class="px">${run.cans}</b><span>個罐罐</span></div>
           ${(run.month || 1) > 1 ? seasonQuestHTML(run) : ''}${itemsHTML(run)}${gachaHTML(run)}
           <div class="cat-looks"><figure><canvas class="cat-look" data-who="tab"></canvas><figcaption>花喵現在的樣子</figcaption></figure>${run.upg.orange ? '<figure><canvas class="cat-look" data-who="orange"></canvas><figcaption>橘貓夥伴</figcaption></figure>' : ''}</div>
-          <ul class="ups">${rows}</ul>${gangShopHTML(run)}${expedHTML(run)}`;
+          <ul class="ups">${rows}</ul>${skillTreeHTML(run)}${gangShopHTML(run)}${expedHTML(run)}`;
       }
       checkAchievements(run);
       const html = `<p class="eyebrow">傍晚</p><h2>${tab === 'store' ? '美玲的花店' : tab === 'garden' ? '頂樓花園' : tab === 'nm' ? '夜市花攤' : '巷口・老貓的攤子'}</h2>
@@ -413,7 +413,7 @@ const UI = {
         this.toast(`${nx.name}蓋好了！${nx.look}${g.story[g.lv] ? '' : '（明天早上有人會注意到）'}`, 3200);
         keep();
       }));
-      bindBreed(this.cardEl, run, keep); bindExped(this.cardEl, run, keep);
+      bindBreed(this.cardEl, run, keep); bindExped(this.cardEl, run, keep); bindSkillTree(this.cardEl, run, keep);
       this.cardEl.querySelectorAll('[data-pot]').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); pickIdx = pickIdx === +b.dataset.pot ? -1 : +b.dataset.pot; keep(); }));
       this.cardEl.querySelectorAll('[data-plant]').forEach(b => b.addEventListener('click', () => {
         if (plantPot(run, pickIdx, b.dataset.plant)) { SFX.play('buy'); this.toast(`種下${FLOWERS[b.dataset.plant].name}，${growNights(run, b.dataset.plant)} 晚後開花`, 2200); }
