@@ -104,6 +104,7 @@ NightScene.prototype.render3D = function () {
   rivalRender3D(this, F);
   heistRender3D(this, F);
   repNight3D(this, F, L);
+  obRender3D(this, F, L);
   roofwayRender3D(this, F, st);
   expNight3D(this, F, L);
   winNight3D(this, F, L);

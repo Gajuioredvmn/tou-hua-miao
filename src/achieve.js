@@ -112,6 +112,16 @@ const ACH = [
   // 屋頂任務
   { id: 'heist1', name: '老屋的花', desc: '屋頂任務：把九盆花全部救出來', c: r => ((r.heist || {}).clears || 0) >= 1, cans: 25 },
   { id: 'heistP', name: '來無影去無蹤', desc: '屋頂任務：一次都沒被發現就全部救出來', c: r => ((r.heist || {}).perfect || 0) >= 1, cans: 50, title: '屋頂上的影子' },
+  // 破解、設備
+  { id: 'counter4', name: '見招拆招', desc: '學會 4 招破解技能', c: r => OBSTACLES.filter(o => r.upg[o.skill]).length >= 4, cans: 40 },
+  { id: 'counter8', name: '防貓設施剋星', desc: '八招破解技能全部學會', c: r => OBSTACLES.every(o => r.upg[o.skill]), cans: 100, title: '防貓剋星' },
+  { id: 'equip4', name: '設備齊全', desc: '花店買了 4 樣新設備', c: r => EQUIPS.filter(e => (r.store || {})[e.id]).length >= 4, cans: 40 },
+  { id: 'equip8', name: '什麼都難不倒', desc: '花店的新設備全部買齊', c: r => EQUIPS.every(e => (r.store || {})[e.id]), cans: 100, money: 50000 },
+  // 花界風雲榜
+  { id: 'wl1', name: '初入江湖', desc: '花藝論劍：打敗第一位高手', c: r => ((r.duel || {}).beaten || 0) >= 1, cans: 15 },
+  { id: 'wl5', name: '名震一方', desc: '風雲榜打進前五名', c: r => ((r.duel || {}).beaten || 0) >= 6, cans: 50 },
+  { id: 'wl10', name: '天下第一花店', desc: '打敗花聖一枝春，坐上風雲榜第一', c: r => ((r.duel || {}).beaten || 0) >= 10, cans: 150, title: '天下第一' },
+  { id: 'wlarena3', name: '擂台霸主', desc: '天下第一的擂台守住 3 次', c: r => (((r.duel || {}).arena || {}).wins || 0) >= 3, cans: 80 },
   // 扭蛋
   { id: 'wd1', name: '第一件新衣', desc: '扭蛋扭到第一件衣服', c: r => Object.keys((r.wardrobe || {}).own || {}).length >= 1, cans: 5 },
   { id: 'wdset', name: '整套穿上', desc: '穿齊一整套套裝', c: r => r.wardrobe && activeSets(r).length >= 1, cans: 20 },

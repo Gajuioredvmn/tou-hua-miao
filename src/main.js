@@ -38,6 +38,13 @@ function reportErr(err, where) {
   console.error(err);
   const line = ((err && err.stack) || '').split('\n').find(l => /at /.test(l)) || '';
   try { UI.toast(`遊戲出了點小問題（可以截圖給我）：${msg} ${line.trim().slice(0, 60)}`, 9000); } catch (e) { }
+  try {
+    const frames = ((err && err.stack) || '').split('\n').filter(l => /at |@/.test(l)).slice(0, 3).map(l => l.trim().replace(/\(?(?:https?|blob|file):[^)]*?([^/]+:\d+:\d+)\)?/, '$1').slice(0, 70));
+    const sc = G.scene, ctx = sc ? (sc.kind || '') + (G.run ? ` m${G.run.month || 1}n${sc.n || ''}` : '') + (sc.mode ? ' ' + sc.mode : '') : '';
+    const L = JSON.parse(localStorage.getItem('thm-err') || '[]');
+    L.unshift({ w: where, m: msg.slice(0, 120), f: frames, c: ctx, t: new Date().toLocaleString('zh-TW') });
+    localStorage.setItem('thm-err', JSON.stringify(L.slice(0, 4)));
+  } catch (e) { }
 }
 function boot(data) {
   if (R3.init($('gl'), $('screen'))) $('screen').classList.add('ov');
@@ -92,7 +99,7 @@ function boot(data) {
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
-  window.__TH = { loadSave, clearSave, G, Flow, UI, Input, Cam, View, R3, GL3, DayScene, NightScene, setScene, newRun, CuteGame, CharmCut, OrangeCat, ART, RP: { repOf, repLv, repDayEnd }, HS: { heistEnter, HE }, ST: { setBranch, mLv, hasCombo, hasLegend, MASTERY }, FV: (r, t, f) => flowerValue(r, t, f), RENT: rentFor, EX: { startExped, expOf, EXPEDS }, RV: { rivalOf, chainOf, initRival, startDuel, chainDayEnd }, BR: { startBreed, breedTick, breedOf, HYBRIDS, HYBRID_ORDER, royaltyOf }, ZN: { zoneEnter, zonesOf, LOST_ITEMS, ZONES }, OUT: { pullGacha, equipOutfit, exchangeOutfit, hasSet, activeSets, wardrobe, OUTFITS }, GEAR: { drawMeowArt2, drawBellyArt2, drawRubArt2, VXR, orangeCloseup, cuteHead, withGear, catGearFor, catRefArt, toonOrangePal: ORANGE_PAL, TAB } };
+  window.__TH = { loadSave, clearSave, G, Flow, UI, Input, Cam, View, R3, GL3, DayScene, NightScene, setScene, newRun, CuteGame, CharmCut, OrangeCat, ART, RP: { repOf, repLv, repDayEnd }, DU: { MASTERS, duelOf, duelHas, masterPower, playerPower, masterSpec, duelBookHTML },HS: { heistEnter, HE }, ST: { setBranch, mLv, hasCombo, hasLegend, MASTERY }, FV: (r, t, f) => flowerValue(r, t, f), RENT: rentFor, EX: { startExped, expOf, EXPEDS }, RV: { rivalOf, chainOf, initRival, startDuel, chainDayEnd }, BR: { startBreed, breedTick, breedOf, HYBRIDS, HYBRID_ORDER, royaltyOf }, ZN: { zoneEnter, zonesOf, LOST_ITEMS, ZONES }, OUT: { pullGacha, equipOutfit, exchangeOutfit, hasSet, activeSets, wardrobe, OUTFITS }, GEAR: { drawMeowArt2, drawBellyArt2, drawRubArt2, VXR, orangeCloseup, cuteHead, withGear, catGearFor, catRefArt, toonOrangePal: ORANGE_PAL, TAB } };
 }
 
 (function start() {

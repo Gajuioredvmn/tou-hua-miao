@@ -93,7 +93,7 @@ const pulse = (t, a, b) => (t < a || t > b ? 0 : Math.pow(Math.sin(Math.PI * (t 
 function drawCatHead(cx, cy, rot, s, o, late) {
   const C = TAB, cs = Math.cos(rot), sn = Math.sin(rot), GR = gearNow();
   const P = (x, y) => [cx + (x * cs - y * sn) * s, cy + (x * sn + y * cs) * s];
-  if (GR && (GR.scarf || GR.collar)) gearHeadUnder(P, s, GR);   // 項圈、領巾（頭會蓋住上半）
+  if (GR && (GR.scarf || GR.collar || GR.charm)) gearHeadUnder(P, s, GR);   // 項圈、領巾（頭會蓋住上半）
   const ear = (side, ang) => {
     const bx = side * 9, by = -8, ca = Math.cos(ang * side), sa = Math.sin(ang * side);
     const R = (x, y) => { const dx = x - bx, dy = y - by; return P(bx + dx * ca - dy * sa, by + dx * sa + dy * ca); };

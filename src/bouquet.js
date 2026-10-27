@@ -41,7 +41,7 @@ const RECIPES = [
   { id: 'fortune', name: '富貴花開', need: { peony: 1, rose: 1 }, mult: 2.0, line: '牡丹配玫瑰，開店送禮都氣派' },
   { id: 'mansion', name: '大宅的秘密', need: { orchid: 1, peony: 1, hydrangea: 1 }, mult: 2.3, line: '全是大宅花園裡的花……噓' },
 ];
-const BQ_MIN = 3, BQ_MAX = 5;
+const BQ_MIN = 3; let BQ_MAX = 5;
 
 // ---------- 判定 ----------
 function hueSpread(hs) {
@@ -105,12 +105,13 @@ const BQ_POS = {
   3: [[0, -47, 1.9], [-8, -38, 1.8], [8, -38, 1.8]],
   4: [[-5, -47, 1.85], [5.5, -48, 1.85], [-10, -37, 1.7], [10, -37, 1.7]],
   5: [[0, -51, 1.8], [-8.5, -45, 1.75], [8.5, -45, 1.75], [-11, -36, 1.65], [11, -36, 1.65]],
+  6: [[-4.5, -52, 1.75], [5, -53, 1.75], [-10.5, -45, 1.7], [10.5, -45, 1.7], [-12, -36, 1.6], [12, -36, 1.6]],
 };
 const HEAD_SIZE = { sunflower: 1.1, hydrangea: 1.05, peony: 1.05, babys: 1.05, orchid: 1.1, tanhua: 1.0 };
 function drawBouquetArt(spec) {
   const stems = spec.stems.slice().sort((a, b) => (FLOWERS[b].price + (HEAD_SIZE[b] || 1) * 200) - (FLOWERS[a].price + (HEAD_SIZE[a] || 1) * 200));
   const P = PAPERS[spec.paper] || PAPERS.kraft, Rb = RIBBONS[spec.ribbon] || RIBBONS.twine;
-  const n = Math.max(1, Math.min(5, stems.length)), pos = BQ_POS[Math.max(3, n)] || BQ_POS[3];
+  const n = Math.max(1, Math.min(6, stems.length)), pos = BQ_POS[Math.max(3, n)] || BQ_POS[3];
   // 露在下面的花梗
   for (const x of [-2.4, 0, 2.4]) { O.curve([[x * 0.6, -12], [x, -2]], CM.ink, 2.4); O.curve([[x * 0.6, -12], [x, -2]], PC.stem, 1.2); }
   // 後面那層紙（內側比較暗）

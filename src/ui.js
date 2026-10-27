@@ -188,9 +188,10 @@ const UI = {
         <div><b>熟門熟路</b>同一家偷熟了（帶回 6 朵），第二個月起在花店貓門按「熟門」，花喵自己去帶回來</div>
         <div><b>警戒</b>偷太多、被抓到，那一家就會起疑：一顆星上門盤問、兩顆星裝防貓設施、三顆星里長約談。送花賠罪、幾晚不去就會降</div>
         <div><b>鍵盤</b>方向鍵移動、Shift 奔跑、空白鍵互動、Q 母雞蹲、F 紙箱、R 橘貓</div>
-      </div>`;
+      </div>${(() => { let L = []; try { L = JSON.parse(localStorage.getItem('thm-err') || '[]'); } catch (e) { } return L.length ? `<details class="old errlog" open><summary>最近的錯誤紀錄（截圖給我）</summary><pre style="white-space:pre-wrap;font-size:11px;line-height:1.4;margin:6px 0 0;user-select:text">${esc(L.map(e => `[${e.t}] ${e.w} ${e.c}\n${e.m}\n${(e.f || []).join('\n')}`).join('\n\n'))}</pre></details>` : ''; })()}`;
     this.modal(html, [
       { label: SFX.muted ? '打開音效' : '關掉音效', onClick: () => { SFX.muted = !SFX.muted; try { localStorage.setItem('thm-mute', SFX.muted ? '1' : '0'); } catch (e) { } this.pause(); } },
+      ...((() => { try { return localStorage.getItem('thm-err') ? [{ label: '清除錯誤紀錄', onClick: () => { try { localStorage.removeItem('thm-err'); } catch (e) { } this.pause(); } }] : []; } catch (e) { return []; } })()),
       { label: '重新開始', onClick: () => this.confirm('重新開始？', '這一輪的進度會清掉。', '重新開始', '取消', ok => { if (ok) Flow.restart(); }) },
       { label: '繼續', primary: true },
     ], { pause: true });
@@ -350,7 +351,7 @@ const UI = {
           const maxed = lv >= u.max;
           const monNeed = !maxed && u.mon ? u.mon[lv] : 1;
           const locked = (u.need && !run.intel[u.need]) || (run.month || 1) < monNeed;
-          const cost = maxed ? 0 : u.cost[lv];
+          const cost = maxed ? 0 : skillCost(run, u, lv);
           const can = !locked && !maxed && run.cans >= cost;
           const now = lv > 0 ? u.lv[lv - 1] : u.base;
           const next = maxed ? '已經滿級' : (u.need && !run.intel[u.need]) ? '白天沒聽說過這號人物' : (run.month || 1) < monNeed ? `第${cn(monNeed)}個月才進貨：${u.lv[lv]}` : '下一級：' + u.lv[lv];
@@ -360,7 +361,7 @@ const UI = {
             <button type="button" class="buy" data-id="${u.id}" ${can ? '' : 'disabled'}>${maxed ? '滿級' : `<img src="${G.icons.can}" alt="罐罐"><b class="px">${cost}</b>`}</button></li>`;
         }).join('');
         body = `<p class="lead">「罐罐拿來，本事教你。」<br><small>學到的本事都會穿戴在花喵身上。</small></p>
-          <div class="wallet"><img src="${G.icons.can}" alt=""><b class="px">${run.cans}</b><span>個罐罐</span></div>
+          <div class="wallet"><img src="${G.icons.can}" alt=""><b class="px">${run.cans}</b><span>個罐罐</span></div>${obstShopNote(run)}${duelNoteHTML(run)}
           ${(run.month || 1) > 1 ? seasonQuestHTML(run) : ''}${itemsHTML(run)}${gachaHTML(run)}
           <div class="cat-looks"><figure><canvas class="cat-look" data-who="tab"></canvas><figcaption>花喵現在的樣子</figcaption></figure>${run.upg.orange ? '<figure><canvas class="cat-look" data-who="orange"></canvas><figcaption>橘貓夥伴</figcaption></figure>' : ''}</div>
           <ul class="ups">${rows}</ul>${skillTreeHTML(run)}${gangShopHTML(run)}${expedHTML(run)}`;
@@ -443,8 +444,9 @@ const UI = {
         } else {
           const u = UPGRADES.find(x => x.id === b.dataset.id);
           const lv = run.upg[u.id] || 0;
-          if (lv >= u.max || run.cans < u.cost[lv]) return;
-          run.cans -= u.cost[lv]; run.upg[u.id] = lv + 1;
+          const sc2 = skillCost(run, u, lv);
+          if (lv >= u.max || run.cans < sc2 || (u.mon && (run.month || 1) < u.mon[lv])) return;
+          run.cans -= sc2; run.upg[u.id] = lv + 1;
           SFX.play('buy');
           const m = u.lv[lv].match(/（(.+?)）/);
           if (m) this.toast('換裝：' + m[1] + '！', 2200);

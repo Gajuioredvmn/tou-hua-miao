@@ -276,7 +276,7 @@ class DayScene {
   }
   // ---- 花店升級：鏡頭帶過去看 ----
   reveal(id, lv, cb) {
-    const spot = { lights: [7.5, 5.2], fridge: [12.6, 9.9], neon: [5.5, 4.4], scooter: [11.2, 17.6], decor: [[5.4, 9.6], [3.4, 6.2], [3.2, 12.4]][lv - 1], catcorner: [13.0, 6.6], expand: [[11.6, 12.4], [11.2, 16.6], [6.5, 5.6], [7.6, 10.2]][lv - 1] }[id] || [7.5, 9];
+    const spot = { lights: [7.5, 5.2], fridge: [12.6, 9.9], neon: [5.5, 4.4], scooter: [11.2, 17.6], decor: [[5.4, 9.6], [3.4, 6.2], [3.2, 12.4]][lv - 1], catcorner: [13.0, 6.6], expand: [[11.6, 12.4], [11.2, 16.6], [6.5, 5.6], [7.6, 10.2]][lv - 1] }[id] || (STORE_UPGRADES.find(x => x.id === id) || {}).spot || [7.5, 9];
     const u = STORE_UPGRADES.find(x => x.id === id);
     this.focus = { x: spot[0], z: spot[1], t: 0, dur: 3.0, cb, id, lv };
     if (id === 'decor' || id === 'expand') { this.layoutDisplays(); this.cat.unstick(this); }
@@ -1038,6 +1038,7 @@ function* newMonthScript(S) {
   if (th) yield S.say(th.line);
   if (run.month === 2) setTimeout(() => UI.toast('偷熟的人家可以「熟門熟路」一鍵帶回；但偷太兇，鄰居會起疑、上門盤問、裝防貓設施', 5200), 400);
   UI.hideDialog();
+  yield* duelLetterScript(S);
   // 今晚（新的一個月第一晚）的訂單
   run.orders[1] = [];
   const o = genOrder(run, 1), cu = S.customer(pick(['cust1', 'cust2', 'shopB', 'shopD']));
@@ -1058,8 +1059,10 @@ function orderLine(o) { return `我想訂${FLOWERS[o.t].name} ${o.n} 朵，今�
 // 第二個月起的白天：鄰居盤問、客人訂花、慢慢賣花
 function* monthDayScript(S, n) {
   const run = S.run;
+  if (duelPending(run, n)) { S.shopOn = false; S.duelHold = true; }   // 論劍日：先論劍再開門，花不會先被買走
   UI.banner(`第${cn(run.month)}個月・第${NUM[n]}天`);
   yield wait(1);
+  yield* duelDayScript(S, n);
   const nb = run.lastNight || {};
   yield S.say(nb.total > 0 ? pick(['門口又有花了！小精靈今天也來了耶。', '今天的花也好漂亮～花喵，你知道是誰放的嗎？', '花店小精靈又來了！']) : '今天門口沒有花……');
   UI.hideDialog();
@@ -1067,7 +1070,8 @@ function* monthDayScript(S, n) {
   yield* lostFoundScript(S);
   S.dayStart = S.stock.map(f => f.t);
   yield* chainMorningScript(S, n);
-  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* zoneStoryScript(S)) && !(yield* breedStoryScript(S)) && !(yield* repStoryScript(S)) && !(yield* heistStoryScript(S)) && !(yield* seasonStartScript(S)) && !(yield* newYearScript(S, n)) && !(yield* chainStoryScript(S)) && !(yield* rivalStoryScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
+  yield* equipDayScript(S, n);
+  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* zoneStoryScript(S)) && !(yield* breedStoryScript(S)) && !(yield* obstStoryScript(S)) && !(yield* repStoryScript(S)) && !(yield* heistStoryScript(S)) && !(yield* seasonStartScript(S)) && !(yield* newYearScript(S, n)) && !(yield* chainStoryScript(S)) && !(yield* rivalStoryScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
   yield* commissionScript(S, n);
@@ -1093,6 +1097,7 @@ function* monthDayScript(S, n) {
   if (rpr) { const r0 = rpr.revs[0]; UI.toast(`口碑 ${rpr.delta >= 0 ? '+' : ''}${rpr.delta}${rpr.after > rpr.before ? `・升到 Lv.${rpr.after}！` : ''}　${r0 ? `${'★'.repeat(r0.s)}「${r0.text}」` : ''}`, 3800); yield wait(0.6); }
   const tuition = classIncome(run) + regularDaily(run) + catCornerIncome(run);
   if (tuition) { run.money += tuition; S.daySales += tuition; UI.toast(`花藝教室的學費 +${money(tuition)}`, 2400); SFX.play('coin'); }
+  const ddy = duelDaily(run); if (ddy) { if (tuition) yield wait(1.2); run.money += ddy.v; S.daySales += ddy.v; UI.toast(ddy.msg, 2400); SFX.play('coin'); }
   yield S.say(S.daySales > 0 ? `今天賣了 ${money(S.daySales)}！花喵，賞你罐罐。` : '今天沒什麼生意……花喵，罐罐還是給你。');
   UI.hideDialog();
   yield wait(0.4);

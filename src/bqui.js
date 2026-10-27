@@ -139,6 +139,8 @@ UI.book = function (run, back, tab = 'bq') {
       body = repBookHTML(run);
     } else if (tab === 'hy') {
       body = breedBookHTML(run);
+    } else if (tab === 'wl') {
+      body = duelBookHTML(run);
     } else if (tab === 'ach') {
       body = achBookHTML(run);
     } else if (tab === 'ev') {
@@ -164,6 +166,7 @@ UI.book = function (run, back, tab = 'bq') {
         <button type="button" class="tab ${tab === 'hy' ? 'on' : ''}" data-tab="hy" role="tab" aria-selected="${tab === 'hy'}">品種<small>${Object.keys(breedOf(run).found).length} / ${HYBRID_ORDER.length}</small></button>
         <button type="button" class="tab ${tab === 'nb' ? 'on' : ''}" data-tab="nb" role="tab" aria-selected="${tab === 'nb'}">鄰居<small>${storyProgress(run).reduce((a, p) => a + p.done, 0)} / 12</small></button>
         <button type="button" class="tab ${tab === 'rv' ? 'on' : ''}" data-tab="rv" role="tab" aria-selected="${tab === 'rv'}">評論<small>Lv.${repLv(run)}</small></button>
+        <button type="button" class="tab ${tab === 'wl' ? 'on' : ''}" data-tab="wl" role="tab" aria-selected="${tab === 'wl'}">風雲榜<small>${duelRankOf(run) ? '第 ' + duelRankOf(run) + ' 名' : '未上榜'}</small></button>
         <button type="button" class="tab ${tab === 'ach' ? 'on' : ''}" data-tab="ach" role="tab" aria-selected="${tab === 'ach'}">成就<small>${ACH.filter(a => (run.ach || {})[a.id]).length} / ${ACH.length}</small></button>
         <button type="button" class="tab ${tab === 'ev' ? 'on' : ''}" data-tab="ev" role="tab" aria-selected="${tab === 'ev'}">事件<small>${Object.keys(run.evSeen || {}).length + gangMembers(run).length} / ${DAY_EVENTS.length + GANG.length}</small></button>
       </div>${body}`;
