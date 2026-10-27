@@ -92,7 +92,7 @@ function boot(data) {
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
-  window.__TH = { loadSave, clearSave, G, Flow, UI, Input, Cam, View, R3, GL3, DayScene, NightScene, setScene, newRun, CuteGame, CharmCut, OrangeCat, ART, RP: { repOf, repLv, repDayEnd }, ST: { setBranch, mLv, hasCombo, hasLegend, MASTERY }, FV: (r, t, f) => flowerValue(r, t, f), RENT: rentFor, EX: { startExped, expOf, EXPEDS }, RV: { rivalOf, chainOf, initRival, startDuel, chainDayEnd }, BR: { startBreed, breedTick, breedOf, HYBRIDS, HYBRID_ORDER, royaltyOf }, ZN: { zoneEnter, zonesOf, LOST_ITEMS, ZONES }, OUT: { pullGacha, equipOutfit, exchangeOutfit, hasSet, activeSets, wardrobe, OUTFITS }, GEAR: { drawMeowArt2, drawBellyArt2, drawRubArt2, VXR, orangeCloseup, cuteHead, withGear, catGearFor, catRefArt, toonOrangePal: ORANGE_PAL, TAB } };
+  window.__TH = { loadSave, clearSave, G, Flow, UI, Input, Cam, View, R3, GL3, DayScene, NightScene, setScene, newRun, CuteGame, CharmCut, OrangeCat, ART, RP: { repOf, repLv, repDayEnd }, HS: { heistEnter, HE }, ST: { setBranch, mLv, hasCombo, hasLegend, MASTERY }, FV: (r, t, f) => flowerValue(r, t, f), RENT: rentFor, EX: { startExped, expOf, EXPEDS }, RV: { rivalOf, chainOf, initRival, startDuel, chainDayEnd }, BR: { startBreed, breedTick, breedOf, HYBRIDS, HYBRID_ORDER, royaltyOf }, ZN: { zoneEnter, zonesOf, LOST_ITEMS, ZONES }, OUT: { pullGacha, equipOutfit, exchangeOutfit, hasSet, activeSets, wardrobe, OUTFITS }, GEAR: { drawMeowArt2, drawBellyArt2, drawRubArt2, VXR, orangeCloseup, cuteHead, withGear, catGearFor, catRefArt, toonOrangePal: ORANGE_PAL, TAB } };
 }
 
 (function start() {

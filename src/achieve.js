@@ -109,6 +109,9 @@ const ACH = [
   { id: 'combo1', name: '組合技', desc: '學會第一個組合技', c: r => COMBOS.some(x => hasCombo(r, x.id)), cans: 20 },
   { id: 'master5', name: '熟能生巧', desc: '一個技能的熟練度練到 Lv.5', c: r => MASTERY.some(m => masteryLv(r, m) >= 5), cans: 30 },
   { id: 'legend3', name: '傳說中的貓', desc: '學會 3 個傳說技能', c: r => LEGENDS.filter(L => L.ok(r)).length >= 3, cans: 50, title: '傳說之貓' },
+  // 屋頂任務
+  { id: 'heist1', name: '老屋的花', desc: '屋頂任務：把九盆花全部救出來', c: r => ((r.heist || {}).clears || 0) >= 1, cans: 25 },
+  { id: 'heistP', name: '來無影去無蹤', desc: '屋頂任務：一次都沒被發現就全部救出來', c: r => ((r.heist || {}).perfect || 0) >= 1, cans: 50, title: '屋頂上的影子' },
   // 扭蛋
   { id: 'wd1', name: '第一件新衣', desc: '扭蛋扭到第一件衣服', c: r => Object.keys((r.wardrobe || {}).own || {}).length >= 1, cans: 5 },
   { id: 'wdset', name: '整套穿上', desc: '穿齊一整套套裝', c: r => r.wardrobe && activeSets(r).length >= 1, cans: 20 },

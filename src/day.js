@@ -1067,7 +1067,7 @@ function* monthDayScript(S, n) {
   yield* lostFoundScript(S);
   S.dayStart = S.stock.map(f => f.t);
   yield* chainMorningScript(S, n);
-  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* zoneStoryScript(S)) && !(yield* breedStoryScript(S)) && !(yield* repStoryScript(S)) && !(yield* seasonStartScript(S)) && !(yield* newYearScript(S, n)) && !(yield* chainStoryScript(S)) && !(yield* rivalStoryScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
+  if (!(yield* gangRescueScript(S)) && !(yield* gangIntroScript(S)) && !(yield* zoneStoryScript(S)) && !(yield* breedStoryScript(S)) && !(yield* repStoryScript(S)) && !(yield* heistStoryScript(S)) && !(yield* seasonStartScript(S)) && !(yield* newYearScript(S, n)) && !(yield* chainStoryScript(S)) && !(yield* rivalStoryScript(S)) && !(yield* gardenStoryScript(S)) && !(yield* storeStoryScript(S)) && !(yield* nmStoryScript(S)) && !(yield* neighborStoryScript(S))) yield* dayEventScript(S);
   const vo = pickVisit(run);
   if (vo) yield* visitScript(S, vo);
   yield* commissionScript(S, n);
