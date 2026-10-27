@@ -30,6 +30,15 @@ function makeIcons() {
   try { Object.assign(G.icons, vectorIcons()); } catch (e) { console.error(e); }
 }
 
+// 出錯時：記下來、跳一次提示（方便截圖回報），不讓遊戲停住
+const ERR_SEEN = {};
+function reportErr(err, where) {
+  const msg = (err && err.message) || String(err), key = where + msg;
+  if (ERR_SEEN[key]) return; ERR_SEEN[key] = 1;
+  console.error(err);
+  const line = ((err && err.stack) || '').split('\n').find(l => /at /.test(l)) || '';
+  try { UI.toast(`遊戲出了點小問題（可以截圖給我）：${msg} ${line.trim().slice(0, 60)}`, 9000); } catch (e) { }
+}
 function boot(data) {
   if (R3.init($('gl'), $('screen'))) $('screen').classList.add('ov');
   View.init($('screen'));
@@ -72,15 +81,14 @@ function boot(data) {
   let last = performance.now();
   const loop = now => {
     const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+    // 更新和畫面分開接錯：其中一邊出錯，另一邊照樣跑，不會整個卡住
+    try { if (G.scene && !G.paused) G.scene.update(dt); } catch (err) { reportErr(err, 'u'); }
     try {
-      if (G.scene && !G.paused) G.scene.update(dt);
       if (G.scene) {
         if (R3.on && G.scene.render3D) G.scene.render3D();
         else { G.scene.render(View.ctx); View.present(); }
       }
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) { reportErr(err, 'r'); }
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);

@@ -30,6 +30,8 @@ class Cat {
     this.unstick(scene);
     const v = Input.vector();
     this.moving = v.mag > 0.15;
+    this.creep = !!this.box && v.mag < 0.55;
+    const ox = this.x, oy = this.y;
     this.running = allowRun && !this.box && v.mag > 0.72;
     this.updateIdle(dt);
     if (this.top && scene.topH) { const th = scene.topH(this.x, this.y); this.h += (th - this.h) * Math.min(1, dt * 9); }
@@ -44,6 +46,8 @@ class Cat {
     else if (Math.abs(v.x) > 0.3) this.nudge(scene, Math.sign(dx) * 1.5, 0, st);
     if (!this.hits(scene, this.x, this.y + dy)) this.y += dy;
     else if (Math.abs(v.y) > 0.3) this.nudge(scene, 0, Math.sign(dy) * 1.5, st);
+    // 紙箱頂著牆推不動：沒有真的在動，就還是一個普通的箱子
+    if (this.box && Math.hypot(this.x - ox, this.y - oy) < 0.05) this.moving = false;
   }
   hits(scene, x, y) {
     if (scene.catSolid) {

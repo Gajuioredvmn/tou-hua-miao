@@ -662,6 +662,7 @@ class NightScene {
     const half = lit && d > vr ? v.half + 0.3 : v.half;
     if (angDiff(Math.atan2(ty - ey, tx - ex), v.ang) > half) return false;
     if (c.hidden && d > 14) return false;
+    if (c.box && c.creep && d > range * 0.45) return false;   // 紙箱慢慢挪：離得遠看不出來
     return lineOfSight(this.map, ex, ey, tx, ty, this.occ);
   }
   detect(dt) {
@@ -674,7 +675,7 @@ class NightScene {
         const d = dist(ex, ey, c.x, c.y - 4);
         let rate = 0.95 * (1.5 - 0.9 * Math.min(1, d / v.range));
         rate *= c.running ? 1.45 : c.moving ? 0.85 : 0.6;
-        if (c.box) { rate *= 1.25; if (!this.tips.boxSeen && v.susp > 0.2) { this.tips.boxSeen = 1; UI.toast('「那個箱子……剛剛是不是動了？」不動就沒事'); } }
+        if (c.box) { rate *= c.creep ? 0.55 : 0.85; if (!this.tips.boxSeen && v.susp > 0.2) { this.tips.boxSeen = 1; UI.toast('「那個箱子……剛剛是不是動了？」不動就沒事'); } }
         const litC = this.litAt(c.x, c.y);
         if (litC) rate *= 1.2;
         rate *= detectMulPlus(this, litC);
@@ -754,7 +755,7 @@ class NightScene {
       if (c.top || c.jump) { SFX.play('nope'); return; }
       this.boxes--; c.box = { t: 0 }; c.pose = null; SFX.play('door');
       this.fx.text(c.x, c.y - 14, '躲！', '#e8c08a');
-      if (!this.tips.box) { this.tips.box = 1; UI.toast('紙箱裡不動，大家只會看到一個箱子。在人家眼前移動會很可疑！', 3400); }
+      if (!this.tips.box) { this.tips.box = 1; UI.toast('紙箱裡不動，大家只會看到一個箱子。輕輕推慢慢挪，遠一點的人看不出來；在人家眼前大步走才會被發現', 4200); }
     } else if (id === 'orange' && this.orange) {
       this.orangeOrder();
     } else if (id === 'call') {

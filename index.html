@@ -7673,6 +7673,8 @@ class Cat {
     this.unstick(scene);
     const v = Input.vector();
     this.moving = v.mag > 0.15;
+    this.creep = !!this.box && v.mag < 0.55;
+    const ox = this.x, oy = this.y;
     this.running = allowRun && !this.box && v.mag > 0.72;
     this.updateIdle(dt);
     if (this.top && scene.topH) { const th = scene.topH(this.x, this.y); this.h += (th - this.h) * Math.min(1, dt * 9); }
@@ -7687,6 +7689,8 @@ class Cat {
     else if (Math.abs(v.x) > 0.3) this.nudge(scene, Math.sign(dx) * 1.5, 0, st);
     if (!this.hits(scene, this.x, this.y + dy)) this.y += dy;
     else if (Math.abs(v.y) > 0.3) this.nudge(scene, 0, Math.sign(dy) * 1.5, st);
+    // 紙箱頂著牆推不動：沒有真的在動，就還是一個普通的箱子
+    if (this.box && Math.hypot(this.x - ox, this.y - oy) < 0.05) this.moving = false;
   }
   hits(scene, x, y) {
     if (scene.catSolid) {
@@ -8556,6 +8560,7 @@ class NightScene {
     const half = lit && d > vr ? v.half + 0.3 : v.half;
     if (angDiff(Math.atan2(ty - ey, tx - ex), v.ang) > half) return false;
     if (c.hidden && d > 14) return false;
+    if (c.box && c.creep && d > range * 0.45) return false;   // 紙箱慢慢挪：離得遠看不出來
     return lineOfSight(this.map, ex, ey, tx, ty, this.occ);
   }
   detect(dt) {
@@ -8568,7 +8573,7 @@ class NightScene {
         const d = dist(ex, ey, c.x, c.y - 4);
         let rate = 0.95 * (1.5 - 0.9 * Math.min(1, d / v.range));
         rate *= c.running ? 1.45 : c.moving ? 0.85 : 0.6;
-        if (c.box) { rate *= 1.25; if (!this.tips.boxSeen && v.susp > 0.2) { this.tips.boxSeen = 1; UI.toast('「那個箱子……剛剛是不是動了？」不動就沒事'); } }
+        if (c.box) { rate *= c.creep ? 0.55 : 0.85; if (!this.tips.boxSeen && v.susp > 0.2) { this.tips.boxSeen = 1; UI.toast('「那個箱子……剛剛是不是動了？」不動就沒事'); } }
         const litC = this.litAt(c.x, c.y);
         if (litC) rate *= 1.2;
         rate *= detectMulPlus(this, litC);
@@ -8648,7 +8653,7 @@ class NightScene {
       if (c.top || c.jump) { SFX.play('nope'); return; }
       this.boxes--; c.box = { t: 0 }; c.pose = null; SFX.play('door');
       this.fx.text(c.x, c.y - 14, '躲！', '#e8c08a');
-      if (!this.tips.box) { this.tips.box = 1; UI.toast('紙箱裡不動，大家只會看到一個箱子。在人家眼前移動會很可疑！', 3400); }
+      if (!this.tips.box) { this.tips.box = 1; UI.toast('紙箱裡不動，大家只會看到一個箱子。輕輕推慢慢挪，遠一點的人看不出來；在人家眼前大步走才會被發現', 4200); }
     } else if (id === 'orange' && this.orange) {
       this.orangeOrder();
     } else if (id === 'call') {
@@ -19721,6 +19726,15 @@ function makeIcons() {
   try { Object.assign(G.icons, vectorIcons()); } catch (e) { console.error(e); }
 }
 
+// 出錯時：記下來、跳一次提示（方便截圖回報），不讓遊戲停住
+const ERR_SEEN = {};
+function reportErr(err, where) {
+  const msg = (err && err.message) || String(err), key = where + msg;
+  if (ERR_SEEN[key]) return; ERR_SEEN[key] = 1;
+  console.error(err);
+  const line = ((err && err.stack) || '').split('\n').find(l => /at /.test(l)) || '';
+  try { UI.toast(`遊戲出了點小問題（可以截圖給我）：${msg} ${line.trim().slice(0, 60)}`, 9000); } catch (e) { }
+}
 function boot(data) {
   if (R3.init($('gl'), $('screen'))) $('screen').classList.add('ov');
   View.init($('screen'));
@@ -19763,15 +19777,14 @@ function boot(data) {
   let last = performance.now();
   const loop = now => {
     const dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now;
+    // 更新和畫面分開接錯：其中一邊出錯，另一邊照樣跑，不會整個卡住
+    try { if (G.scene && !G.paused) G.scene.update(dt); } catch (err) { reportErr(err, 'u'); }
     try {
-      if (G.scene && !G.paused) G.scene.update(dt);
       if (G.scene) {
         if (R3.on && G.scene.render3D) G.scene.render3D();
         else { G.scene.render(View.ctx); View.present(); }
       }
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) { reportErr(err, 'r'); }
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
