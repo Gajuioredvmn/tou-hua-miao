@@ -1,7 +1,7 @@
 // ================= 花界風雲榜：十大高手 =================
 // 第二個月起，每個月月初會收到一封挑戰帖：風雲榜上排在你前面的高手，第四天早上上門「花藝論劍」。
 // 論劍＝三招：對手先出一束花，你用店裡的花回一束。每招有題目（配色、指定花、包裝、限時……），
-// 合題目的花束功力 ×1.3，不合只剩 ×0.5。三招贏兩招就打敗他，學到他的獨門秘笈（永久效果），
+// 合題目的花束功力 ×1.3，不合只剩 ×0.5。三招贏兩招（一刀流只比一招）就打敗他，學到他的獨門秘笈（永久效果），
 // 牆上的「花界風雲榜」也會劃掉他的名字。輸了，下個月他會再來（一樣的題目，知道要偷什麼了）。
 // 十大高手全部打敗以後是「擂台」：每個月有人來挑戰你的天下第一。
 
@@ -58,15 +58,13 @@ const MASTERS = [
       { t: '網友票選', c: T_.free(), rep: true, spec: SP(['lisianthus', 'hydrangea', 'babys', 'babys'], 'sage', 'ivory') },
     ],
     perk: { name: '打卡術', desc: '每天打烊後網友來打卡：口碑越高，宣傳收入越多' } },
-  { id: 'liu', rank: 7, nick: '一刀流', name: '劉師傅', shop: '五十年老花店「劉記」', skin: 'bo', col: '#e8c87a', k: 1.05, timer: 25,
-    style: '剪刀一揮就是一束，三招都限時，手要快、腦要更快',
-    intro: ['……小姑娘，我開花店的時候，妳爸媽都還沒出生。', '風雲榜第七，劉某。我只出三刀。', '每一刀，二十五秒。慢了，就是輸。'],
-    win: ['好快的手。好準的眼。', '「一刀流」傳給妳：包裝紙配得好，花束會多值兩成五。'],
+  { id: 'liu', rank: 7, nick: '一刀流', name: '劉師傅', shop: '五十年老花店「劉記」', skin: 'bo', col: '#e8c87a', k: 1.2,
+    style: '剪刀一揮就是一束。他只出一刀：一招定勝負',
+    intro: ['……小姑娘，我開花店的時候，妳爸媽都還沒出生。', '風雲榜第七，劉某。', '我只出一刀。一刀，定勝負。'],
+    win: ['好準的眼。', '「一刀流」傳給妳：包裝紙配得好，花束會多值兩成五。'],
     lose: ['手太慢了。花是不等人的。', '下個月，我再來看妳的刀。'],
     rounds: [
-      { t: '第一刀・漸層', c: T_.scheme('analog'), spec: SP(['lisianthus', 'hydrangea', 'lisianthus'], 'sage', 'green') },
-      { t: '第二刀・三枝', c: T_.exact(3), spec: SP(['rose', 'rose', 'rose'], 'black', 'red') },
-      { t: '第三刀・對比', c: T_.scheme('comp'), spec: SP(['sunflower', 'hydrangea', 'sunflower'], 'kraft', 'twine') },
+      { t: '一刀定勝負', c: T_.exact(3), spec: SP(['rose', 'rose', 'rose'], 'black', 'red') },
     ],
     perk: { name: '一刀流', desc: '包裝紙搭得好：花束 ×1.25（原本 ×1.1）' } },
   { id: 'gui', rank: 6, nick: '香手', name: '桂嬸', shop: '香花行「桂香」', skin: 'wang', col: '#ffc070', k: 1.1,
@@ -216,7 +214,7 @@ function duelDaily(run) {
 }
 
 // ---------- 白天：挑戰帖、論劍 ----------
-function duelRoundsText(M) { return M.rounds.map((R, i) => `<li><b>第${NUM[i + 1]}招・${esc(R.t)}</b>${esc(R.c.d)}${M.timer ? `（限時 ${M.timer} 秒）` : ''}</li>`).join(''); }
+function duelRoundsText(M) { return M.rounds.map((R, i) => `<li><b>${M.rounds.length > 1 ? '第' + NUM[i + 1] + '招・' : ''}${esc(R.t)}</b>${esc(R.c.d)}${M.timer ? `（限時 ${M.timer} 秒）` : ''}</li>`).join(''); }
 function* duelLetterScript(S) {
   const run = S.run, m = run.month || 1, D = duelOf(run);
   if (m < 2 || (D.cur && D.cur.m === m)) return;
@@ -230,7 +228,7 @@ function* duelLetterScript(S) {
   yield S.modal(done => UI.modal(`<p class="eyebrow">${arena ? '擂台・天下第一保衛戰' : '花界風雲榜・挑戰帖'}</p>
     <h2>${arena ? '復仇戰：' : ''}第 ${M.rank} 名「${esc(M.nick)}」${esc(M.name)}</h2>
     <p class="lead">${esc(M.shop)}。${esc(M.style)}。</p>
-    <p class="lead">這個月<b>第四天早上</b>上門論劍。三招贏兩招就算贏；每一招的花都從<b>店裡的花</b>拿，記得先留著別賣掉：</p>
+    <p class="lead">這個月<b>第四天早上</b>上門論劍。${M.rounds.length > 1 ? '三招贏兩招就算贏' : '只比一招，一招定勝負'}。用的是<b>第三晚偷回來的花</b>（加上頂樓花園的），每一招會自動幫你配好最強的一束：</p>
     <ul class="chain-opts du-rounds">${duelRoundsText(M)}</ul>
     <p class="hint">合題目的花束功力 ×1.3，不合只剩 ×0.5。${arena ? `已經守住擂台 ${D.arena.wins} 次，這次對手會更強。` : `打敗他：學到獨門秘笈「${esc(M.perk.name)}」、拿獎金，風雲榜升到第 ${M.rank} 名。`}${again ? `（之前輸了 ${D.losses[M.id]} 次，這次他會稍微手下留情）` : ''}</p>`,
     [{ label: '接下挑戰帖', primary: true, onClick: done }], { pause: true, cls: 'small' }));
@@ -286,11 +284,39 @@ function duelUI(S, M, c, cb) {
   const papers = Object.keys(PAPERS).filter(k => (PAPERS[k].decor || 0) <= decor);
   const ribbons = Object.keys(RIBBONS).filter(k => (RIBBONS[k].decor || 0) <= decor);
   const maxN = duelHas(run, 'ji') ? 6 : 5;
-  const st = { r: 0, win: 0, lose: 0, phase: 'pick', last: null, timer: null, left: 0 };
+  const st = { r: 0, win: 0, lose: 0, phase: 'pick', last: null, timer: null, left: 0, auto: false };
+  const need = Math.ceil(M.rounds.length / 2);
   const sel = { stems: [], paper: papers[0], ribbon: ribbons[0] };
   const pool = () => S.stock.filter(f => S.canSell(f));
   const takePlan = () => { const P = pool().slice().sort((a, b) => b.fresh - a.fresh), used = []; for (const t of sel.stems) { const i = P.findIndex(f => f.t === t && !used.includes(f)); if (i >= 0) used.push(P[i]); } return used; };
   const left = t => pool().filter(f => f.t === t).length - sel.stems.filter(x => x === t).length;
+  // 自動配花：店裡的花湊得出的、功力最高的一束（優先合題目）
+  const bestPick = () => {
+    const P = pool(), cnt = {}; for (const f of P) cnt[f.t] = (cnt[f.t] || 0) + 1;
+    const types = Object.keys(cnt).sort((a, b) => FLOWERS[b].price - FLOWERS[a].price).slice(0, 10);
+    const R = M.rounds[st.r]; let best = null, bestP = -1;
+    const needRb = R.c.d.includes('緞帶');
+    const mp = masterPower(run, M, st.r, c); let win = null, winCost = Infinity;
+    const cur = [];
+    const tryIt = () => {
+      for (const pa of papers) {
+        const spec = { stems: cur.slice(), paper: pa, ribbon: ribbons[0] };
+        let ev = bouquetEval(run, spec), pp = playerPower(run, M, st.r, spec, ev);
+        if (!pp.ok && needRb) { for (const rb of ribbons) { const s2 = { stems: spec.stems, paper: pa, ribbon: rb }; const e2 = bouquetEval(run, s2), p2 = playerPower(run, M, st.r, s2, e2); if (p2.ok) { spec.ribbon = rb; pp = p2; break; } } }
+        if (pp.p > bestP) { bestP = pp.p; best = spec; }
+        // 贏得了的話，挑最省花的那一束（好花留給下一招）
+        if (pp.p >= mp + 2 && ev.base < winCost) { winCost = ev.base; win = spec; }
+      }
+    };
+    const rec = (from, left) => {
+      if (cur.length >= BQ_MIN) tryIt();
+      if (cur.length >= maxN) return;
+      for (let i = from; i < types.length; i++) { const t = types[i]; if (cur.filter(x => x === t).length >= cnt[t]) continue; cur.push(t); rec(i, left); cur.pop(); }
+    };
+    rec(0);
+    return win || best;
+  };
+  const autoFill = () => { const b = bestPick(); if (b) { sel.stems = b.stems.slice(); sel.paper = b.paper; sel.ribbon = b.ribbon; } };
   const stopTimer = () => { if (st.timer) { clearInterval(st.timer); st.timer = null; } };
   const evalSel = () => { const plan = takePlan(); return bouquetEval(run, sel, i => (plan[i] ? plan[i].fresh : 1)); };
   const submit = (forfeit) => {
@@ -310,12 +336,12 @@ function duelUI(S, M, c, cb) {
     st.phase = 'show'; render();
   };
   const next = () => {
-    if (st.win >= 2 || st.lose >= 2 || st.r >= 2) { stopTimer(); cb({ win: st.win >= 2, wins: st.win, losses: st.lose }); return; }
-    st.r++; st.phase = 'pick'; sel.stems = []; st.last = null; render(); startTimer();
+    if (st.win >= need || st.lose >= need || st.r >= M.rounds.length - 1) { stopTimer(); cb({ win: st.win >= need, wins: st.win, losses: st.lose }); return; }
+    st.r++; st.phase = 'pick'; sel.stems = []; st.last = null; st.auto = false; render(); startTimer();
   };
   const render = () => {
     const R = M.rounds[st.r], mp = masterPower(run, M, st.r, c);
-    const head = `<p class="eyebrow">${c.arena ? '擂台' : '花藝論劍'}・第${NUM[st.r + 1]}招（三招兩勝）</p>
+    const head = `<p class="eyebrow">${c.arena ? '擂台' : '花藝論劍'}${M.rounds.length > 1 ? `・第${NUM[st.r + 1]}招（三招兩勝）` : '・一招定勝負'}</p>
       <h2>${esc(R.t)}</h2><p class="du-q">${esc(R.c.d)}</p>
       <div class="du-score"><span>美玲</span><b class="px">${st.win}</b><i>：</i><b class="px">${st.lose}</b><span>${esc(M.name)}</span></div>`;
     if (st.phase === 'show') {
@@ -324,12 +350,13 @@ function duelUI(S, M, c, cb) {
         <div class="du-mid ${L.won ? 'win' : 'lose'}">${L.won ? '勝' : '敗'}</div>
         <div class="du-side"><canvas class="du-cv" data-w="p" width="150" height="190"></canvas><b>${esc(L.name)}</b><span class="px">功力 ${L.me.p}</span></div></div>
         <p class="du-judge">${L.me.p === 0 ? '這一招棄權了。' : `${L.me.ok ? '合題目 ×1.3' : '沒合題目，只剩 ×0.5'}${L.me.notes.length ? '・' + L.me.notes.join('・') : ''}。`}${L.won ? pick(['評審們點點頭：這一招，美玲贏了！', '圍觀的鄰居拍手叫好！', `${M.name}愣了一下。`]) : pick(['評審們搖搖頭。', `${M.name}冷笑了一聲。`, '圍觀的鄰居嘆了一口氣。'])}</p>`,
-        [{ label: (st.win >= 2 || st.lose >= 2 || st.r >= 2) ? '看結果' : '下一招', primary: true, onClick: next }], { pause: true, cls: 'duel' });
+        [{ label: (st.win >= need || st.lose >= need || st.r >= M.rounds.length - 1) ? '看結果' : '下一招', primary: true, onClick: next }], { pause: true, cls: 'duel' });
       const card = UI.cardEl;
       paintCardCanvas(card.querySelector('[data-w="m"]'), bouquetCanvas(masterSpec(run, M, st.r), 3));
       if (L.spec.stems.length) paintCardCanvas(card.querySelector('[data-w="p"]'), bouquetCanvas(L.spec, 3));
       return;
     }
+    if (!st.auto) { st.auto = true; autoFill(); }
     const types = [...new Set(pool().map(f => f.t))].sort((a, b) => FLOWERS[a].price - FLOWERS[b].price);
     const okN = sel.stems.length >= BQ_MIN && sel.stems.length <= maxN;
     let mine = `<b>挑 ${BQ_MIN}～${maxN} 枝</b><span class="px">功力 —</span>`;
@@ -342,9 +369,9 @@ function duelUI(S, M, c, cb) {
       <div class="bq-pick">${types.length ? types.map(t => `<button type="button" class="bq-chip" data-t="${t}" ${left(t) > 0 && sel.stems.length < maxN ? '' : 'disabled'}>${flowerChip(t)}<em>×${left(t)}</em></button>`).join('') : '<p class="bq-hint">店裡沒有花了……這一招只能棄權。</p>'}</div>
       <div class="bq-sws">${papers.map(k => `<button type="button" class="bq-sw ${sel.paper === k ? 'on' : ''}" data-p="${k}" style="--c:${PAPERS[k].col}">${PAPERS[k].name}</button>`).join('')}</div>
       <div class="bq-sws">${ribbons.map(k => `<button type="button" class="bq-sw ${sel.ribbon === k ? 'on' : ''}" data-r="${k}" style="--c:${RIBBONS[k].col}">${RIBBONS[k].name}</button>`).join('')}</div>`,
-      [{ label: '棄權這一招', keep: true, onClick: () => submit(true) }, { label: '出招！', primary: true, keep: true, onClick: () => { if (okN) submit(false); else SFX.play('nope'); } }], { pause: true, cls: 'duel' });
+      [{ label: '棄權', keep: true, onClick: () => submit(true) }, { label: '自動配花', keep: true, onClick: () => { SFX.play('pick'); autoFill(); rerender(); } }, { label: '出招！', primary: true, keep: true, onClick: () => { if (okN) submit(false); else SFX.play('nope'); } }], { pause: true, cls: 'duel' });
     const card = UI.cardEl;
-    const go = card.querySelector('.btns .btn[data-i="1"]'); if (go) go.disabled = !okN;
+    const go = card.querySelector('.btns .btn[data-i="2"]'); if (go) go.disabled = !okN;
     paintCardCanvas(card.querySelector('[data-w="m"]'), bouquetCanvas(masterSpec(run, M, st.r), 3));
     if (sel.stems.length) paintCardCanvas(card.querySelector('[data-w="p"]'), bouquetCanvas(sel, 3));
     card.querySelectorAll('.bq-chip').forEach(el => el.addEventListener('click', () => { if (sel.stems.length >= maxN || left(el.dataset.t) <= 0) return; SFX.play('pick'); sel.stems.push(el.dataset.t); rerender(); }));
@@ -380,7 +407,7 @@ function duelBookHTML(run) {
   const r = duelRankOf(run);
   return `<p class="lead">第二個月起，風雲榜上的高手每個月來一位。打敗他就換你坐他的位子，還能學到他的獨門秘笈。</p>
     <div class="bk-goal ${r === 1 ? 'done' : ''}">美玲花店：<b>${esc(duelTitle(run))}</b>${D.beaten >= MASTERS.length ? `　擂台守住 ${D.arena.wins} 次${D.arena.lost ? '（天下第一被搶走了，下個月搶回來）' : ''}` : ''}</div>
-    <ul class="du-list">${rows}</ul>`;
+    <ul class="du-list">${rows}</ul>${jhBookHTML(run)}`;
 }
 // 喵技能頁的提醒
 function duelNoteHTML(run) {

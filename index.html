@@ -667,6 +667,8 @@ details.old .intel { margin-top: 6px; color: var(--ink-dim); }
 .du-row p { margin: 3px 0 0; font-size: 12px; line-height: 1.5; color: var(--ink-dim); }
 .du-seal { position: absolute; right: 10px; top: 8px; width: 28px; height: 28px; border-radius: 6px; border: 2px solid #d83a3a; color: #d83a3a; font-style: normal; font-size: 16px; display: grid; place-items: center; transform: rotate(-12deg); }
 .du-note { color: #ffe9a8; }
+.du-seal.jh { border-color: #ff8ab0; color: #ff8ab0; }
+.du-row b small { font-size: 11.5px; color: var(--ink-dim); }
 .card.book .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: row; }
 .card.book .tab { padding: 6px 4px; font-size: 14px; }
 </style>
@@ -14294,6 +14296,9 @@ const ACH = [
   { id: 'wl5', name: '名震一方', desc: '風雲榜打進前五名', c: r => ((r.duel || {}).beaten || 0) >= 6, cans: 50 },
   { id: 'wl10', name: '天下第一花店', desc: '打敗花聖一枝春，坐上風雲榜第一', c: r => ((r.duel || {}).beaten || 0) >= 10, cans: 150, title: '天下第一' },
   { id: 'wlarena3', name: '擂台霸主', desc: '天下第一的擂台守住 3 次', c: r => (((r.duel || {}).arena || {}).wins || 0) >= 3, cans: 80 },
+  { id: 'jh1', name: '江湖朋友', desc: '巷子江湖：交到第一個朋友', c: r => JH.some(j => ((r.jh || {}).solved || {})[j.id]), cans: 10 },
+  { id: 'jh4', name: '人脈很廣', desc: '巷子江湖：交到 4 個朋友', c: r => JH.filter(j => ((r.jh || {}).solved || {})[j.id]).length >= 4, cans: 40 },
+  { id: 'jh8', name: '巷子新老大', desc: '巷子江湖：八個角色全部變成朋友', c: r => JH.every(j => ((r.jh || {}).solved || {})[j.id]), cans: 100, title: '巷子老大' },
   // 扭蛋
   { id: 'wd1', name: '第一件新衣', desc: '扭蛋扭到第一件衣服', c: r => Object.keys((r.wardrobe || {}).own || {}).length >= 1, cans: 5 },
   { id: 'wdset', name: '整套穿上', desc: '穿齊一整套套裝', c: r => r.wardrobe && activeSets(r).length >= 1, cans: 20 },
@@ -16604,6 +16609,7 @@ NightScene.prototype.render3D = function () {
   heistRender3D(this, F);
   repNight3D(this, F, L);
   obRender3D(this, F, L);
+  jhRender3D(this, F);
   roofwayRender3D(this, F, st);
   expNight3D(this, F, L);
   winNight3D(this, F, L);
@@ -18826,8 +18832,8 @@ function rivalUpdate(sc, dt) {
 }
 // 對決：瞪眼比氣勢（三戰兩勝）
 class RivalDuel {
-  constructor(sc) {
-    this.sc = sc; this.rv = sc.rival; this.round = 0; this.score = [0, 0]; this.t = 0; this.phase = 'intro'; this.pos = 0; this.dir = 1; this.msg = '';
+  constructor(sc, o = {}) {
+    this.o = o; this.sc = sc; this.rv = o.rv || sc.rival; this.round = 0; this.score = [0, 0]; this.t = 0; this.phase = 'intro'; this.pos = 0; this.dir = 1; this.msg = '';
     const k = this.rv.skill + (this.rv.final ? 0.25 : 0);
     this.speeds = [1.3 + k * 0.8, 1.6 + k * 0.9, 1.9 + k * 1.0];
     this.zones = [[0.36, 0.64], [0.4, 0.6], [0.43, 0.57]];
@@ -18860,15 +18866,15 @@ class RivalDuel {
     const cy = H * 0.42;
     // 兩隻貓的大頭
     const sc = this.sc;
-    const me = ART.cat(Object.assign({}, sc.cat, { pose: null, dir: 'right', moving: false })), him = rivalArt(Object.assign(new Cat(0, 0), { dir: 'left', moving: false, t: this.t }));
+    const me = ART.cat(Object.assign({}, sc.cat, { pose: null, dir: 'right', moving: false })), him = this.o.art ? this.o.art(this.t) : rivalArt(Object.assign(new Cat(0, 0), { dir: 'left', moving: false, t: this.t }));
     const big = Math.min(W / 2.6, 170);
     const draw = (a, x, flip) => { if (!a || !a.img) return; const w = big, h = big * a.h / a.w; g.save(); g.translate(x, cy); if (flip) g.scale(-1, 1); g.drawImage(a.img, -w / 2, -h + 20, w, h); g.restore(); };
     for (const [x, col] of [[W * 0.27, 'rgba(255,214,140,'], [W * 0.73, 'rgba(160,255,190,']]) { const gr = g.createRadialGradient(x, cy - big * 0.3, 4, x, cy - big * 0.3, big * 0.75); gr.addColorStop(0, col + '0.55)'); gr.addColorStop(1, col + '0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, cy - big * 0.3, big * 0.75, 0, TAU); g.fill(); }
     // 中間的火花
     for (let i = 0; i < 6; i++) { const a = this.t * 4 + i, r = 6 + (i % 3) * 5; g.fillStyle = i % 2 ? '#ffd25a' : '#ffffff'; g.beginPath(); g.arc(W / 2 + Math.cos(a) * r, cy - big * 0.35 + Math.sin(a * 1.3) * r, 2.2, 0, TAU); g.fill(); }
     draw(me, W * 0.27, false); draw(him, W * 0.73, false);
-    CM.text(g, W / 2, cy - big * 0.8, this.rv.final ? '屋頂決戰' : '對決！', '#ffd25a', 30, 1, { rot: -0.05 });
-    CM.text(g, W * 0.27, cy + 34, '花喵', '#fff', 15, 1); CM.text(g, W * 0.73, cy + 34, '煤炭', '#c8f0d0', 15, 1);
+    CM.text(g, W / 2, cy - big * 0.8, this.o.title || (this.rv.final ? '屋頂決戰' : '對決！'), '#ffd25a', 30, 1, { rot: -0.05 });
+    CM.text(g, W * 0.27, cy + 34, '花喵', '#fff', 15, 1); CM.text(g, W * 0.73, cy + 34, this.o.name || '煤炭', '#c8f0d0', 15, 1);
     // 比分
     for (let i = 0; i < 2; i++) {
       for (let k = 0; k < 2; k++) { g.fillStyle = this.score[i] > k ? (i ? '#ff7a5a' : '#ffd25a') : 'rgba(255,255,255,0.2)'; g.beginPath(); g.arc((i ? W * 0.73 : W * 0.27) - 9 + k * 18, cy + 56, 6.5, 0, TAU); g.fill(); }
@@ -18883,7 +18889,7 @@ class RivalDuel {
       g.fillStyle = '#ffd25a'; g.strokeStyle = CM.ink; g.lineWidth = 2.5; g.beginPath(); g.moveTo(px, y + 22); g.lineTo(px - 8, y + 34); g.lineTo(px + 8, y + 34); g.closePath(); g.fill(); g.stroke(); g.fillRect(px - 1.5, y - 3, 3, 22);
       CM.text(g, W / 2, y - 18, `第 ${this.round + 1} 回合`, '#e8e2ff', 14, 1);
       if (this.phase === 'result') CM.text(g, W / 2, y + 60, this.msg, '#fff3c8', 18, 1);
-    } else if (this.phase === 'end') CM.text(g, W / 2, y + 10, this.win ? (this.rv.final ? '煤炭低下頭了……' : '贏了！煤炭把花丟下來了') : '輸了……煤炭叼著花跑了', this.win ? '#ffd25a' : '#ff9a8a', 20, 1);
+    } else if (this.phase === 'end') CM.text(g, W / 2, y + 10, this.win ? (this.o.winText || (this.rv.final ? '煤炭低下頭了……' : '贏了！煤炭把花丟下來了')) : (this.o.loseText || '輸了……煤炭叼著花跑了'), this.win ? '#ffd25a' : '#ff9a8a', 20, 1);
     g.restore();
   }
 }
@@ -21225,7 +21231,7 @@ function obstShopNote(run) {
 // ================= 花界風雲榜：十大高手 =================
 // 第二個月起，每個月月初會收到一封挑戰帖：風雲榜上排在你前面的高手，第四天早上上門「花藝論劍」。
 // 論劍＝三招：對手先出一束花，你用店裡的花回一束。每招有題目（配色、指定花、包裝、限時……），
-// 合題目的花束功力 ×1.3，不合只剩 ×0.5。三招贏兩招就打敗他，學到他的獨門秘笈（永久效果），
+// 合題目的花束功力 ×1.3，不合只剩 ×0.5。三招贏兩招（一刀流只比一招）就打敗他，學到他的獨門秘笈（永久效果），
 // 牆上的「花界風雲榜」也會劃掉他的名字。輸了，下個月他會再來（一樣的題目，知道要偷什麼了）。
 // 十大高手全部打敗以後是「擂台」：每個月有人來挑戰你的天下第一。
 
@@ -21282,15 +21288,13 @@ const MASTERS = [
       { t: '網友票選', c: T_.free(), rep: true, spec: SP(['lisianthus', 'hydrangea', 'babys', 'babys'], 'sage', 'ivory') },
     ],
     perk: { name: '打卡術', desc: '每天打烊後網友來打卡：口碑越高，宣傳收入越多' } },
-  { id: 'liu', rank: 7, nick: '一刀流', name: '劉師傅', shop: '五十年老花店「劉記」', skin: 'bo', col: '#e8c87a', k: 1.05, timer: 25,
-    style: '剪刀一揮就是一束，三招都限時，手要快、腦要更快',
-    intro: ['……小姑娘，我開花店的時候，妳爸媽都還沒出生。', '風雲榜第七，劉某。我只出三刀。', '每一刀，二十五秒。慢了，就是輸。'],
-    win: ['好快的手。好準的眼。', '「一刀流」傳給妳：包裝紙配得好，花束會多值兩成五。'],
+  { id: 'liu', rank: 7, nick: '一刀流', name: '劉師傅', shop: '五十年老花店「劉記」', skin: 'bo', col: '#e8c87a', k: 1.2,
+    style: '剪刀一揮就是一束。他只出一刀：一招定勝負',
+    intro: ['……小姑娘，我開花店的時候，妳爸媽都還沒出生。', '風雲榜第七，劉某。', '我只出一刀。一刀，定勝負。'],
+    win: ['好準的眼。', '「一刀流」傳給妳：包裝紙配得好，花束會多值兩成五。'],
     lose: ['手太慢了。花是不等人的。', '下個月，我再來看妳的刀。'],
     rounds: [
-      { t: '第一刀・漸層', c: T_.scheme('analog'), spec: SP(['lisianthus', 'hydrangea', 'lisianthus'], 'sage', 'green') },
-      { t: '第二刀・三枝', c: T_.exact(3), spec: SP(['rose', 'rose', 'rose'], 'black', 'red') },
-      { t: '第三刀・對比', c: T_.scheme('comp'), spec: SP(['sunflower', 'hydrangea', 'sunflower'], 'kraft', 'twine') },
+      { t: '一刀定勝負', c: T_.exact(3), spec: SP(['rose', 'rose', 'rose'], 'black', 'red') },
     ],
     perk: { name: '一刀流', desc: '包裝紙搭得好：花束 ×1.25（原本 ×1.1）' } },
   { id: 'gui', rank: 6, nick: '香手', name: '桂嬸', shop: '香花行「桂香」', skin: 'wang', col: '#ffc070', k: 1.1,
@@ -21440,7 +21444,7 @@ function duelDaily(run) {
 }
 
 // ---------- 白天：挑戰帖、論劍 ----------
-function duelRoundsText(M) { return M.rounds.map((R, i) => `<li><b>第${NUM[i + 1]}招・${esc(R.t)}</b>${esc(R.c.d)}${M.timer ? `（限時 ${M.timer} 秒）` : ''}</li>`).join(''); }
+function duelRoundsText(M) { return M.rounds.map((R, i) => `<li><b>${M.rounds.length > 1 ? '第' + NUM[i + 1] + '招・' : ''}${esc(R.t)}</b>${esc(R.c.d)}${M.timer ? `（限時 ${M.timer} 秒）` : ''}</li>`).join(''); }
 function* duelLetterScript(S) {
   const run = S.run, m = run.month || 1, D = duelOf(run);
   if (m < 2 || (D.cur && D.cur.m === m)) return;
@@ -21454,7 +21458,7 @@ function* duelLetterScript(S) {
   yield S.modal(done => UI.modal(`<p class="eyebrow">${arena ? '擂台・天下第一保衛戰' : '花界風雲榜・挑戰帖'}</p>
     <h2>${arena ? '復仇戰：' : ''}第 ${M.rank} 名「${esc(M.nick)}」${esc(M.name)}</h2>
     <p class="lead">${esc(M.shop)}。${esc(M.style)}。</p>
-    <p class="lead">這個月<b>第四天早上</b>上門論劍。三招贏兩招就算贏；每一招的花都從<b>店裡的花</b>拿，記得先留著別賣掉：</p>
+    <p class="lead">這個月<b>第四天早上</b>上門論劍。${M.rounds.length > 1 ? '三招贏兩招就算贏' : '只比一招，一招定勝負'}。用的是<b>第三晚偷回來的花</b>（加上頂樓花園的），每一招會自動幫你配好最強的一束：</p>
     <ul class="chain-opts du-rounds">${duelRoundsText(M)}</ul>
     <p class="hint">合題目的花束功力 ×1.3，不合只剩 ×0.5。${arena ? `已經守住擂台 ${D.arena.wins} 次，這次對手會更強。` : `打敗他：學到獨門秘笈「${esc(M.perk.name)}」、拿獎金，風雲榜升到第 ${M.rank} 名。`}${again ? `（之前輸了 ${D.losses[M.id]} 次，這次他會稍微手下留情）` : ''}</p>`,
     [{ label: '接下挑戰帖', primary: true, onClick: done }], { pause: true, cls: 'small' }));
@@ -21510,11 +21514,39 @@ function duelUI(S, M, c, cb) {
   const papers = Object.keys(PAPERS).filter(k => (PAPERS[k].decor || 0) <= decor);
   const ribbons = Object.keys(RIBBONS).filter(k => (RIBBONS[k].decor || 0) <= decor);
   const maxN = duelHas(run, 'ji') ? 6 : 5;
-  const st = { r: 0, win: 0, lose: 0, phase: 'pick', last: null, timer: null, left: 0 };
+  const st = { r: 0, win: 0, lose: 0, phase: 'pick', last: null, timer: null, left: 0, auto: false };
+  const need = Math.ceil(M.rounds.length / 2);
   const sel = { stems: [], paper: papers[0], ribbon: ribbons[0] };
   const pool = () => S.stock.filter(f => S.canSell(f));
   const takePlan = () => { const P = pool().slice().sort((a, b) => b.fresh - a.fresh), used = []; for (const t of sel.stems) { const i = P.findIndex(f => f.t === t && !used.includes(f)); if (i >= 0) used.push(P[i]); } return used; };
   const left = t => pool().filter(f => f.t === t).length - sel.stems.filter(x => x === t).length;
+  // 自動配花：店裡的花湊得出的、功力最高的一束（優先合題目）
+  const bestPick = () => {
+    const P = pool(), cnt = {}; for (const f of P) cnt[f.t] = (cnt[f.t] || 0) + 1;
+    const types = Object.keys(cnt).sort((a, b) => FLOWERS[b].price - FLOWERS[a].price).slice(0, 10);
+    const R = M.rounds[st.r]; let best = null, bestP = -1;
+    const needRb = R.c.d.includes('緞帶');
+    const mp = masterPower(run, M, st.r, c); let win = null, winCost = Infinity;
+    const cur = [];
+    const tryIt = () => {
+      for (const pa of papers) {
+        const spec = { stems: cur.slice(), paper: pa, ribbon: ribbons[0] };
+        let ev = bouquetEval(run, spec), pp = playerPower(run, M, st.r, spec, ev);
+        if (!pp.ok && needRb) { for (const rb of ribbons) { const s2 = { stems: spec.stems, paper: pa, ribbon: rb }; const e2 = bouquetEval(run, s2), p2 = playerPower(run, M, st.r, s2, e2); if (p2.ok) { spec.ribbon = rb; pp = p2; break; } } }
+        if (pp.p > bestP) { bestP = pp.p; best = spec; }
+        // 贏得了的話，挑最省花的那一束（好花留給下一招）
+        if (pp.p >= mp + 2 && ev.base < winCost) { winCost = ev.base; win = spec; }
+      }
+    };
+    const rec = (from, left) => {
+      if (cur.length >= BQ_MIN) tryIt();
+      if (cur.length >= maxN) return;
+      for (let i = from; i < types.length; i++) { const t = types[i]; if (cur.filter(x => x === t).length >= cnt[t]) continue; cur.push(t); rec(i, left); cur.pop(); }
+    };
+    rec(0);
+    return win || best;
+  };
+  const autoFill = () => { const b = bestPick(); if (b) { sel.stems = b.stems.slice(); sel.paper = b.paper; sel.ribbon = b.ribbon; } };
   const stopTimer = () => { if (st.timer) { clearInterval(st.timer); st.timer = null; } };
   const evalSel = () => { const plan = takePlan(); return bouquetEval(run, sel, i => (plan[i] ? plan[i].fresh : 1)); };
   const submit = (forfeit) => {
@@ -21534,12 +21566,12 @@ function duelUI(S, M, c, cb) {
     st.phase = 'show'; render();
   };
   const next = () => {
-    if (st.win >= 2 || st.lose >= 2 || st.r >= 2) { stopTimer(); cb({ win: st.win >= 2, wins: st.win, losses: st.lose }); return; }
-    st.r++; st.phase = 'pick'; sel.stems = []; st.last = null; render(); startTimer();
+    if (st.win >= need || st.lose >= need || st.r >= M.rounds.length - 1) { stopTimer(); cb({ win: st.win >= need, wins: st.win, losses: st.lose }); return; }
+    st.r++; st.phase = 'pick'; sel.stems = []; st.last = null; st.auto = false; render(); startTimer();
   };
   const render = () => {
     const R = M.rounds[st.r], mp = masterPower(run, M, st.r, c);
-    const head = `<p class="eyebrow">${c.arena ? '擂台' : '花藝論劍'}・第${NUM[st.r + 1]}招（三招兩勝）</p>
+    const head = `<p class="eyebrow">${c.arena ? '擂台' : '花藝論劍'}${M.rounds.length > 1 ? `・第${NUM[st.r + 1]}招（三招兩勝）` : '・一招定勝負'}</p>
       <h2>${esc(R.t)}</h2><p class="du-q">${esc(R.c.d)}</p>
       <div class="du-score"><span>美玲</span><b class="px">${st.win}</b><i>：</i><b class="px">${st.lose}</b><span>${esc(M.name)}</span></div>`;
     if (st.phase === 'show') {
@@ -21548,12 +21580,13 @@ function duelUI(S, M, c, cb) {
         <div class="du-mid ${L.won ? 'win' : 'lose'}">${L.won ? '勝' : '敗'}</div>
         <div class="du-side"><canvas class="du-cv" data-w="p" width="150" height="190"></canvas><b>${esc(L.name)}</b><span class="px">功力 ${L.me.p}</span></div></div>
         <p class="du-judge">${L.me.p === 0 ? '這一招棄權了。' : `${L.me.ok ? '合題目 ×1.3' : '沒合題目，只剩 ×0.5'}${L.me.notes.length ? '・' + L.me.notes.join('・') : ''}。`}${L.won ? pick(['評審們點點頭：這一招，美玲贏了！', '圍觀的鄰居拍手叫好！', `${M.name}愣了一下。`]) : pick(['評審們搖搖頭。', `${M.name}冷笑了一聲。`, '圍觀的鄰居嘆了一口氣。'])}</p>`,
-        [{ label: (st.win >= 2 || st.lose >= 2 || st.r >= 2) ? '看結果' : '下一招', primary: true, onClick: next }], { pause: true, cls: 'duel' });
+        [{ label: (st.win >= need || st.lose >= need || st.r >= M.rounds.length - 1) ? '看結果' : '下一招', primary: true, onClick: next }], { pause: true, cls: 'duel' });
       const card = UI.cardEl;
       paintCardCanvas(card.querySelector('[data-w="m"]'), bouquetCanvas(masterSpec(run, M, st.r), 3));
       if (L.spec.stems.length) paintCardCanvas(card.querySelector('[data-w="p"]'), bouquetCanvas(L.spec, 3));
       return;
     }
+    if (!st.auto) { st.auto = true; autoFill(); }
     const types = [...new Set(pool().map(f => f.t))].sort((a, b) => FLOWERS[a].price - FLOWERS[b].price);
     const okN = sel.stems.length >= BQ_MIN && sel.stems.length <= maxN;
     let mine = `<b>挑 ${BQ_MIN}～${maxN} 枝</b><span class="px">功力 —</span>`;
@@ -21566,9 +21599,9 @@ function duelUI(S, M, c, cb) {
       <div class="bq-pick">${types.length ? types.map(t => `<button type="button" class="bq-chip" data-t="${t}" ${left(t) > 0 && sel.stems.length < maxN ? '' : 'disabled'}>${flowerChip(t)}<em>×${left(t)}</em></button>`).join('') : '<p class="bq-hint">店裡沒有花了……這一招只能棄權。</p>'}</div>
       <div class="bq-sws">${papers.map(k => `<button type="button" class="bq-sw ${sel.paper === k ? 'on' : ''}" data-p="${k}" style="--c:${PAPERS[k].col}">${PAPERS[k].name}</button>`).join('')}</div>
       <div class="bq-sws">${ribbons.map(k => `<button type="button" class="bq-sw ${sel.ribbon === k ? 'on' : ''}" data-r="${k}" style="--c:${RIBBONS[k].col}">${RIBBONS[k].name}</button>`).join('')}</div>`,
-      [{ label: '棄權這一招', keep: true, onClick: () => submit(true) }, { label: '出招！', primary: true, keep: true, onClick: () => { if (okN) submit(false); else SFX.play('nope'); } }], { pause: true, cls: 'duel' });
+      [{ label: '棄權', keep: true, onClick: () => submit(true) }, { label: '自動配花', keep: true, onClick: () => { SFX.play('pick'); autoFill(); rerender(); } }, { label: '出招！', primary: true, keep: true, onClick: () => { if (okN) submit(false); else SFX.play('nope'); } }], { pause: true, cls: 'duel' });
     const card = UI.cardEl;
-    const go = card.querySelector('.btns .btn[data-i="1"]'); if (go) go.disabled = !okN;
+    const go = card.querySelector('.btns .btn[data-i="2"]'); if (go) go.disabled = !okN;
     paintCardCanvas(card.querySelector('[data-w="m"]'), bouquetCanvas(masterSpec(run, M, st.r), 3));
     if (sel.stems.length) paintCardCanvas(card.querySelector('[data-w="p"]'), bouquetCanvas(sel, 3));
     card.querySelectorAll('.bq-chip').forEach(el => el.addEventListener('click', () => { if (sel.stems.length >= maxN || left(el.dataset.t) <= 0) return; SFX.play('pick'); sel.stems.push(el.dataset.t); rerender(); }));
@@ -21604,7 +21637,7 @@ function duelBookHTML(run) {
   const r = duelRankOf(run);
   return `<p class="lead">第二個月起，風雲榜上的高手每個月來一位。打敗他就換你坐他的位子，還能學到他的獨門秘笈。</p>
     <div class="bk-goal ${r === 1 ? 'done' : ''}">美玲花店：<b>${esc(duelTitle(run))}</b>${D.beaten >= MASTERS.length ? `　擂台守住 ${D.arena.wins} 次${D.arena.lost ? '（天下第一被搶走了，下個月搶回來）' : ''}` : ''}</div>
-    <ul class="du-list">${rows}</ul>`;
+    <ul class="du-list">${rows}</ul>${jhBookHTML(run)}`;
 }
 // 喵技能頁的提醒
 function duelNoteHTML(run) {
@@ -21647,6 +21680,329 @@ function duelDecor3D(sc, F) {
   }
 }
 const DUEL_BOARD = [4.6, 3.05, 0.9], DUEL_PLAQUE = [7.5, 3.05, 2.35];
+
+// ================= 巷子江湖：晚上的對手與麻煩 =================
+// 第二個月起，每個月巷子裡會多一個新角色（貓或人）。每個都有自己的麻煩，也有一種解法：
+//   瞪眼比氣勢、分罐罐、擺姿勢、趁他偷花時嚇他、搖醒、躲紙箱、送白色的花、單挑。
+// 解決了就變成朋友，送你一個永久的好處（圖鑑「風雲榜」頁下面的「巷子江湖」看得到）。
+// 一個晚上最多出現一個；這個月新來的那個，第一晚一定會出現。
+
+const JH = [
+  { id: 'tiger', m: 2, kind: 'cat', name: '虎爺', tag: '巷口老大', beh: 'block', solve: 'stare', skill: 0.3,
+    pal: { fur: '#e8913a', furL: '#ffb066', furD: '#b8641e', stripe: '#a8521a', cream: '#fff0dc', creamS: '#f0d8b8', eye: '#ffe066', eyeD: '#c8a02a', ear: '#f6a890' },
+    intro: '巷口來了一隻大橘貓「虎爺」，霸佔了一盆好花。靠近按「瞪眼」跟牠比氣勢！',
+    how: '霸佔一盆好花不讓你碰。靠近「瞪眼」比氣勢（指針停在綠色按）',
+    perk: { name: '虎爺的貢品', desc: '每晚收工，虎爺會叼一朵好花放進店裡' } },
+  { id: 'trio', m: 3, kind: 'cat', name: '小偷三兄弟', tag: '三隻小虎斑', beh: 'chase', solve: 'cans', cost: 3,
+    pal: { fur: '#b8a890', furL: '#d8ccb8', furD: '#8a7a64', stripe: '#5a4a3a', cream: '#f4ece0', creamS: '#e0d4c4', eye: '#9ae0ff', eyeD: '#4a9ac8', ear: '#f0b0a0' },
+    intro: '三隻小虎斑在巷子裡亂跑，碰到你就搶走嘴上的花！靠近按「分罐罐」收買牠們。',
+    how: '追著你跑，碰到就搶走一朵花。靠近「分罐罐」（3 個）收買牠們',
+    perk: { name: '小跟班', desc: '三兄弟幫忙叼花：叼花上限 +1' } },
+  { id: 'photo', m: 4, kind: 'human', key: 'shopD', name: '夜拍阿傑', tag: '街頭攝影師', beh: 'flash', solve: 'pose',
+    intro: '有人在巷子裡拍夜景，閃光燈一閃就會照到你！嘴巴空空的時候靠近他「擺姿勢」。',
+    how: '閃光燈照到你就會吵醒鄰居。嘴巴沒叼花時靠近他「擺姿勢」',
+    perk: { name: '網紅貓', desc: '阿傑每晚幫你 PO 照片：口碑每晚多加一點' } },
+  { id: 'thief', m: 5, kind: 'human', key: 'shopF', name: '偷花賊', tag: '戴口罩的怪叔叔', beh: 'thief', solve: 'scare', need: 2,
+    intro: '有個戴口罩的人也在偷花！趁他蹲下來偷花的時候，從旁邊「嚇他」。',
+    how: '跟你搶花，偷走的人家會更警戒。趁他蹲著偷花時「嚇他」，嚇跑兩次就不敢來了',
+    perk: { name: '巷子安全了', desc: '偷花賊不敢來了，鄰居比較安心：每晚收工每一家警戒 −3' } },
+  { id: 'fat', m: 6, kind: 'cat', name: '肥仔', tag: '睡不醒的胖貓', beh: 'block', solve: 'shake', taps: 5,
+    pal: { fur: '#f4f0ea', furL: '#ffffff', furD: '#d8d0c4', stripe: '#9a8a7a', cream: '#ffffff', creamS: '#ece4d8', eye: '#c8e070', eyeD: '#8aa040', ear: '#f6b8b0' },
+    intro: '一隻超胖的貓「肥仔」睡在花盆上，怎麼推都推不動。靠近連按「搖醒」！',
+    how: '整隻壓在一盆花上睡覺。靠近連按五下「搖醒」',
+    perk: { name: '肥仔的地圖', desc: '肥仔睡遍整條巷子：每晚都有「老貓的地圖」效果' } },
+  { id: 'net', m: 7, kind: 'human', key: 'patrol', name: '捕貓大叔', tag: '拿網子的大叔', beh: 'net', solve: 'box', need: 2,
+    intro: '捕貓大叔拿著網子在巷子裡巡！被他追上嘴上的花全掉光。他靠近時躲進「紙箱」騙過他。',
+    how: '看到你就追，被抓到嘴上的花全掉光。他靠近時躲進紙箱騙過他（兩次）',
+    perk: { name: '大叔改當志工', desc: '大叔現在幫流浪貓送飯：每晚收工 +3 罐罐' } },
+  { id: 'snow', m: 8, kind: 'cat', name: '雪姬', tag: '高冷的白貓', beh: 'block', solve: 'white',
+    pal: { fur: '#f8f8fc', furL: '#ffffff', furD: '#dcdce8', stripe: '#e4e4f0', cream: '#ffffff', creamS: '#eeeef6', eye: '#8ac8ff', eyeD: '#3a7ac8', ear: '#f8c8d0' },
+    intro: '一隻高冷的白貓「雪姬」坐在花盆前，誰都不理。聽說她只喜歡白色的花……',
+    how: '坐在一盆花前面誰都不理。叼一朵白色的花（茉莉、滿天星、玉蘭……）去「送花」',
+    perk: { name: '雪姬的祝福', desc: '白色的花賣價 ×1.2' } },
+  { id: 'boss', m: 9, kind: 'cat', name: '黑輪老大', tag: '夜市後巷的老大', beh: 'block', solve: 'stare', skill: 0.95, final: true, allies: 4,
+    pal: { fur: '#3a3036', furL: '#544850', furD: '#241c22', stripe: '#1a1418', cream: '#6a5a62', creamS: '#544850', eye: '#ff6a5a', eyeD: '#c83a2a', ear: '#6a4a52' },
+    intro: '夜市後巷的「黑輪老大」親自來了，帶著一道疤。打贏牠，整條巷子都是你的！',
+    how: '交到 4 個朋友後才會出現。「單挑」瞪眼（很快、很難）',
+    perk: { name: '新老大', desc: '整條巷子都聽你的：每晚多 20 分鐘' } },
+];
+function jhOf(run) { return run.jh || (run.jh = { met: {}, solved: {}, prog: {} }); }
+function jhHas(run, id) { return !!(run && run.jh && run.jh.solved[id]); }
+function jhAllies(run) { return JH.filter(j => jhHas(run, j.id)).length; }
+function jhUnlocked(run, j) { return (run.month || 1) >= j.m && (!j.allies || jhAllies(run) >= j.allies); }
+
+// ---------- 好處 ----------
+(function () {
+  const P = NightScene.prototype;
+  const _cap = P.capacity;
+  P.capacity = function () { return _cap.call(this) + (jhHas(this.run, 'trio') ? 1 : 0); };
+  const _ia = itemActive;
+  itemActive = function (run, id) { return _ia(run, id) || (id === 'map' && jhHas(run, 'fat') && G.scene instanceof NightScene); };
+  const _fv = flowerValue;
+  flowerValue = function (run, t, fresh) { const v = _fv(run, t, fresh); return (FLOWERS[t] && FLOWERS[t].white && jhHas(run, 'snow')) ? v * 1.2 : v; };
+})();
+
+// ---------- 每晚：誰出來 ----------
+function jhInit(sc) {
+  const run = sc.run, J = jhOf(run);
+  sc.jh = null;
+  if (jhHas(run, 'boss')) sc.end += 20;
+  if (sc.raid || (run.month || 1) < 2) return;
+  const open = JH.filter(j => !jhHas(run, j.id) && jhUnlocked(run, j));
+  if (!open.length) return;
+  const fresh = open.filter(j => !J.met[j.id]);
+  let j = fresh.length ? fresh[fresh.length - 1] : (Math.random() < 0.5 ? pick(open) : null);
+  if (!j) return;
+  J.met[j.id] = (J.met[j.id] || 0) + 1;
+  const isCat = j.kind === 'cat';
+  const n = Object.assign(isCat ? new Cat(0, 0) : { dir: 'down', moving: false }, { j, state: 'idle', t: 0, path: [], carry: [], cool: 0, taps: 0, tapT: 0, said: 0 });
+  const pots = sc.pots.filter(p => p.avail && !p.gone && !p.top && p.owner !== 'mansion' && p.owner !== 'storm' && p.t !== 'lily');
+  if (j.beh === 'block' || j.beh === 'flash') {
+    const good = pots.slice().sort((a, b) => FLOWERS[b.t].price - FLOWERS[a.t].price).slice(0, 4);
+    const p = good.length ? pick(good) : null; if (!p) return;
+    n.x = p.x + (j.beh === 'flash' ? 0 : 9); n.y = p.y + (j.beh === 'flash' ? 14 : 3);
+    if (j.beh === 'block') { n.pot = p; p.avail = false; p.jhBlock = true; }
+    n.owner = p.owner; n.dir = 'left';
+    if (j.id === 'fat') n.pose = 'loaf';
+    n.flashT = 3 + Math.random() * 2;
+  } else {
+    const from = Math.random() < 0.5 ? [7.5, 41.4] : [1.6, 5.6];
+    n.x = from[0] * TS; n.y = from[1] * TS; n.from = from;
+    n.state = j.beh === 'thief' ? 'wait' : 'roam'; n.at = sc.time + rnd(5, 25);
+    n.speed = { chase: 36, thief: 24, net: 27 }[j.beh];
+  }
+  sc.jh = n;
+  setTimeout(() => { if (G.scene === sc) UI.toast((J.met[j.id] === 1 ? '新面孔：' : '') + j.intro, 4600); }, J.met[j.id] === 1 ? 4200 : 3200);
+}
+function jhGo(sc, n, x, y) { n.path = sc.groundPath(n.x, n.y, x, y) || [[x, y]]; }
+function jhWalk(n, dt, sp) {
+  if (!n.path.length) { n.moving = false; return true; }
+  const [tx, ty] = n.path[0], dx = tx - n.x, dy = ty - n.y, d = Math.hypot(dx, dy), s = sp * dt;
+  if (d <= s) { n.x = tx; n.y = ty; n.path.shift(); } else { n.x += dx / d * s; n.y += dy / d * s; }
+  n.moving = true;
+  if (Math.abs(dx) > Math.abs(dy) * 0.9) n.dir = dx > 0 ? 'right' : 'left'; else n.dir = dy > 0 ? 'down' : 'up';
+  return false;
+}
+function jhSeen(sc, n, r) { const c = sc.cat; return !c.top && !c.hidden && !c.box && dist(c.x, c.y, n.x, n.y) < r * TS; }
+function jhUpdate(sc, dt) {
+  const n = sc.jh; if (!n || n.state === 'gone') return;
+  const j = n.j, c = sc.cat, run = sc.run, d = dist(c.x, c.y, n.x, n.y);
+  n.t += dt; if (n.cool > 0) n.cool -= dt; if (n.tapT > 0) { n.tapT -= dt; if (n.tapT <= 0) n.taps = 0; }
+  if (d < 4 * TS && !n.said) { n.said = 1; sc.fx.text(n.x, n.y - 20, j.name, '#ffd25a'); }
+  if (j.beh === 'block') {
+    if (d < 1.2 * TS && !c.top && n.cool <= 0 && j.id !== 'fat' && j.id !== 'snow') { n.cool = 2.5; sc.fx.text(n.x, n.y - 18, j.final ? '……滾。' : '嘶——！', '#ff9a7a'); }
+    if (j.id === 'fat' && n.t % 2.2 < dt) sc.fx.text(n.x + 4, n.y - 16, 'Zzz', '#c8d8ff');
+  } else if (j.beh === 'flash') {
+    n.flashT -= dt;
+    if (n.flashT < 1 && !n.ready) { n.ready = true; if (Cam.visible(n.x, n.y, 80)) sc.fx.text(n.x, n.y - 22, '要拍囉～', '#fff3c8'); }
+    if (n.flashT <= 0) {
+      n.flashT = 4.5 + Math.random() * 2; n.ready = false; n.flash = 0.35;
+      if (Cam.visible(n.x, n.y, 80)) SFX.tone(1400, 0.05, { vol: 0.04 });
+      if (jhSeen(sc, n, 3.6)) { if (sc.obCool) sc.obCool['jh-photo'] = 0; obAlarm(sc, n.owner, c.x, c.y, '喀嚓！', 'jh-photo'); UI.toast('被閃光燈照到了！鄰居被吵醒……', 2200); }
+    }
+    if (n.flash > 0) n.flash -= dt;
+  } else if (j.beh === 'chase') {
+    if (n.state === 'roam') {
+      if (n.cool <= 0 && jhSeen(sc, n, 5) && c.carry.length) { n.state = 'chase'; }
+      else if (!n.path.length) { const p = pick(sc.pots); jhGo(sc, n, p.x, p.y + 4); }
+      jhWalk(n, dt, n.speed * 0.6);
+    } else if (n.state === 'chase') {
+      if (!jhSeen(sc, n, 7) || !c.carry.length) { n.state = 'roam'; n.path = []; }
+      else {
+        n.path = [[c.x, c.y]]; jhWalk(n, dt, n.speed);
+        if (d < 0.8 * TS && c.inv <= 0) {
+          const f = c.carry.pop(); n.carry.push(f.t); c.inv = 1.2;
+          sc.fx.text(c.x, c.y - 18, `${FLOWERS[f.t].name}被搶走了！`, '#ff9a7a'); SFX.play('fail');
+          n.state = 'roam'; n.cool = 8; const p = pick(sc.pots); jhGo(sc, n, p.x, p.y + 4);
+        }
+      }
+    }
+  } else if (j.beh === 'thief') {
+    if (n.state === 'wait') { if (sc.time >= n.at) n.state = 'hunt'; else return; }
+    if (n.state === 'hunt') {
+      if (!n.target || !n.target.avail) {
+        const ps = sc.pots.filter(p => p.avail && !p.gone && !p.top && p.owner !== 'mansion' && p.t !== 'lily');
+        n.target = ps.length ? pick(ps) : null;
+        if (!n.target || n.carry.length >= 3) { n.state = 'leave'; jhGo(sc, n, n.from[0] * TS, n.from[1] * TS); }
+        else jhGo(sc, n, n.target.x, n.target.y + 6);
+      }
+      if (n.target && jhWalk(n, dt, n.speed)) {
+        n.grab = (n.grab || 0) + dt; n.crouch = true;
+        if (n.grab > 2.2) {
+          n.grab = 0; n.crouch = false; const p = n.target;
+          if (p.avail) { p.avail = false; n.carry.push(p.t); sc.fx.text(p.x, p.y - 16, '被偷花賊拿走了！', '#ffb0a0'); if (HEAT_OWNERS.includes(p.owner)) heatAdd(run, p.owner, 5); }
+          n.target = null;
+        }
+      } else n.crouch = false;
+    }
+    if (n.state === 'leave' || n.state === 'flee') { if (jhWalk(n, dt, n.speed * (n.state === 'flee' ? 2.4 : 1))) n.state = 'gone'; }
+  } else if (j.beh === 'net') {
+    if (n.state === 'roam') {
+      if (sc.time < n.at) return;
+      if (jhSeen(sc, n, 5)) { n.state = 'chase'; sc.fx.text(n.x, n.y - 24, '站住！', '#ff9a7a'); SFX.tone(500, 0.12, { vol: 0.05 }); }
+      else if (!n.path.length) { const p = pick(sc.pots); jhGo(sc, n, p.x, p.y + 8); }
+      jhWalk(n, dt, n.speed * 0.7);
+    } else if (n.state === 'chase') {
+      if (c.box && d < 2.6 * TS) {
+        n.fooled = (n.fooled || 0) + dt; n.moving = false;
+        if (n.fooled > 1.4) {
+          const J = jhOf(run); J.prog.net = (J.prog.net || 0) + 1;
+          sc.fx.text(n.x, n.y - 24, '咦？只是紙箱啊……', '#fff3c8');
+          if (J.prog.net >= j.need) jhSolve(sc, n); else { UI.toast(`騙過捕貓大叔了！（${J.prog.net}/${j.need}）他今晚先回家了`, 3000); n.state = 'flee'; jhGo(sc, n, (n.from || [7.5, 41.4])[0] * TS, (n.from || [7.5, 41.4])[1] * TS); }
+        }
+      } else if (!jhSeen(sc, n, 8) && !c.box) { n.state = 'roam'; n.path = []; }
+      else {
+        n.fooled = 0; n.path = [[c.x, c.y]]; jhWalk(n, dt, n.speed);
+        if (d < 0.8 * TS && !c.box && c.inv <= 0) {
+          const lost = c.carry.splice(0); c.inv = 2;
+          sc.fx.text(c.x, c.y - 20, '被網子罩住了！', '#ff9a7a'); SFX.play('fail'); vibrate(80);
+          UI.toast(lost.length ? `被捕貓大叔的網子罩住了！嘴上的${lost.map(f => FLOWERS[f.t].name).join('、')}全掉了……` : '被網子罩住了！還好嘴上沒叼花，掙脫跑掉了', 3200);
+          n.state = 'flee'; jhGo(sc, n, (n.from || [7.5, 41.4])[0] * TS, (n.from || [7.5, 41.4])[1] * TS);
+        }
+      }
+    } else if (n.state === 'flee') { if (jhWalk(n, dt, n.speed)) n.state = 'gone'; }
+  }
+}
+// 解決了：變成朋友
+function jhSolve(sc, n) {
+  const run = sc.run, j = n.j, J = jhOf(run);
+  if (J.solved[j.id]) return;
+  J.solved[j.id] = run.nightIdx || 1;
+  if (n.pot) { n.pot.avail = true; n.pot.jhBlock = false; }
+  while (n.carry.length && sc.cat.carry.length < sc.capacity()) sc.cat.carry.push({ t: n.carry.pop(), fresh: 0.9, pot: { owner: null } });
+  run.cans += 10;
+  SFX.play('heart'); vibrate(40);
+  sc.fx.text(n.x, n.y - 24, '♥', '#ff8ab0');
+  UI.toast(`${j.name}變成朋友了！學到「${j.perk.name}」：${j.perk.desc}（罐罐 +10）`, 5000);
+  n.state = 'friend'; n.leaveT = 2.5;
+  checkAchievements(run);
+}
+// ---------- 互動 ----------
+function jhAction(sc) {
+  const n = sc.jh, j = n.j, c = sc.cat, run = sc.run;
+  if (n.cool > 0 && j.solve !== 'shake') { SFX.play('nope'); return; }
+  if (j.solve === 'stare') {
+    sc.jhDuel = new RivalDuel(sc, { rv: { skill: j.skill, final: !!j.final }, name: j.name, title: j.final ? '單挑！' : '比氣勢！',
+      art: t => jhCatArt(Object.assign(new Cat(0, 0), { j, dir: 'left', moving: false, t })),
+      winText: `${j.name}低下頭了……`, loseText: `輸了……${j.name}瞪得你耳朵都縮起來了` });
+    sc.mode = 'jhduel'; Input.release(); c.moving = false;
+    Input.game = (type, a) => sc.jhDuel.input(type, a);
+    UI.setAction(null); UI.setSkills([]);
+  } else if (j.solve === 'cans') {
+    if (run.cans < j.cost) { SFX.play('nope'); UI.toast(`罐罐不夠（要 ${j.cost} 個）`, 2000); n.cool = 1; return; }
+    run.cans -= j.cost; jhSolve(sc, n);
+  } else if (j.solve === 'pose') {
+    if (c.carry.length) { SFX.play('nope'); UI.toast('嘴巴叼著花，拍起來不可愛……先把花放回店裡再來', 2600); n.cool = 1.5; return; }
+    n.flash = 0.35; SFX.tone(1400, 0.05, { vol: 0.04 }); sc.fx.text(n.x, n.y - 24, '好可愛！！', '#ffd25a');
+    jhSolve(sc, n);
+  } else if (j.solve === 'scare') {
+    const J = jhOf(run);
+    if (!n.crouch) { n.cool = 3; sc.fx.text(n.x, n.y - 24, '走開啦臭貓！', '#ff9a7a'); SFX.play('nope'); UI.toast('他正盯著你……等他蹲下去偷花的時候再嚇他', 2400); return; }
+    J.prog.thief = (J.prog.thief || 0) + 1;
+    sc.fx.text(n.x, n.y - 24, '哇啊啊！', '#ffd25a'); SFX.play('heart'); vibrate(40);
+    const got = []; while (n.carry.length && c.carry.length < sc.capacity()) { const t = n.carry.pop(); c.carry.push({ t, fresh: 0.9, pot: { owner: null } }); got.push(t); }
+    n.carry = []; n.crouch = false; n.target = null;
+    if (J.prog.thief >= j.need) { jhSolve(sc, n); n.state = 'flee'; jhGo(sc, n, n.from[0] * TS, n.from[1] * TS); }
+    else { UI.toast(`偷花賊嚇得跑掉了！${got.length ? '搶回' + got.map(t => FLOWERS[t].name).join('、') : ''}（${J.prog.thief}/${j.need}）`, 3000); n.state = 'flee'; jhGo(sc, n, n.from[0] * TS, n.from[1] * TS); }
+  } else if (j.solve === 'shake') {
+    n.taps++; n.tapT = 1.6; SFX.tone(300 + n.taps * 80, 0.06, { vol: 0.05 }); sc.fx.text(n.x, n.y - 16 - n.taps * 2, n.taps >= j.taps ? '喵嗚？' : '搖～', '#fff3c8');
+    if (n.taps >= j.taps) { n.pose = null; jhSolve(sc, n); }
+  } else if (j.solve === 'white') {
+    const i = c.carry.findIndex(f => FLOWERS[f.t].white);
+    if (i < 0) { SFX.play('nope'); UI.toast('雪姬看都不看你一眼。她只喜歡白色的花（茉莉、滿天星、玉蘭、曇花……）', 2800); n.cool = 1.5; return; }
+    const f = c.carry.splice(i, 1)[0]; sc.fx.text(n.x, n.y - 24, `收下了${FLOWERS[f.t].name}`, '#ffffff');
+    jhSolve(sc, n);
+  }
+}
+function jhEndDuel(sc) {
+  const D = sc.jhDuel, n = sc.jh;
+  sc.jhDuel = null; Input.game = null; sc.mode = 'play'; sc.cat.inv = 1.5;
+  if (D.win) jhSolve(sc, n);
+  else { n.cool = 6; UI.toast(`輸給${n.j.name}了……等一下再來挑戰`, 2600); }
+}
+function jhLabel(sc, n) {
+  const j = n.j, c = sc.cat;
+  if (j.solve === 'stare') return j.final ? '單挑' : '瞪眼';
+  if (j.solve === 'cans') return `分罐罐（${j.cost}）`;
+  if (j.solve === 'pose') return '擺姿勢';
+  if (j.solve === 'scare') return '嚇他';
+  if (j.solve === 'shake') return n.taps ? `搖醒 ${n.taps}/${j.taps}` : '搖醒';
+  if (j.solve === 'white') return c.carry.some(f => FLOWERS[f.t].white) ? '送花' : '送花？';
+  return null;
+}
+(function () {
+  const P = NightScene.prototype;
+  const _u = P.update;
+  P.update = function (dt) {
+    if (!this.jhInited) { this.jhInited = true; try { jhInit(this); } catch (e) { reportErr(e, 'jh'); } }
+    if (this.mode === 'jhduel' && this.jhDuel) { this.fx.update(dt); this.jhDuel.update(dt); if (this.jhDuel.done) jhEndDuel(this); UI.nightHud(this); return; }
+    const r = _u.call(this, dt);
+    const n = this.jh;
+    if (n && this.mode === 'play') {
+      try { jhUpdate(this, dt * (this.timeScale || 1)); } catch (e) { reportErr(e, 'jhu'); }
+      if (n.state === 'friend') { n.leaveT -= dt; if (n.leaveT <= 0) n.state = 'gone'; }
+    }
+    return r;
+  };
+  const _ft = P.findTarget;
+  P.findTarget = function () {
+    _ft.call(this);
+    const n = this.jh, c = this.cat;
+    if (this.mode !== 'play' || !n || !n.j || c.top || c.jump || ['gone', 'friend', 'wait', 'flee', 'leave'].includes(n.state)) return;
+    if (n.j.solve === 'box') return;
+    if (dist(c.x, c.y, n.x, n.y) < 1.9 * TS) { this.target = { kind: 'jh', ref: { x: n.x, y: n.y } }; UI.setAction(jhLabel(this, n)); }
+  };
+  const _act = P.onAction;
+  P.onAction = function () {
+    if (this.mode === 'play' && this.target && this.target.kind === 'jh' && this.jh) { jhAction(this); return; }
+    return _act.call(this);
+  };
+  const _r3 = P.render3D;
+  P.render3D = function () { const r = _r3.call(this); if (this.jhDuel && R3.ov) this.jhDuel.render(R3.ov, R3.W, R3.H); return r; };
+  const _fin = P.finish;
+  P.finish = function (timeUp) {
+    const run = this.run;
+    if (this.jh && this.jh.pot && this.jh.pot.jhBlock) { this.jh.pot.jhBlock = false; }
+    try {
+      if (jhHas(run, 'tiger')) this.deposited.push({ t: pick(['rose', 'hydrangea', 'lisianthus', 'carnation', 'osmanthus']), fresh: 1, owner: 'gift' });
+      if (jhHas(run, 'photo')) { const R = repOf(run); R.xp += 3; }
+      if (jhHas(run, 'thief')) for (const o of HEAT_OWNERS) heatAdd(run, o, -3);
+      if (jhHas(run, 'net')) run.cans += 3;
+    } catch (e) { reportErr(e, 'jhf'); }
+    return _fin.call(this, timeUp);
+  };
+})();
+// ---------- 畫 ----------
+function jhCatArt(n) { const j = n.j; return withGear(null, () => ART.fix(toonGang({ id: 'jh' + j.id, pal: j.pal, scarf: 0 }, n))); }
+function jhRender3D(sc, F) {
+  const n = sc.jh; if (!n || n.state === 'gone' || n.state === 'wait' || sc.mode === 'zone') return;
+  if (n.j.kind === 'cat') {
+    const offs = n.j.id === 'trio' ? [[0, 0], [-6, 3], [6, 4]] : [[0, 0]];
+    for (const [ox, oy] of offs) {
+      pushSprite(F.sprites, jhCatArt(n), n.x + ox, n.y + 0.6 + oy, { minLight: [0.36, 0.34, 0.4] });
+      shadowAt(F, n.x + ox, n.y + 0.6 + oy, n.j.id === 'fat' ? 1.1 : 0.7, 0.28, 1, 0);
+    }
+    glowQuad(F.glow, n.x / TS + (n.dir === 'left' ? -0.15 : n.dir === 'right' ? 0.15 : 0), 0.62, n.y / TS + 0.08, 0.14, n.j.id === 'boss' ? [1, 0.4, 0.3, 0.4] : [1, 0.95, 0.5, 0.3]);
+  } else {
+    pushSprite(F.sprites, ART.human({ key: n.j.key, dir: n.dir, moving: n.moving, t: n.t }), n.x, n.y + 0.5, { minLight: [0.32, 0.3, 0.36] });
+    shadowAt(F, n.x, n.y + 0.5, 0.7, 0.28);
+    if (n.flash > 0) glowQuad(F.glow, n.x / TS, 1.4, n.y / TS, 3.6, [1, 1, 0.95, n.flash * 1.6]);
+    if (n.ready) glowQuad(F.glow, n.x / TS, 1.5, n.y / TS, 0.25, [1, 0.3, 0.3, 0.6]);
+    n.carry.forEach((t, i) => pushSprite(F.sprites, ART.icon(t), n.x + 6, n.y + 1, { lift: 0.9 + i * 0.12, minLight: [0.45, 0.42, 0.48] }));
+  }
+  // 還沒解決的：頭上一個小驚嘆號
+  if (n.state !== 'friend' && n.j.kind) glowQuad(F.glow, n.x / TS, n.j.kind === 'cat' ? 1.05 : 1.9, n.y / TS, 0.12, [1, 0.85, 0.3, 0.55 + 0.3 * Math.sin(n.t * 5)]);
+}
+// ---------- 圖鑑 ----------
+function jhBookHTML(run) {
+  const J = jhOf(run);
+  const rows = JH.map(j => {
+    const ok = jhHas(run, j.id), met = J.met[j.id];
+    return `<li class="du-row ${ok ? 'beat' : ''}"><span class="du-rk">${j.kind === 'cat' ? '🐾' : '👤'}</span><div><b>${met ? esc(j.name) : '？？？'}<small>　${met ? esc(j.tag) : `第 ${j.m} 個月出現`}</small></b>
+      <p>${ok ? `朋友・「${esc(j.perk.name)}」：${esc(j.perk.desc)}` : met ? esc(j.how) : (j.allies ? `交到 ${j.allies} 個朋友以後才會出現` : '還沒碰過')}</p></div>${ok ? '<i class="du-seal jh">友</i>' : ''}</li>`;
+  }).join('');
+  return `<h3>巷子江湖　朋友 ${jhAllies(run)}/${JH.length}</h3><p class="lead">晚上巷子裡的貓和人。每個都有麻煩、也都有解法；解決了就變成朋友，送你一個永久的好處。</p><ul class="du-list">${rows}</ul>`;
+}
 
 // ================= 啟動 =================
 const G = { S: null, maps: {}, bg: {}, run: null, scene: null, icons: {}, paused: false };
@@ -21749,7 +22105,7 @@ function boot(data) {
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
-  window.__TH = { loadSave, clearSave, G, Flow, UI, Input, Cam, View, R3, GL3, DayScene, NightScene, setScene, newRun, CuteGame, CharmCut, OrangeCat, ART, RP: { repOf, repLv, repDayEnd }, DU: { MASTERS, duelOf, duelHas, masterPower, playerPower, masterSpec, duelBookHTML },HS: { heistEnter, HE }, ST: { setBranch, mLv, hasCombo, hasLegend, MASTERY }, FV: (r, t, f) => flowerValue(r, t, f), RENT: rentFor, EX: { startExped, expOf, EXPEDS }, RV: { rivalOf, chainOf, initRival, startDuel, chainDayEnd }, BR: { startBreed, breedTick, breedOf, HYBRIDS, HYBRID_ORDER, royaltyOf }, ZN: { zoneEnter, zonesOf, LOST_ITEMS, ZONES }, OUT: { pullGacha, equipOutfit, exchangeOutfit, hasSet, activeSets, wardrobe, OUTFITS }, GEAR: { drawMeowArt2, drawBellyArt2, drawRubArt2, VXR, orangeCloseup, cuteHead, withGear, catGearFor, catRefArt, toonOrangePal: ORANGE_PAL, TAB } };
+  window.__TH = { loadSave, clearSave, G, Flow, UI, Input, Cam, View, R3, GL3, DayScene, NightScene, setScene, newRun, CuteGame, CharmCut, OrangeCat, ART, RP: { repOf, repLv, repDayEnd }, JH: { JH, jhOf, jhHas, jhInit, jhAction },DU: { MASTERS, duelOf, duelHas, masterPower, playerPower, masterSpec, duelBookHTML },HS: { heistEnter, HE }, ST: { setBranch, mLv, hasCombo, hasLegend, MASTERY }, FV: (r, t, f) => flowerValue(r, t, f), RENT: rentFor, EX: { startExped, expOf, EXPEDS }, RV: { rivalOf, chainOf, initRival, startDuel, chainDayEnd }, BR: { startBreed, breedTick, breedOf, HYBRIDS, HYBRID_ORDER, royaltyOf }, ZN: { zoneEnter, zonesOf, LOST_ITEMS, ZONES }, OUT: { pullGacha, equipOutfit, exchangeOutfit, hasSet, activeSets, wardrobe, OUTFITS }, GEAR: { drawMeowArt2, drawBellyArt2, drawRubArt2, VXR, orangeCloseup, cuteHead, withGear, catGearFor, catRefArt, toonOrangePal: ORANGE_PAL, TAB } };
 }
 
 (function start() {

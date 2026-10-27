@@ -122,6 +122,9 @@ const ACH = [
   { id: 'wl5', name: '名震一方', desc: '風雲榜打進前五名', c: r => ((r.duel || {}).beaten || 0) >= 6, cans: 50 },
   { id: 'wl10', name: '天下第一花店', desc: '打敗花聖一枝春，坐上風雲榜第一', c: r => ((r.duel || {}).beaten || 0) >= 10, cans: 150, title: '天下第一' },
   { id: 'wlarena3', name: '擂台霸主', desc: '天下第一的擂台守住 3 次', c: r => (((r.duel || {}).arena || {}).wins || 0) >= 3, cans: 80 },
+  { id: 'jh1', name: '江湖朋友', desc: '巷子江湖：交到第一個朋友', c: r => JH.some(j => ((r.jh || {}).solved || {})[j.id]), cans: 10 },
+  { id: 'jh4', name: '人脈很廣', desc: '巷子江湖：交到 4 個朋友', c: r => JH.filter(j => ((r.jh || {}).solved || {})[j.id]).length >= 4, cans: 40 },
+  { id: 'jh8', name: '巷子新老大', desc: '巷子江湖：八個角色全部變成朋友', c: r => JH.every(j => ((r.jh || {}).solved || {})[j.id]), cans: 100, title: '巷子老大' },
   // 扭蛋
   { id: 'wd1', name: '第一件新衣', desc: '扭蛋扭到第一件衣服', c: r => Object.keys((r.wardrobe || {}).own || {}).length >= 1, cans: 5 },
   { id: 'wdset', name: '整套穿上', desc: '穿齊一整套套裝', c: r => r.wardrobe && activeSets(r).length >= 1, cans: 20 },

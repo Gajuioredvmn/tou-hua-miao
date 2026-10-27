@@ -80,8 +80,8 @@ function rivalUpdate(sc, dt) {
 }
 // 對決：瞪眼比氣勢（三戰兩勝）
 class RivalDuel {
-  constructor(sc) {
-    this.sc = sc; this.rv = sc.rival; this.round = 0; this.score = [0, 0]; this.t = 0; this.phase = 'intro'; this.pos = 0; this.dir = 1; this.msg = '';
+  constructor(sc, o = {}) {
+    this.o = o; this.sc = sc; this.rv = o.rv || sc.rival; this.round = 0; this.score = [0, 0]; this.t = 0; this.phase = 'intro'; this.pos = 0; this.dir = 1; this.msg = '';
     const k = this.rv.skill + (this.rv.final ? 0.25 : 0);
     this.speeds = [1.3 + k * 0.8, 1.6 + k * 0.9, 1.9 + k * 1.0];
     this.zones = [[0.36, 0.64], [0.4, 0.6], [0.43, 0.57]];
@@ -114,15 +114,15 @@ class RivalDuel {
     const cy = H * 0.42;
     // 兩隻貓的大頭
     const sc = this.sc;
-    const me = ART.cat(Object.assign({}, sc.cat, { pose: null, dir: 'right', moving: false })), him = rivalArt(Object.assign(new Cat(0, 0), { dir: 'left', moving: false, t: this.t }));
+    const me = ART.cat(Object.assign({}, sc.cat, { pose: null, dir: 'right', moving: false })), him = this.o.art ? this.o.art(this.t) : rivalArt(Object.assign(new Cat(0, 0), { dir: 'left', moving: false, t: this.t }));
     const big = Math.min(W / 2.6, 170);
     const draw = (a, x, flip) => { if (!a || !a.img) return; const w = big, h = big * a.h / a.w; g.save(); g.translate(x, cy); if (flip) g.scale(-1, 1); g.drawImage(a.img, -w / 2, -h + 20, w, h); g.restore(); };
     for (const [x, col] of [[W * 0.27, 'rgba(255,214,140,'], [W * 0.73, 'rgba(160,255,190,']]) { const gr = g.createRadialGradient(x, cy - big * 0.3, 4, x, cy - big * 0.3, big * 0.75); gr.addColorStop(0, col + '0.55)'); gr.addColorStop(1, col + '0)'); g.fillStyle = gr; g.beginPath(); g.arc(x, cy - big * 0.3, big * 0.75, 0, TAU); g.fill(); }
     // 中間的火花
     for (let i = 0; i < 6; i++) { const a = this.t * 4 + i, r = 6 + (i % 3) * 5; g.fillStyle = i % 2 ? '#ffd25a' : '#ffffff'; g.beginPath(); g.arc(W / 2 + Math.cos(a) * r, cy - big * 0.35 + Math.sin(a * 1.3) * r, 2.2, 0, TAU); g.fill(); }
     draw(me, W * 0.27, false); draw(him, W * 0.73, false);
-    CM.text(g, W / 2, cy - big * 0.8, this.rv.final ? '屋頂決戰' : '對決！', '#ffd25a', 30, 1, { rot: -0.05 });
-    CM.text(g, W * 0.27, cy + 34, '花喵', '#fff', 15, 1); CM.text(g, W * 0.73, cy + 34, '煤炭', '#c8f0d0', 15, 1);
+    CM.text(g, W / 2, cy - big * 0.8, this.o.title || (this.rv.final ? '屋頂決戰' : '對決！'), '#ffd25a', 30, 1, { rot: -0.05 });
+    CM.text(g, W * 0.27, cy + 34, '花喵', '#fff', 15, 1); CM.text(g, W * 0.73, cy + 34, this.o.name || '煤炭', '#c8f0d0', 15, 1);
     // 比分
     for (let i = 0; i < 2; i++) {
       for (let k = 0; k < 2; k++) { g.fillStyle = this.score[i] > k ? (i ? '#ff7a5a' : '#ffd25a') : 'rgba(255,255,255,0.2)'; g.beginPath(); g.arc((i ? W * 0.73 : W * 0.27) - 9 + k * 18, cy + 56, 6.5, 0, TAU); g.fill(); }
@@ -137,7 +137,7 @@ class RivalDuel {
       g.fillStyle = '#ffd25a'; g.strokeStyle = CM.ink; g.lineWidth = 2.5; g.beginPath(); g.moveTo(px, y + 22); g.lineTo(px - 8, y + 34); g.lineTo(px + 8, y + 34); g.closePath(); g.fill(); g.stroke(); g.fillRect(px - 1.5, y - 3, 3, 22);
       CM.text(g, W / 2, y - 18, `第 ${this.round + 1} 回合`, '#e8e2ff', 14, 1);
       if (this.phase === 'result') CM.text(g, W / 2, y + 60, this.msg, '#fff3c8', 18, 1);
-    } else if (this.phase === 'end') CM.text(g, W / 2, y + 10, this.win ? (this.rv.final ? '煤炭低下頭了……' : '贏了！煤炭把花丟下來了') : '輸了……煤炭叼著花跑了', this.win ? '#ffd25a' : '#ff9a8a', 20, 1);
+    } else if (this.phase === 'end') CM.text(g, W / 2, y + 10, this.win ? (this.o.winText || (this.rv.final ? '煤炭低下頭了……' : '贏了！煤炭把花丟下來了')) : (this.o.loseText || '輸了……煤炭叼著花跑了'), this.win ? '#ffd25a' : '#ff9a8a', 20, 1);
     g.restore();
   }
 }

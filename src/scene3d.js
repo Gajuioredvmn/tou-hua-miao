@@ -105,6 +105,7 @@ NightScene.prototype.render3D = function () {
   heistRender3D(this, F);
   repNight3D(this, F, L);
   obRender3D(this, F, L);
+  jhRender3D(this, F);
   roofwayRender3D(this, F, st);
   expNight3D(this, F, L);
   winNight3D(this, F, L);
