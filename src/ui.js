@@ -339,7 +339,7 @@ const UI = {
         }).join('');
         body = `<p class="lead">「先投資店面，之後每天都多賺一點……可是房租也要留著。」</p>
           <p class="hint">還剩 <b>${nightsLeft}</b> 晚。越早裝回本越多；買下去馬上會看到店裡變樣。</p>
-          ${this.rentBar(run)}${repShopHTML(run)}${chainShopHTML(run)}
+          ${this.rentBar(run)}${repShopHTML(run)}${chainShopHTML(run)}${floraHTML(run)}
           <ul class="ups">${rows}</ul>${windowHTML(run)}`;
       } else if (tab === 'garden') {
         body = gardenTabHTML(run, pickIdx);
@@ -414,7 +414,7 @@ const UI = {
         this.toast(`${nx.name}蓋好了！${nx.look}${g.story[g.lv] ? '' : '（明天早上有人會注意到）'}`, 3200);
         keep();
       }));
-      bindBreed(this.cardEl, run, keep); bindExped(this.cardEl, run, keep); bindSkillTree(this.cardEl, run, keep);
+      bindBreed(this.cardEl, run, keep); bindExped(this.cardEl, run, keep); bindSkillTree(this.cardEl, run, keep); bindFlora(this.cardEl, run, keep);
       this.cardEl.querySelectorAll('[data-pot]').forEach(b => b.addEventListener('click', () => { SFX.play('ui'); pickIdx = pickIdx === +b.dataset.pot ? -1 : +b.dataset.pot; keep(); }));
       this.cardEl.querySelectorAll('[data-plant]').forEach(b => b.addEventListener('click', () => {
         if (plantPot(run, pickIdx, b.dataset.plant)) { SFX.play('buy'); this.toast(`種下${FLOWERS[b.dataset.plant].name}，${growNights(run, b.dataset.plant)} 晚後開花`, 2200); }

@@ -620,6 +620,7 @@ function shopDecor3D(sc, F, st, store) {
   repDecor3D(sc, F);
   equipDecor3D(sc, F);
   duelDecor3D(sc, F);
+  floraDecor3D(sc, F);
   gangDay3D(sc, F);
   winDay3D(sc, F);
   catCornerDay3D(sc, F);
