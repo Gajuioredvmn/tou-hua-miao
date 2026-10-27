@@ -80,7 +80,7 @@ button { font-family: var(--font-ui); -webkit-tap-highlight-color: transparent; 
   pointer-events: auto; width: 36px; height: 30px; border-radius: 9px; border: 2px solid var(--edge);
   background: var(--panel-2); color: var(--ink); font-family: var(--font-px); font-size: 12px; box-shadow: 0 2px 0 var(--edge); cursor: pointer;
 }
-#hud-carry { position: absolute; top: 50px; left: 0; display: flex; gap: 5px; }
+#hud-carry { flex-basis: 100%; display: flex; gap: 5px; margin-top: 2px; }
 .slot { width: 30px; height: 30px; box-sizing: border-box; border: 2px dashed rgba(184, 179, 216, 0.45); border-radius: 8px; background: rgba(18, 20, 42, 0.55); position: relative; display: grid; place-items: center; }
 .slot.full { border-style: solid; border-color: var(--edge); background: rgba(39, 44, 85, 0.92); }
 .slot img { width: 22px; height: 24px; object-fit: contain; }
@@ -646,13 +646,13 @@ details.old .intel { margin-top: 6px; color: var(--ink-dim); }
       <div class="hud-l">
         <div class="chip" id="hud-phase"></div>
         <div class="chip" id="hud-money"></div>
+        <div id="hud-carry" hidden></div>
       </div>
       <div class="hud-r">
         <div class="chip" id="hud-cans"></div>
         <button type="button" class="icon-btn" id="btn-pause" aria-label="暫停">II</button>
       </div>
     </header>
-    <div id="hud-carry" hidden></div>
     <div id="hud-orders" hidden></div>
     <div id="meter" hidden><div class="m-label"></div><div class="m-bar"><i></i></div><div class="m-sub"></div></div>
     <div id="banner" hidden></div>
@@ -11417,9 +11417,10 @@ const UI = {
         <div><b>熟門熟路</b>同一家偷熟了（帶回 6 朵），第二個月起在花店貓門按「熟門」，花喵自己去帶回來</div>
         <div><b>警戒</b>偷太多、被抓到，那一家就會起疑：一顆星上門盤問、兩顆星裝防貓設施、三顆星里長約談。送花賠罪、幾晚不去就會降</div>
         <div><b>鍵盤</b>方向鍵移動、Shift 奔跑、空白鍵互動、Q 母雞蹲、F 紙箱、R 橘貓</div>
-      </div>`;
+      </div>${(() => { let L = []; try { L = JSON.parse(localStorage.getItem('thm-err') || '[]'); } catch (e) { } return L.length ? `<details class="old errlog" open><summary>最近的錯誤紀錄（截圖給我）</summary><pre style="white-space:pre-wrap;font-size:11px;line-height:1.4;margin:6px 0 0;user-select:text">${esc(L.map(e => `[${e.t}] ${e.w} ${e.c}\n${e.m}\n${(e.f || []).join('\n')}`).join('\n\n'))}</pre></details>` : ''; })()}`;
     this.modal(html, [
       { label: SFX.muted ? '打開音效' : '關掉音效', onClick: () => { SFX.muted = !SFX.muted; try { localStorage.setItem('thm-mute', SFX.muted ? '1' : '0'); } catch (e) { } this.pause(); } },
+      ...((() => { try { return localStorage.getItem('thm-err') ? [{ label: '清除錯誤紀錄', onClick: () => { try { localStorage.removeItem('thm-err'); } catch (e) { } this.pause(); } }] : []; } catch (e) { return []; } })()),
       { label: '重新開始', onClick: () => this.confirm('重新開始？', '這一輪的進度會清掉。', '重新開始', '取消', ok => { if (ok) Flow.restart(); }) },
       { label: '繼續', primary: true },
     ], { pause: true });
@@ -21213,6 +21214,13 @@ function reportErr(err, where) {
   console.error(err);
   const line = ((err && err.stack) || '').split('\n').find(l => /at /.test(l)) || '';
   try { UI.toast(`遊戲出了點小問題（可以截圖給我）：${msg} ${line.trim().slice(0, 60)}`, 9000); } catch (e) { }
+  try {
+    const frames = ((err && err.stack) || '').split('\n').filter(l => /at |@/.test(l)).slice(0, 3).map(l => l.trim().replace(/\(?(?:https?|blob|file):[^)]*?([^/]+:\d+:\d+)\)?/, '$1').slice(0, 70));
+    const sc = G.scene, ctx = sc ? (sc.kind || '') + (G.run ? ` m${G.run.month || 1}n${sc.n || ''}` : '') + (sc.mode ? ' ' + sc.mode : '') : '';
+    const L = JSON.parse(localStorage.getItem('thm-err') || '[]');
+    L.unshift({ w: where, m: msg.slice(0, 120), f: frames, c: ctx, t: new Date().toLocaleString('zh-TW') });
+    localStorage.setItem('thm-err', JSON.stringify(L.slice(0, 4)));
+  } catch (e) { }
 }
 function boot(data) {
   if (R3.init($('gl'), $('screen'))) $('screen').classList.add('ov');

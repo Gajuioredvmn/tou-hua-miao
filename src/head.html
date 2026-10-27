@@ -72,7 +72,7 @@ button { font-family: var(--font-ui); -webkit-tap-highlight-color: transparent; 
   pointer-events: auto; width: 36px; height: 30px; border-radius: 9px; border: 2px solid var(--edge);
   background: var(--panel-2); color: var(--ink); font-family: var(--font-px); font-size: 12px; box-shadow: 0 2px 0 var(--edge); cursor: pointer;
 }
-#hud-carry { position: absolute; top: 50px; left: 0; display: flex; gap: 5px; }
+#hud-carry { flex-basis: 100%; display: flex; gap: 5px; margin-top: 2px; }
 .slot { width: 30px; height: 30px; box-sizing: border-box; border: 2px dashed rgba(184, 179, 216, 0.45); border-radius: 8px; background: rgba(18, 20, 42, 0.55); position: relative; display: grid; place-items: center; }
 .slot.full { border-style: solid; border-color: var(--edge); background: rgba(39, 44, 85, 0.92); }
 .slot img { width: 22px; height: 24px; object-fit: contain; }
@@ -638,13 +638,13 @@ details.old .intel { margin-top: 6px; color: var(--ink-dim); }
       <div class="hud-l">
         <div class="chip" id="hud-phase"></div>
         <div class="chip" id="hud-money"></div>
+        <div id="hud-carry" hidden></div>
       </div>
       <div class="hud-r">
         <div class="chip" id="hud-cans"></div>
         <button type="button" class="icon-btn" id="btn-pause" aria-label="暫停">II</button>
       </div>
     </header>
-    <div id="hud-carry" hidden></div>
     <div id="hud-orders" hidden></div>
     <div id="meter" hidden><div class="m-label"></div><div class="m-bar"><i></i></div><div class="m-sub"></div></div>
     <div id="banner" hidden></div>
