@@ -385,7 +385,7 @@ function gearLoafBody(stage, g) {
 function gearBoxTop(wob, g) {
   if (g.bow >= 3) { for (let i = 0; i < 5; i++) { const u = -1 + i / 2; gFlower(GO, u * 6.4 + wob, -20.4 - (1 - u * u) * 1.2, 1.6, GEARC.crown[i + 1]); } if (g.bow >= 4) gCrown(GO, wob, -21.6, 0.55); }
   if (g.lamp) gLamp(GO, -1 + wob, -18.6, 0.7);
-  else if (g.bow) { const C = GEARC.bow[g.bow], k = C.s * 0.55, cx = -6.4 + wob, cy = -21.6; for (const sd of [-1, 1]) O.eo(cx + sd * 2.6 * k, cy - 0.4 * k, 2.6 * k, 1.8 * k, C.c, { rot: sd * 0.35 }); O.eo(cx, cy, 1.1 * k, 1.1 * k, C.c); }
+  else if (g.bow && g.bow < 3) { const C = GEARC.bow[g.bow], k = C.s * 0.55, cx = -6.4 + wob, cy = -21.6; for (const sd of [-1, 1]) O.eo(cx + sd * 2.6 * k, cy - 0.4 * k, 2.6 * k, 1.8 * k, C.c, { rot: sd * 0.35 }); O.eo(cx, cy, 1.1 * k, 1.1 * k, C.c); }
   if (g.flower) { const C = GEARC.flower[g.flower]; gFlower(GO, 7.6 + wob, -21.4, 1.9 * C.s, C.c, C.ctr); }
 }
 
