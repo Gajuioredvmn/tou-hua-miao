@@ -109,34 +109,64 @@ const BQ_POS = {
 };
 const HEAD_SIZE = { sunflower: 1.1, hydrangea: 1.05, peony: 1.05, babys: 1.05, orchid: 1.1, tanhua: 1.0 };
 function drawBouquetArt(spec) {
-  const stems = spec.stems.slice().sort((a, b) => (FLOWERS[b].price + (HEAD_SIZE[b] || 1) * 200) - (FLOWERS[a].price + (HEAD_SIZE[a] || 1) * 200));
+  // spec.fl＝包的人的功夫 [剪枝, 配色, 包裝]（0～5）：同樣的花，功夫越好包得越漂亮
+  const fl = spec.fl || [1, 1, 1], cu = fl[0] || 0, co = fl[1] || 0, wr = fl[2] || 0;
+  let stems = spec.stems.slice().sort((a, b) => (FLOWERS[b].price + (HEAD_SIZE[b] || 1) * 200) - (FLOWERS[a].price + (HEAD_SIZE[a] || 1) * 200));
+  if (co >= 4 && stems.length >= 4) {   // 配色眼：依顏色排成漸層，白花放兩邊
+    const hue = t => FLOWERS[t].white ? 999 : (FLOWERS[t].hue || 0);
+    const big = stems[0], rest = stems.slice(1).sort((a, b) => hue(a) - hue(b));
+    stems = [big, ...rest];
+  }
   const P = PAPERS[spec.paper] || PAPERS.kraft, Rb = RIBBONS[spec.ribbon] || RIBBONS.twine;
   const n = Math.max(1, Math.min(6, stems.length)), pos = BQ_POS[Math.max(3, n)] || BQ_POS[3];
+  const mess = Math.max(0, 1 - cu / 2);   // 剪枝功不夠：歪七扭八
   // 露在下面的花梗
-  for (const x of [-2.4, 0, 2.4]) { O.curve([[x * 0.6, -12], [x, -2]], CM.ink, 2.4); O.curve([[x * 0.6, -12], [x, -2]], PC.stem, 1.2); }
+  if (cu >= 3) for (const x of [-3.2, -1.6, 0, 1.6, 3.2]) { O.curve([[x * 0.55, -12], [x * 0.9, -1.5]], CM.ink, 2.2); O.curve([[x * 0.55, -12], [x * 0.9, -1.5]], PC.stem, 1.0); }
+  else for (const x of [-2.4, 0, 2.4]) { O.curve([[x * 0.6, -12], [x, -2]], CM.ink, 2.4); O.curve([[x * 0.6, -12], [x, -2]], PC.stem, 1.2); }
+  if (mess > 0) { O.curve([[-2, -12], [-6.5, -0.5]], CM.ink, 2.2); O.curve([[-2, -12], [-6.5, -0.5]], PC.stem, 1); O.curve([[2.2, -12], [4.4, -4.5], [7, -3.6]], CM.ink, 2); O.curve([[2.2, -12], [4.4, -4.5], [7, -3.6]], PC.stem, 0.9); }
+  // 剪枝功滿級：後面插一圈尤加利葉
+  if (cu >= 5) for (const [x0, y0, x1, y1] of [[-8, -44, -22, -60], [8, -44, 22, -60], [0, -50, 0, -66]]) {
+    O.curve([[x0, y0], [x1, y1]], '#5a7a5a', 1);
+    for (let k = 1; k <= 4; k++) { const f = k / 4.6; O.eo(x0 + (x1 - x0) * f + (k % 2 ? 1.6 : -1.6), y0 + (y1 - y0) * f, 1.5, 1.3, '#8ab49a'); }
+  }
   // 後面那層紙（內側比較暗）
   O.blobO([[-21, -35], [-13, -53], [0, -58], [13, -53], [21, -35], [4, -12], [-4, -12]], P.dark);
+  // 包裝術 4：紙邊有蕾絲
+  if (wr >= 4) for (let k = 0; k <= 8; k++) { const a = Math.PI * (0.06 + 0.88 * k / 8), x = -Math.cos(a) * 20.5, y = -35 - Math.sin(a) * 22; O.eo(x, y, 1.4, 1.4, '#fffaf2'); }
   // 葉子墊底
-  for (const [x, y] of [[-14, -40], [14, -40], [-7, -51], [7, -52], [0, -42], [-16, -32], [16, -32]]) leafBall(x, y, 5.4, 4);
+  for (const [x, y] of [[-14, -40], [14, -40], [-7, -51], [7, -52], [0, -42], [-16, -32], [16, -32]]) leafBall(x + mess * (x > 0 ? 1.5 : -1), y + mess * 1.5, 5.4, 4);
+  if (mess > 0) { O.blobO([[-17, -30], [-23, -24], [-19, -22]], PC.leaf || '#5aa060'); }   // 垂下來的葉子
+  // 配色眼 2：花和花中間塞小碎花
+  if (co >= 2) for (const [x, y] of [[-12, -47], [12, -47], [-3, -55], [4, -44], [-15, -38], [15, -38]]) { O.dot(x, y, 1.3, '#ffffff'); O.dot(x + 1.6, y + 1, 1.1, '#ffffff'); O.dot(x - 1.2, y + 1.4, 1, '#f4f0ff'); }
+  if (co >= 4) for (const [x, y] of [[-9, -56], [9, -56], [-18, -44], [18, -44]]) O.eo(x, y, 1.2, 1.2, Rb.col);
   // 花頭
   pos.forEach(([x, y, s], i) => {
     const t = stems[i]; if (!t) return;
     const B = BUNCH[t];
-    if (B) B.head(x, y, s * (HEAD_SIZE[t] || 1), ((i * 0.37) % 1));
+    const dx = Math.sin(i * 7.3 + 1) * 2.6 * mess, dy = Math.cos(i * 5.1) * 2.2 * mess, ds = 1 - 0.1 * mess * (i % 2);
+    if (B) B.head(x + dx, y + dy, s * (HEAD_SIZE[t] || 1) * ds, ((i * 0.37) % 1));
   });
-  // 前面那層紙（兩片交疊）
-  O.blobO([[-19, -31], [-7, -28], [2, -26], [3.6, -10], [-3.6, -10]], P.col, { part: 32 });
-  O.blobO([[19, -32], [8, -28], [-1, -27], [-3.4, -10], [3.6, -10]], P.col, { part: 32 });
+  // 包裝術 2：前面多一層透明紗紙
+  if (wr >= 2) { O.blobO([[-20, -34], [-9, -31], [-2, -12], [-5, -12]], 'rgba(255,255,255,0.75)'); O.blobO([[20, -35], [9, -31], [2, -12], [5, -12]], 'rgba(255,255,255,0.75)'); }
+  // 前面那層紙（兩片交疊）；包裝術 0：歪一邊、皺皺的
+  const sk = wr === 0 ? 1.8 : 0;
+  O.blobO([[-19 + sk, -31], [-7, -28 + sk], [2, -26], [3.6, -10], [-3.6, -10]], P.col, { part: 32 });
+  O.blobO([[19 + sk, -32 + sk], [8, -28], [-1, -27], [-3.4, -10], [3.6, -10]], P.col, { part: 32 });
   O.curve([[-10, -28], [-2, -14]], P.line, 0.8, { only: 32 }); O.curve([[10, -29], [1.5, -14]], P.line, 0.8, { only: 32 });
+  if (wr === 0) { O.curve([[-14, -27], [-11, -24], [-13, -21], [-9, -18]], P.line, 0.7, { only: 32 }); O.curve([[13, -26], [10, -22], [12, -19]], P.line, 0.7, { only: 32 }); }
   O.e(-6, -24, 3, 9, 'rgba(255,255,255,0.12)', { only: 32 });
-  // 緞帶
-  const by = -16;
+  if (wr >= 5) { O.curve([[-19, -31], [-7, -28], [2, -26]], '#ffd23a', 0.9, { only: 32 }); O.curve([[19, -32], [8, -28], [-1, -27]], '#ffd23a', 0.9, { only: 32 }); }
+  // 緞帶（包裝術越好，蝴蝶結越大、尾巴越長）
+  const by = -16, bw = wr >= 4 ? 1.35 : wr >= 2 ? 1.12 : 0.9;
   O.blobO([[-4, by - 1.6], [4, by - 1.6], [4, by + 1.6], [-4, by + 1.6]], Rb.col);
-  O.blobO([[0, by], [-6.5, by - 4], [-7, by + 2.4]], Rb.col); O.blobO([[0, by], [6.5, by - 4], [7, by + 2.4]], Rb.col);
-  O.blobO([[-1, by + 1], [-4, by + 8], [-1.8, by + 8.4]], Rb.col); O.blobO([[1, by + 1], [4, by + 8], [1.8, by + 8.4]], Rb.col);
+  O.blobO([[0, by], [-6.5 * bw, by - 4 * bw], [-7 * bw, by + 2.4 * bw]], Rb.col); O.blobO([[0, by], [6.5 * bw, by - 4 * bw], [7 * bw, by + 2.4 * bw]], Rb.col);
+  if (wr >= 4) { O.curve([[-1, by + 1], [-5, by + 7], [-2, by + 11], [-6, by + 15]], CM.ink, 2.4); O.curve([[-1, by + 1], [-5, by + 7], [-2, by + 11], [-6, by + 15]], Rb.col, 1.4); O.curve([[1, by + 1], [5, by + 7], [2.5, by + 11], [6, by + 14]], CM.ink, 2.4); O.curve([[1, by + 1], [5, by + 7], [2.5, by + 11], [6, by + 14]], Rb.col, 1.4); }
+  else { O.blobO([[-1, by + 1], [-4, by + 8], [-1.8, by + 8.4]], Rb.col); O.blobO([[1, by + 1], [4, by + 8], [1.8, by + 8.4]], Rb.col); }
   O.eo(0, by, 1.6, 1.6, Rb.col);
+  // 三門功夫加起來很高：名作，會閃
+  if (cu + co + wr >= 12) for (const [x, y, r] of [[-17, -55, 1.3], [16, -58, 1.1], [-21, -42, 0.9], [20, -44, 1.2]]) { O.dot(x, y, r, '#fffbe0'); O.curve([[x - r * 2, y], [x + r * 2, y]], '#fffbe0', 0.5); O.curve([[x, y - r * 2], [x, y + r * 2]], '#fffbe0', 0.5); }
 }
-function bqKey(spec) { return spec.stems.slice().sort().join('+') + '|' + spec.paper + '|' + spec.ribbon; }
+function bqKey(spec) { return spec.stems.slice().sort().join('+') + '|' + spec.paper + '|' + spec.ribbon + '|' + (spec.fl || [1, 1, 1]).join(''); }
 // 3D 立牌（櫃台上、客人手上）
 function toonBouquet(spec, sc = 0.42) { return toonFrameInfo(toonFrame('bq-' + bqKey(spec), 44, 60, () => drawBouquetArt(spec)), false, 0.5, sc); }
 // 介面用的大圖（k 倍）

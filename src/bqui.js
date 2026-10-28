@@ -69,7 +69,7 @@ UI.bouquetStudio = function (S, done) {
     ], { pause: true, cls: 'studio' });
     const card = UI.cardEl;
     const mk = card.querySelector('.btns .btn[data-i="2"]'); if (mk) mk.disabled = !ok;
-    paintCardCanvas(card.querySelector('.bq-prev'), bouquetCanvas(sel, 5));
+    paintCardCanvas(card.querySelector('.bq-prev'), bouquetCanvas(Object.assign({ fl: floraSnap(run) }, sel), 5));
     card.querySelectorAll('.bq-chip').forEach(el => el.addEventListener('click', () => { if (sel.stems.length >= BQ_MAX || left(el.dataset.t) <= 0) return; SFX.play('pick'); sel.stems.push(el.dataset.t); note = null; rerender(); }));
     card.querySelectorAll('.bq-slot.full').forEach(el => el.addEventListener('click', () => { SFX.play('ui'); sel.stems.splice(+el.dataset.i, 1); note = null; rerender(); }));
     card.querySelectorAll('.bq-sw').forEach(el => el.addEventListener('click', () => { SFX.play('ui'); if (el.dataset.p) sel.paper = el.dataset.p; if (el.dataset.r) sel.ribbon = el.dataset.r; note = null; rerender(); }));
@@ -80,7 +80,7 @@ UI.bouquetStudio = function (S, done) {
   const make = (gift) => {
     if (sel.stems.length < BQ_MIN || sel.stems.length > BQ_MAX) { SFX.play('nope'); return; }
     const plan = takePlan(); if (plan.length !== sel.stems.length) return;
-    const spec = { stems: sel.stems.slice(), paper: sel.paper, ribbon: sel.ribbon };
+    const spec = { stems: sel.stems.slice(), paper: sel.paper, ribbon: sel.ribbon, fl: floraSnap(run) };
     const ev = bouquetEval(run, spec, i => plan[i].fresh);
     for (const f of plan) { const i = S.stock.indexOf(f); if (i >= 0) S.stock.splice(i, 1); }
     const rec = bookRecord(run, spec, ev);

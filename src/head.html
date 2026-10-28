@@ -665,6 +665,17 @@ details.old .intel { margin-top: 6px; color: var(--ink-dim); }
 .fl-bar { position: relative; height: 10px; border-radius: 5px; background: rgba(10, 11, 24, 0.5); overflow: hidden; }
 .fl-bar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #ff9fc2, #ffd23a); }
 .fl-lv .px { font-size: 11px; color: var(--ink-dim); }
+.dojo { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: 12.5px; color: var(--ink-dim); }
+.dojo-b { flex: 0 0 auto; height: 44px; padding: 0 12px; background: var(--lamp); color: #2a1a08; border: 2px solid var(--edge); border-radius: 12px; box-shadow: 0 3px 0 var(--edge); font: inherit; font-size: 13px; cursor: pointer; }
+.dojo-b:disabled { background: #4a4e74; color: #9a96b8; cursor: not-allowed; }
+.dojo-ts { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+.dojo-t { padding: 6px 10px; border-radius: 10px; border: 2px solid var(--edge); background: rgba(10, 11, 24, 0.38); color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; text-align: left; }
+.dojo-t:disabled { opacity: 0.5; cursor: default; }
+.dojo-t small { display: block; font-size: 10.5px; color: var(--ink-dim); }
+.quest { list-style: none; padding: 0; margin: 6px 0 10px; display: grid; gap: 5px; }
+.quest li { display: flex; justify-content: space-between; gap: 8px; padding: 7px 10px; border-radius: 10px; border: 2px solid var(--edge); font-size: 13px; color: var(--ink); }
+.quest li.got { opacity: 0.6; border-style: dashed; }
+.quest li b { font-size: 12px; color: #ffe9a8; white-space: nowrap; }
 .du-seal.jh { border-color: #ff8ab0; color: #ff8ab0; }
 .du-row b small { font-size: 11.5px; color: var(--ink-dim); }
 .card.book .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: row; }

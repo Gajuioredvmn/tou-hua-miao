@@ -342,7 +342,7 @@ function duelUI(S, M, c, cb) {
     }
     const won = me.p >= mp && me.p > 0;
     if (won) { st.win++; SFX.play('heart'); } else { st.lose++; SFX.play('nope'); }
-    st.last = { mp, me, won, name, spec: { stems: sel.stems.slice(), paper: sel.paper, ribbon: sel.ribbon } };
+    st.last = { mp, me, won, name, spec: { stems: sel.stems.slice(), paper: sel.paper, ribbon: sel.ribbon, fl: floraSnap(run) } };
     st.phase = 'show'; render();
   };
   const next = () => {
@@ -363,7 +363,7 @@ function duelUI(S, M, c, cb) {
         <p class="du-judge">${L.me.p === 0 ? '這一招棄權了。' : `${L.me.ok ? '合題目 ×1.3' : '沒合題目，只剩 ×0.5'}${L.me.notes.length ? '・' + L.me.notes.join('・') : ''}。`}${L.won ? pick(['評審們點點頭：這一招，美玲贏了！', '圍觀的鄰居拍手叫好！', `${M.name}愣了一下。`]) : pick(['評審們搖搖頭。', `${M.name}冷笑了一聲。`, '圍觀的鄰居嘆了一口氣。'])}</p>`,
         [{ label: (st.win >= need || st.lose >= need || st.r >= M.rounds.length - 1) ? '看結果' : '下一招', primary: true, onClick: next }], { pause: true, cls: 'duel' });
       const card = UI.cardEl;
-      paintCardCanvas(card.querySelector('[data-w="m"]'), bouquetCanvas(masterSpec(run, M, st.r), 3));
+      paintCardCanvas(card.querySelector('[data-w="m"]'), bouquetCanvas(Object.assign({ fl: masterFl(run, M, c) }, masterSpec(run, M, st.r)), 3));
       if (L.spec.stems.length) paintCardCanvas(card.querySelector('[data-w="p"]'), bouquetCanvas(L.spec, 3));
       return;
     }
@@ -383,8 +383,8 @@ function duelUI(S, M, c, cb) {
       [{ label: '棄權', keep: true, onClick: () => submit(true) }, { label: '自動配花', keep: true, onClick: () => { SFX.play('pick'); autoFill(); rerender(); } }, { label: '出招！', primary: true, keep: true, onClick: () => { if (okN) submit(false); else SFX.play('nope'); } }], { pause: true, cls: 'duel' });
     const card = UI.cardEl;
     const go = card.querySelector('.btns .btn[data-i="2"]'); if (go) go.disabled = !okN;
-    paintCardCanvas(card.querySelector('[data-w="m"]'), bouquetCanvas(masterSpec(run, M, st.r), 3));
-    if (sel.stems.length) paintCardCanvas(card.querySelector('[data-w="p"]'), bouquetCanvas(sel, 3));
+    paintCardCanvas(card.querySelector('[data-w="m"]'), bouquetCanvas(Object.assign({ fl: masterFl(run, M, c) }, masterSpec(run, M, st.r)), 3));
+    if (sel.stems.length) paintCardCanvas(card.querySelector('[data-w="p"]'), bouquetCanvas(Object.assign({ fl: floraSnap(run) }, sel), 3));
     card.querySelectorAll('.bq-chip').forEach(el => el.addEventListener('click', () => { if (sel.stems.length >= maxN || left(el.dataset.t) <= 0) return; SFX.play('pick'); sel.stems.push(el.dataset.t); rerender(); }));
     card.querySelectorAll('.bq-slot.full').forEach(el => el.addEventListener('click', () => { SFX.play('ui'); sel.stems.splice(+el.dataset.i, 1); rerender(); }));
     card.querySelectorAll('.bq-sw').forEach(el => el.addEventListener('click', () => { SFX.play('ui'); if (el.dataset.p) sel.paper = el.dataset.p; if (el.dataset.r) sel.ribbon = el.dataset.r; rerender(); }));
@@ -517,9 +517,22 @@ function floraHTML(run) {
   return `<h3>美玲的花藝修練<small>包花束、賣花、論劍都會長經驗</small></h3>
     <div class="fl-lv"><b>花藝 Lv.${lv}</b><span class="fl-bar"><i style="width:${pct}%"></i></span><span class="px">${nx ? `${F.xp}/${nx}` : 'MAX'}</span></div>
     <p class="hint">修練點：<b>${pts}</b>${M ? `　下一位高手「${esc(M.nick)}」建議花藝 Lv.${rec}${lv >= rec ? '（夠了！）' : `（還差 ${rec - lv} 級）`}` : ''}</p>
-    <ul class="ups">${rows}</ul>`;
+    <ul class="ups">${rows}</ul>${dojoHTML(run)}`;
 }
 function bindFlora(card, run, keep) {
+  card.querySelectorAll('[data-lesson]').forEach(b => b.addEventListener('click', () => {
+    const F = floraOf(run), cost = lessonCost(run);
+    if (F.lesson === dayKey(run) || run.money < cost) return;
+    run.money -= cost; F.lesson = dayKey(run); floraGain(run, lessonXp(run));
+    UI.toast(pick(['老師說：「花要有呼吸的空間。」', '學會了新的綁法！', '今天練了一整晚的螺旋花腳。']) + `（花藝經驗 +${lessonXp(run)}）`, 2600); keep();
+  }));
+  card.querySelectorAll('[data-teach]').forEach(b => b.addEventListener('click', () => {
+    const F = floraOf(run), M = MASTERS.find(x => x.id === b.dataset.teach), m = run.month || 1;
+    if (F.lesson === dayKey(run)) return;
+    F.taught = F.taught || {}; if (F.taught[M.id] === m) return;
+    F.taught[M.id] = m; F.lesson = dayKey(run); const xp = 30 + M.lv * 6; floraGain(run, xp);
+    UI.toast(`${M.name}：「${pick(['看好了，只示範一次。', '妳的手還不夠穩。再來。', '不錯嘛，進步了。'])}」（花藝經驗 +${xp}）`, 3000); keep();
+  }));
   card.querySelectorAll('[data-fl]').forEach(b => b.addEventListener('click', () => {
     const F = floraOf(run), id = b.dataset.fl;
     if (floraPts(run) <= 0 || (F.sk[id] || 0) >= FLORA_MAX) return;
@@ -547,4 +560,81 @@ function floraDecor3D(sc, F) {
   const key = FLORA_SK.map(k => Math.min(5, run.flora.sk[k.id] || 0)).join('');
   if (key === '00000') return;
   pushSprite(F.sprites, ART.fix(toonFloraCerts(key)), 10.4 * TS, 3.05 * TS, { lift: 1.5 * Math.cos(R3.pitch), minLight: [0.75, 0.7, 0.66] });
+}
+
+function floraSnap(run) { return ['cut', 'color', 'wrap'].map(k => floraSk(run, k)); }
+function masterFl(run, M, cur) { const v = Math.min(5, Math.round(masterLv(run, M, cur) / 4)); return [v, v, v]; }
+
+// ================= 練功的地方：花藝道場、任務板 =================
+// 道場：每天傍晚可以去花藝教室上一堂課（花錢換經驗）；打敗過的高手每個月可以免費教你一次。
+// 任務板：每個月三張花藝委託（包某種配色、某種具名花束、包裝搭配、賣花），做完拿經驗、錢、罐罐。
+function lessonCost(run) { return Math.round(1500 * (1 + 0.25 * ((run.month || 1) - 1)) / 100) * 100; }
+function lessonXp(run) { return 40 + 8 * (run.month || 1); }
+function dayKey(run) { return (run.month || 1) + '-' + (run.night || 0); }
+const QUEST_RECIPES = [['love', 1], ['street', 1], ['bubble', 1], ['mom', 1], ['star', 1], ['summer', 1], ['dream', 3], ['scent', 3], ['wedding', 6], ['fortune', 6], ['mansion', 8]];
+function questsOf(run) {
+  const F = floraOf(run), m = run.month || 1;
+  if (!F.q || F.q.m !== m) {
+    const sch = pick(['mono', 'analog', 'comp', 'rainbow', 'white']);
+    const rcs = QUEST_RECIPES.filter(([, mm]) => m >= mm).map(([id]) => id);
+    const pool = [
+      { k: 'scheme', v: sch, n: m >= 4 ? 3 : 2 },
+      { k: 'recipe', v: pick(rcs), n: 1 },
+      { k: 'match', n: 2 + Math.min(3, Math.floor(m / 3)) },
+      { k: 'sell', n: 20 + m * 6 },
+      { k: 'big', n: 2 },
+    ];
+    const qs = []; while (qs.length < 3) { const q = pool.splice(Math.floor(Math.random() * pool.length), 1)[0]; qs.push(Object.assign(q, { p: 0, done: false })); }
+    F.q = { m, list: qs };
+  }
+  return F.q.list;
+}
+function questText(q) {
+  if (q.k === 'scheme') return `包 ${q.n} 束「${SCHEMES[q.v].name}」配色的花束`;
+  if (q.k === 'recipe') { const r = RECIPES.find(x => x.id === q.v); return `包一束「${r.name}」（${Object.keys(r.need).map(t => FLOWERS[t].name + (r.need[t] > 1 ? '×' + r.need[t] : '')).join('＋')}）`; }
+  if (q.k === 'match') return `包 ${q.n} 束包裝紙很搭的花束`;
+  if (q.k === 'sell') return `這個月賣出 ${q.n} 份花`;
+  if (q.k === 'big') return `包 ${q.n} 束 5 枝以上的大花束`;
+  return '';
+}
+function questReward(run) { const m = run.month || 1; return { xp: 50 + 12 * m, money: 1200 * m, cans: 5 }; }
+function questTick(run, fn) {
+  if (!run || !run.flora || !run.flora.q || run.flora.q.m !== (run.month || 1)) { if (!run) return; questsOf(run); }
+  for (const q of run.flora.q.list) {
+    if (q.done) continue;
+    const add = fn(q); if (!add) continue;
+    q.p = Math.min(q.n, q.p + add);
+    if (q.p >= q.n) {
+      q.done = true; const R = questReward(run);
+      run.money += R.money; run.cans += R.cans; floraGain(run, R.xp, true);
+      setTimeout(() => UI.toast(`任務完成：${questText(q)}！花藝經驗 +${R.xp}、${money(R.money)}、罐罐 +${R.cans}`, 3800), 600); SFX.play('coin');
+    }
+  }
+}
+(function () {
+  const P = DayScene.prototype;
+  const _mb = P.bouquetMade;
+  P.bouquetMade = function (bq) {
+    try {
+      const ev = bouquetEval(this.run, bq.spec);
+      questTick(this.run, q => q.k === 'scheme' ? (bq.scheme === q.v ? 1 : 0) : q.k === 'recipe' ? (bq.recipe === q.v ? 1 : 0) : q.k === 'match' ? (ev.match ? 1 : 0) : q.k === 'big' ? (bq.spec.stems.length >= 5 ? 1 : 0) : 0);
+    } catch (e) { }
+    return _mb ? _mb.call(this, bq) : undefined;
+  };
+  const _sell = P.sell;
+  P.sell = function (v, pot, wrap) { if (v > 0) try { questTick(this.run, q => q.k === 'sell' ? 1 : 0); } catch (e) { } return _sell.call(this, v, pot, wrap); };
+})();
+function dojoHTML(run) {
+  const F = floraOf(run), D = duelOf(run), m = run.month || 1, dk = dayKey(run);
+  const took = F.lesson === dk, cost = lessonCost(run);
+  const teach = MASTERS.filter((M, i) => D.beaten > i).map(M => {
+    const done = (F.taught || {})[M.id] === m;
+    return `<button type="button" class="dojo-t ${done ? 'on' : ''}" data-teach="${M.id}" ${done || took ? 'disabled' : ''}>${esc(M.name)}<small>${done ? '這個月教過了' : '+' + (30 + M.lv * 6) + ' 經驗'}</small></button>`;
+  }).join('');
+  const qs = questsOf(run), R = questReward(run);
+  const ql = qs.map(q => `<li class="${q.done ? 'got' : ''}"><span>${esc(questText(q))}</span><b class="px">${q.done ? '完成' : q.p + '/' + q.n}</b></li>`).join('');
+  return `<h3>花藝道場<small>一天只能練一次</small></h3>
+    <div class="dojo"><button type="button" class="dojo-b" data-lesson="1" ${took || run.money < cost ? 'disabled' : ''}>${took ? '今天練過了' : `上花藝課 ${money(cost)}`}</button><span>花藝經驗 +${lessonXp(run)}${teach ? '，或找打敗過的高手免費學藝：' : '（打敗高手以後，他們也會教你）'}</span></div>
+    ${teach ? `<div class="dojo-ts">${teach}</div>` : ''}
+    <h3>任務板<small>每個月換新・每張 +${R.xp} 經驗、${money(R.money)}、罐罐 ${R.cans}</small></h3><ul class="quest">${ql}</ul>`;
 }
